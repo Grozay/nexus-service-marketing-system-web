@@ -1,3 +1,5 @@
+//nav bar
+import * as React from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
@@ -17,7 +19,7 @@ import theme from '~/theme'
 const pages = ['Products', 'Pricing', 'Blog']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
-const NavBar = () => {
+function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = useState(null)
   const [anchorElUser, setAnchorElUser] = useState(null)
 
@@ -37,13 +39,8 @@ const NavBar = () => {
   }
 
   return (
-    <AppBar
-      sx={{
-        height: theme.nexus.appBarHeight,
-        backgroundColor: theme.palette.primary.main
-      }}
-    >
-      <Container maxWidth="xl">
+    <AppBar position="static" sx={{ height: theme.nexus.appBarHeight }}>
+      <Container maxWidth="xl" >
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
           <Typography
@@ -162,4 +159,4 @@ const NavBar = () => {
     </AppBar>
   )
 }
-export default NavBar
+export default ResponsiveAppBar
