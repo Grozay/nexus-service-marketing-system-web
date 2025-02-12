@@ -14,7 +14,6 @@ import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
 import { useState } from 'react'
-import theme from '~/theme'
 
 const pages = ['Products', 'Pricing', 'Blog']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
@@ -39,8 +38,13 @@ function ResponsiveAppBar() {
   }
 
   return (
-    <AppBar position="static" sx={{ height: theme.nexus.appBarHeight }}>
-      <Container maxWidth="xl" >
+    <AppBar
+      sx={{
+        height: (theme) => theme.nexus.appBarHeight,
+        backgroundColor: (theme) => theme.palette.primary.main
+      }}
+    >
+      <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
           <Typography

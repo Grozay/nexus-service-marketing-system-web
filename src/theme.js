@@ -1,4 +1,4 @@
-// import { cyan, deepOrange, orange, teal } from '@mui/material/colors'
+import { cyan, deepOrange, orange, teal } from '@mui/material/colors'
 import { extendTheme } from '@mui/material/styles'
 
 const APP_BAR_HEIGHT = '64px'
@@ -14,26 +14,23 @@ const theme = extendTheme({
   },
   palette: {
     primary: {
-      main: '#95a5a6'
-    },
-    secondary: {
-      main: '#000000'
+      main: '#7f8c8d'
     }
   },
-  // colorSchemes: {
-  //   light: {
-  //     palette: {
-  //       primary: teal,
-  //       secondary: deepOrange
-  //     }
-  //   },
-  //   dark: {
-  //     palette: {
-  //       primary: cyan,
-  //       secondary: orange
-  //     }
-  //   }
-  // },
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: teal,
+        secondary: deepOrange
+      }
+    },
+    dark: {
+      palette: {
+        primary: cyan,
+        secondary: orange
+      }
+    }
+  },
   components: {
     MuiCssBaseline: {
       styleOverrides: {

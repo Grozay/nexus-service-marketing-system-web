@@ -3,17 +3,18 @@
 import './App.css'
 // import Stack from '@mui/material/Stack'
 // import Button from '@mui/material/Button'
-import AppBar from '~/components/AppBar/AppBar'
+import Auth from '~/pages/Auth/Auth'
+import { Routes, Route } from 'react-router-dom'
 function App() {
 
   return (
     <>
-      <AppBar />
-      {/* <Stack spacing={2} direction="row">
-        <Button variant="text">Text</Button>
-        <Button variant="contained">Contained</Button>
-        <Button variant="outlined">Outlined</Button>
-      </Stack> */}
+      <Routes>
+        <Route path='/' element={<Auth />} />
+        <Route path='/login' element={<Auth />} />
+        <Route path='/register' element={<Auth />} />
+      </Routes>
+      {/* <Auth /> */}
     </>
   )
 }
