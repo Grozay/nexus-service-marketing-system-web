@@ -12,7 +12,6 @@ import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
 import { useState } from 'react'
-import theme from '~/theme'
 
 const pages = ['Products', 'Pricing', 'Blog']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
@@ -39,8 +38,8 @@ const NavBar = () => {
   return (
     <AppBar
       sx={{
-        height: theme.nexus.appBarHeight,
-        backgroundColor: theme.palette.primary.main
+        height: (theme) => theme.nexus.appBarHeight,
+        backgroundColor: (theme) => theme.palette.primary.main
       }}
     >
       <Container maxWidth="xl">
