@@ -1,3 +1,5 @@
+//nav bar
+import * as React from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
@@ -16,7 +18,7 @@ import { useState } from 'react'
 const pages = ['Products', 'Pricing', 'Blog']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
-const NavBar = () => {
+function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = useState(null)
   const [anchorElUser, setAnchorElUser] = useState(null)
 
@@ -161,4 +163,4 @@ const NavBar = () => {
     </AppBar>
   )
 }
-export default NavBar
+export default ResponsiveAppBar
