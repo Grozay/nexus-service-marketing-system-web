@@ -13,10 +13,10 @@ createRoot(document.getElementById('root')).render(
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <ConfirmProvider defaultOptions={{
-        // allowClose: false,
-        // dialogProps: { maxWidth: 'xs' },
-        // confirmationButtonProps: { color: 'secondary', variant: 'outlined' },
-        // cancellationButtonProps: { color: 'inherit' }
+          allowClose: false,
+          dialogProps: { maxWidth: 'xs' },
+          confirmationButtonProps: { color: 'secondary', variant: 'outlined' },
+          cancellationButtonProps: { color: 'inherit' }
         }}
         >
           <App />

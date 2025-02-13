@@ -1,4 +1,4 @@
-import { cyan, deepOrange, orange, teal } from '@mui/material/colors'
+import { grey, deepOrange, orange, teal } from '@mui/material/colors'
 import { extendTheme } from '@mui/material/styles'
 
 const APP_BAR_HEIGHT = '64px'
@@ -26,7 +26,7 @@ const theme = extendTheme({
     },
     dark: {
       palette: {
-        primary: cyan,
+        primary: grey,
         secondary: orange
       }
     }
