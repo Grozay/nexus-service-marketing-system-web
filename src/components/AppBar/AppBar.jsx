@@ -1,5 +1,3 @@
-//nav bar
-import * as React from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
@@ -14,11 +12,14 @@ import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
+import LogoutIcon from '@mui/icons-material/Logout'
+import CableIcon from '@mui/icons-material/Cable'
+import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck'
+import ModeSelect from '../ModeSelect/ModeSelect'
 
-const pages = ['Products', 'Pricing', 'Blog']
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
-
-function ResponsiveAppBar() {
+const NavBar = () => {
   const [anchorElNav, setAnchorElNav] = useState(null)
   const [anchorElUser, setAnchorElUser] = useState(null)
 
@@ -41,7 +42,7 @@ function ResponsiveAppBar() {
     <AppBar
       sx={{
         height: (theme) => theme.nexus.appBarHeight,
-        backgroundColor: (theme) => theme.palette.primary.main
+        backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#2c3e50' : '#22a6b3'
       }}
     >
       <Container maxWidth="xl">
@@ -62,7 +63,7 @@ function ResponsiveAppBar() {
               textDecoration: 'none'
             }}
           >
-            LOGO
+            NEXUS
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -92,11 +93,23 @@ function ResponsiveAppBar() {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem onClick={handleCloseNavMenu}>
+                <Link to={'/'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <Typography sx={{ textAlign: 'center' }}>Home</Typography>
+                </Link>
+              </MenuItem>
+              <MenuItem onClick={handleCloseNavMenu}>
+                <Typography sx={{ textAlign: 'center' }}>Services</Typography>
+              </MenuItem>
+              <MenuItem onClick={handleCloseNavMenu}>
+                <Typography sx={{ textAlign: 'center' }}>Equipment</Typography>
+              </MenuItem>
+              <MenuItem onClick={handleCloseNavMenu}>
+                <Typography sx={{ textAlign: 'center' }}>About Us</Typography>
+              </MenuItem>
+              <MenuItem onClick={handleCloseNavMenu}>
+                <Typography sx={{ textAlign: 'center' }}>Support</Typography>
+              </MenuItem>
             </Menu>
           </Box>
           <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
@@ -118,23 +131,49 @@ function ResponsiveAppBar() {
           >
             LOGO
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex', justifyContent: 'center' } }}>
+            <Link to={'/'} style={{ textDecoration: 'none', color: 'inherit' }}>
               <Button
-                key={page}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                {page}
+                Home
               </Button>
-            ))}
+            </Link>
+            <Button
+              onClick={handleCloseNavMenu}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Services
+            </Button>
+            <Button
+              onClick={handleCloseNavMenu}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Equipment
+            </Button>
+            <Button
+              onClick={handleCloseNavMenu}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              About Us
+            </Button>
+            <Button
+              onClick={handleCloseNavMenu}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Support
+            </Button>
           </Box>
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
+            <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+              <ModeSelect />
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                </IconButton>
+              </Tooltip>
+            </Box>
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"
@@ -151,11 +190,34 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+              <MenuItem onClick={handleCloseUserMenu}>
+                <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <PersonOutlineIcon />
+                  Profile
+                </Typography>
+              </MenuItem>
+              <MenuItem onClick={handleCloseUserMenu}>
+                <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CableIcon />
+                  Account and connection
+                </Typography>
+              </MenuItem>
+              <Link to={'/register-plans'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <MenuItem onClick={handleCloseUserMenu}>
+                  <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <PlaylistAddCheckIcon fontSize="small" />
+                    Registered Plans
+                  </Typography>
                 </MenuItem>
-              ))}
+              </Link>
+              <Link to={'/login'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <MenuItem onClick={handleCloseUserMenu}>
+                  <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <LogoutIcon fontSize="small" />
+                  Logout
+                  </Typography>
+                </MenuItem>
+              </Link>
             </Menu>
           </Box>
         </Toolbar>
@@ -163,4 +225,4 @@ function ResponsiveAppBar() {
     </AppBar>
   )
 }
-export default ResponsiveAppBar
+export default NavBar
