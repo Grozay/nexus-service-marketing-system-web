@@ -11,6 +11,7 @@ import Profile from '~/pages/Profile/Profile'
 import Support from '~/pages/Support/Support'
 import AboutUs from '~/pages/AboutUs/AboutUs'
 import Equipment from '~/pages/Equipment/Equipment'
+import EquipmentDetail from '~/pages/Equipment/EquipmentDetail/EquipmentDetail'
 import Footer from '~/components/Footer/Footer'
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
         <Route path='/support' element={<Support />} />
         <Route path='/about-us' element={<AboutUs />} />
         <Route path='/equipment' element={<Equipment />} />
+        <Route path='/equipment/:slug' element={<EquipmentDetail />} />
       </Routes>
     </Box>
   )

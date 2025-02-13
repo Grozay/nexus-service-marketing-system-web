@@ -150,37 +150,54 @@ const Profile = () => {
           </Typography>
           <List dense>
             {customerData.registeredPlans.slice(0, showAllPlans ? customerData.registeredPlans.length : 5).map((plan, index) => (
-              <ListItem key={plan.id} secondaryAction={
-                <Button edge="end" aria-label="view" size="small" variant="outlined">
-                    View Details
-                </Button>
-              }>
+              <ListItem key={plan.id} 
+                sx={{
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  alignItems: { xs: 'flex-start', sm: 'center' },
+                  gap: { xs: 1, sm: 0 },
+                  position: 'relative',
+                  pb: { xs: 6, sm: 0 } // Thêm padding bottom cho mobile để chừa chỗ cho nút
+                }}>
                 <ListItemIcon>
                   {plan.icon}
                 </ListItemIcon>
                 <ListItemText
                   primary={plan.name}
                   secondary={`${plan.connectionType} - Registered: ${plan.registeredDate} - Status: ${plan.status}`}
+                  sx={{ width: { xs: '100%', sm: 'auto' } }}
                 />
+                <Box 
+                  sx={{ 
+                    position: { xs: 'absolute', sm: 'static' },
+                    bottom: { xs: 8, sm: 'auto' },
+                    left: { xs: 16, sm: 'auto' },
+                    width: { xs: 'calc(100% - 32px)', sm: 'auto' }
+                  }}
+                >
+                  <Button 
+                    aria-label="view" 
+                    size="small" 
+                    variant="outlined"
+                    fullWidth
+                  >
+                    View Details
+                  </Button>
+                </Box>
               </ListItem>
             ))}
             {!showAllPlans && customerData.registeredPlans.length > 5 && (
-              <Box sx={{
-                mt: 1
-              }}>
-                <ListItem key="show-more" >
-                  <Button onClick={handleShowMore}>
+              <Box sx={{ mt: 1 }}>
+                <ListItem key="show-more">
+                  <Button onClick={handleShowMore} fullWidth>
                     Show more
                   </Button>
                 </ListItem>
               </Box>
             )}
             {showAllPlans && customerData.registeredPlans.length > 5 && (
-              <Box sx={{
-                mt: 1
-              }}>
-                <ListItem key="show-less" >
-                  <Button onClick={handleShowLess}>
+              <Box sx={{ mt: 1 }}>
+                <ListItem key="show-less">
+                  <Button onClick={handleShowLess} fullWidth>
                     Show less
                   </Button>
                 </ListItem>
