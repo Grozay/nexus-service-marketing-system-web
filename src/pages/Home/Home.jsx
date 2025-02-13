@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import AppBar from '~/components/AppBar/AppBar'
 import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
 function Home() {
   return (
     <Box
@@ -19,7 +20,9 @@ function Home() {
         backgroundSize: 'cover',
         backgroundPosition: 'center'
       }}>
-        <Typography variant="h1">Home</Typography>
+        <Button variant="text">Text</Button>
+        <Button variant="contained">Contained</Button>
+        <Button variant="outlined">Outlined</Button>
       </Box>
     </Box>
   )
