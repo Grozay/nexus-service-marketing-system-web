@@ -1,19 +1,19 @@
-// TrungQuanDev: https://youtube.com/@trungquandev
 import { useLocation } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'
 import AppBar from '~/components/AppBar/AppBar'
+
 function Auth() {
   const location = useLocation()
-  // console.log(location)
   const isLogin = location.pathname === '/login'
   const isRegister = location.pathname === '/register'
 
   return (
-    <>
+    <Box>
       <AppBar />
       <Box sx={{
+        overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
         minHeight: '100vh',
@@ -27,7 +27,7 @@ function Auth() {
         {isLogin && <LoginForm />}
         {isRegister && <RegisterForm />}
       </Box>
-    </>
+    </Box>
   )
 }
 

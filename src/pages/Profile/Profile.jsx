@@ -55,12 +55,10 @@ const Profile = () => {
   const [showAllPlans, setShowAllPlans] = React.useState(false)
 
   const handleShowMore = () => {
-    // TODO: handle show more click event here
     setShowAllPlans(true)
   }
 
   const handleShowLess = () => {
-    // TODO: handle show less click event here
     setShowAllPlans(false)
   }
 
@@ -88,7 +86,7 @@ const Profile = () => {
 
         <Grid container spacing={3}>
           {/* Personal Information */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography variant="h6" component="h3" gutterBottom>
                 Personal Information
             </Typography>
@@ -115,7 +113,7 @@ const Profile = () => {
           </Grid>
 
           {/* Account Information */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Typography variant="h6" component="h3" gutterBottom>
                 Account Information
             </Typography>
@@ -128,7 +126,7 @@ const Profile = () => {
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <Icon><PlaylistAddCheckIcon /></Icon>
+                  <PlaylistAddCheckIcon />
                 </ListItemIcon>
                 <ListItemText primary="Account Created Date" secondary={customerData.accountCreated} />
               </ListItem>
@@ -198,13 +196,13 @@ const Profile = () => {
             Account Settings
           </Typography>
           <List dense>
-            <ListItem button component="a" href="/profile/change-password">
+            <ListItem component={Link} to="/profile/change-password">
               <ListItemIcon>
                 <VpnKeyIcon />
               </ListItemIcon>
               <ListItemText primary="Change Password" />
             </ListItem>
-            <ListItem button component="a" href="/profile/edit">
+            <ListItem component={Link} to="/profile/edit">
               <ListItemIcon>
                 <EditIcon />
               </ListItemIcon>

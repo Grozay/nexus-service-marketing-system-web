@@ -2,14 +2,14 @@
 import { extendTheme } from '@mui/material/styles'
 
 const APP_BAR_HEIGHT = '64px'
-const FOOTER_HEIGHT = '64px'
-const CONTENT_HEIGHT = `calc(100vh - ${APP_BAR_HEIGHT} - ${FOOTER_HEIGHT})`
+// const FOOTER_HEIGHT = '350px'
+const CONTENT_HEIGHT = `calc(100vh - ${APP_BAR_HEIGHT})`
 
 // Create a theme instance.
 const theme = extendTheme({
   nexus: {
     appBarHeight: APP_BAR_HEIGHT,
-    footerHeight: FOOTER_HEIGHT,
+    // footerHeight: FOOTER_HEIGHT,
     contentHeight: CONTENT_HEIGHT
   },
   // colorSchemes: {

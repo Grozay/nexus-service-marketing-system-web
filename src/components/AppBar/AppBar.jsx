@@ -47,7 +47,9 @@ const NavBar = () => {
       >
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+            <Link to={'/'} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+            </Link>
             <Typography
               variant="h6"
               noWrap
@@ -99,16 +101,24 @@ const NavBar = () => {
                   </Link>
                 </MenuItem>
                 <MenuItem onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>Services</Typography>
+                  <Link to={'/service'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Typography sx={{ textAlign: 'center' }}>Services</Typography>
+                  </Link>
                 </MenuItem>
                 <MenuItem onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>Equipment</Typography>
+                  <Link to={'/equipment'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Typography sx={{ textAlign: 'center' }}>Equipment</Typography>
+                  </Link>
                 </MenuItem>
                 <MenuItem onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>About Us</Typography>
+                  <Link to={'/about-us'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Typography sx={{ textAlign: 'center' }}>About Us</Typography>
+                  </Link>
                 </MenuItem>
                 <MenuItem onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>Support</Typography>
+                  <Link to={'/support'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Typography sx={{ textAlign: 'center' }}>Support</Typography>
+                  </Link>
                 </MenuItem>
               </Menu>
             </Box>
@@ -148,12 +158,14 @@ const NavBar = () => {
                   Services
                 </Button>
               </Link>
-              <Button
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                Equipment
-              </Button>
+              <Link to={'/equipment'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Button
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                >
+                  Equipment
+                </Button>
+              </Link>
               <Link to={'/about-us'} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <Button
                   onClick={handleCloseNavMenu}
@@ -197,18 +209,20 @@ const NavBar = () => {
                 onClose={handleCloseUserMenu}
               >
                 <Link to={'/profile'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <MenuItem onClick={handleCloseUserMenu}>
+                  <MenuItem onClick={handleCloseUserMenu} role="menuitem" tabIndex={0}>
                     <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
                       <PersonOutlineIcon />
-                    Profile
+                      Profile
                     </Typography>
                   </MenuItem>
                 </Link>
                 <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <CableIcon />
-                    Account and connection
-                  </Typography>
+                  <Link to={'/account-and-connection'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <CableIcon />
+                      Account and connection
+                    </Typography>
+                  </Link>
                 </MenuItem>
                 <Link to={'/register-plans'} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <MenuItem onClick={handleCloseUserMenu}>

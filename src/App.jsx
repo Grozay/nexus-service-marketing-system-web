@@ -10,6 +10,8 @@ import Box from '@mui/material/Box'
 import Profile from '~/pages/Profile/Profile'
 import Support from '~/pages/Support/Support'
 import AboutUs from '~/pages/AboutUs/AboutUs'
+import Equipment from '~/pages/Equipment/Equipment'
+import Footer from '~/components/Footer/Footer'
 function App() {
 
   return (
@@ -22,6 +24,7 @@ function App() {
         <Route path='/profile' element={<Profile />} />
         <Route path='/support' element={<Support />} />
         <Route path='/about-us' element={<AboutUs />} />
+        <Route path='/equipment' element={<Equipment />} />
       </Routes>
     </Box>
   )
