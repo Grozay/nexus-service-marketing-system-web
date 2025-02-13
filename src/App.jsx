@@ -8,6 +8,7 @@ import Service from '~/pages/Service/Service'
 import { Routes, Route } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Profile from '~/pages/Profile/Profile'
+import Support from '~/pages/Support/Support'
 function App() {
 
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path='/register' element={<Auth />} />
         <Route path='/service' element={<Service />} />
         <Route path='/profile' element={<Profile />} />
+        <Route path='/support' element={<Support />} />
       </Routes>
     </Box>
   )
