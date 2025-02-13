@@ -160,12 +160,14 @@ const NavBar = () => {
               >
                 About Us
               </Button>
-              <Button
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                Support
-              </Button>
+              <Link to={'/support'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Button
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                >
+                  Support
+                </Button>
+              </Link>
             </Box>
             <Box sx={{ flexGrow: 0 }}>
               <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
