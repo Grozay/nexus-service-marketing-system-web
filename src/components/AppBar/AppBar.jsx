@@ -154,12 +154,14 @@ const NavBar = () => {
               >
                 Equipment
               </Button>
-              <Button
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                About Us
-              </Button>
+              <Link to={'/about-us'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Button
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                >
+                  About Us
+                </Button>
+              </Link>
               <Link to={'/support'} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <Button
                   onClick={handleCloseNavMenu}
