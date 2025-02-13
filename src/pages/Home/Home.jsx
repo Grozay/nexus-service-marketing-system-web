@@ -1,12 +1,12 @@
 import Box from '@mui/material/Box'
 import AppBar from '~/components/AppBar/AppBar'
-import Typography from '@mui/material/Typography'
+// import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 function Home() {
   return (
     <Box
       sx={{
-        backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#7f8c8d' : '#ffffff'
+        height: (theme) => theme.nexus.contentHeight
       }}
     >
       <AppBar />

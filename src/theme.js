@@ -1,4 +1,4 @@
-import { grey, deepOrange, orange, teal } from '@mui/material/colors'
+// import { grey, deepOrange, orange, teal } from '@mui/material/colors'
 import { extendTheme } from '@mui/material/styles'
 
 const APP_BAR_HEIGHT = '64px'
@@ -12,25 +12,20 @@ const theme = extendTheme({
     footerHeight: FOOTER_HEIGHT,
     contentHeight: CONTENT_HEIGHT
   },
-  palette: {
-    primary: {
-      main: '#7f8c8d'
-    }
-  },
-  colorSchemes: {
-    light: {
-      palette: {
-        primary: teal,
-        secondary: deepOrange
-      }
-    },
-    dark: {
-      palette: {
-        primary: grey,
-        secondary: orange
-      }
-    }
-  },
+  // colorSchemes: {
+  //   light: {
+  //     palette: {
+  //       primary: teal,
+  //       secondary: deepOrange
+  //     }
+  //   },
+  //   dark: {
+  //     palette: {
+  //       primary: grey,
+  //       secondary: orange
+  //     }
+  //   }
+  // },
   components: {
     MuiCssBaseline: {
       styleOverrides: {

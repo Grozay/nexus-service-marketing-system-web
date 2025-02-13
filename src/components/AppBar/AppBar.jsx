@@ -42,7 +42,7 @@ const NavBar = () => {
     <Box sx={{ height: (theme) => theme.nexus.appBarHeight }}>
       <AppBar
         sx={{
-          backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#2c3e50' : '#22a6b3'
+          // backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#2c3e50' : '#22a6b3'
         }}
       >
         <Container maxWidth="xl">
@@ -192,12 +192,14 @@ const NavBar = () => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <PersonOutlineIcon />
+                <Link to={'/profile'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <PersonOutlineIcon />
                     Profile
-                  </Typography>
-                </MenuItem>
+                    </Typography>
+                  </MenuItem>
+                </Link>
                 <MenuItem onClick={handleCloseUserMenu}>
                   <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
                     <CableIcon />
