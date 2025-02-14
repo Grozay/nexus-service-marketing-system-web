@@ -9,7 +9,7 @@ import App from './App.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme} noSsr disableTransitionOnChange defaultMode='light'>
         <CssBaseline />
         <ConfirmProvider defaultOptions={{
           allowClose: false,

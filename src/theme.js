@@ -1,31 +1,31 @@
-// import { grey, deepOrange, orange, teal } from '@mui/material/colors'
-import { extendTheme } from '@mui/material/styles'
+import { grey, deepOrange, orange, teal } from '@mui/material/colors'
+import { createTheme } from '@mui/material/styles'
 
 const APP_BAR_HEIGHT = '64px'
 // const FOOTER_HEIGHT = '350px'
 const CONTENT_HEIGHT = `calc(100vh - ${APP_BAR_HEIGHT})`
 
 // Create a theme instance.
-const theme = extendTheme({
+const theme = createTheme({
   nexus: {
     appBarHeight: APP_BAR_HEIGHT,
     // footerHeight: FOOTER_HEIGHT,
     contentHeight: CONTENT_HEIGHT
   },
-  // colorSchemes: {
-  //   light: {
-  //     palette: {
-  //       primary: teal,
-  //       secondary: deepOrange
-  //     }
-  //   },
-  //   dark: {
-  //     palette: {
-  //       primary: grey,
-  //       secondary: orange
-  //     }
-  //   }
-  // },
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: teal,
+        secondary: deepOrange
+      }
+    },
+    dark: {
+      palette: {
+        primary: grey,
+        secondary: orange
+      }
+    }
+  },
   components: {
     MuiCssBaseline: {
       styleOverrides: {
