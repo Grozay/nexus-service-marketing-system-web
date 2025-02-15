@@ -1,177 +1,296 @@
-import React from 'react'
-import { Box, Grid, TextField, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material'
-import { useForm, Controller } from 'react-hook-form'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { useState } from 'react'
+import Container from '@mui/material/Container'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Stepper from '@mui/material/Stepper'
+import Step from '@mui/material/Step'
+import StepLabel from '@mui/material/StepLabel'
+import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import TextField from '@mui/material/TextField'
+import FormControl from '@mui/material/FormControl'
+import FormHelperText from '@mui/material/FormHelperText'
+import AppBar from '~/components/AppBar/AppBar'
+import Footer from '~/components/Footer/Footer'
+import { useParams } from 'react-router-dom'
+const steps = ['Personal Information', 'Confirm Subscription', 'Payment'] // Step labels in English
 
-const SubscribeForm = ({ initialData, onSubmit }) => {
-  const { register, handleSubmit, control, formState: { errors } } = useForm({
-    defaultValues: initialData || {
-      customerIsActive: true
-    }
+const servicePlans = [
+  {
+    id: 1,
+    name: 'Broadband 64 Kbps',
+    securityDeposit: '$350',
+    slug: 'broadband-128-kbps',
+    description: 'High-speed internet for home and business users. Enjoy seamless streaming, fast downloads, and reliable connectivity for all your online activities.'
+  }
+]
+
+const SubscribePage = () => {
+  const { slug } = useParams()
+  const [activeStep, setActiveStep] = useState(0)
+  const [formData, setFormData] = useState({
+    fullName: '',
+    phone: '',
+    email: '',
+    address: '',
+    plan: '', // Store plan slug
+    deposit: 0 // You might calculate this based on the selected plan
   })
+  const [formErrors, setFormErrors] = useState({})
+  const selectedPlan = servicePlans.find(plan => plan?.slug === slug)
+  console.log(selectedPlan)
+
+  const handleNext = () => {
+    // Basic validation before moving to the next step
+    let errors = {}
+    if (activeStep === 0) {
+      if (!formData.fullName) errors.fullName = 'Please enter your Full Name' // Error message in English
+      if (!formData.phone) errors.phone = 'Please enter your Phone Number' // Error message in English
+      if (!formData.email) errors.email = 'Please enter your Email' // Error message in English
+      if (!formData.address) errors.address = 'Please enter your Address' // Error message in English
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors)
+      return // Stop proceeding if there are errors
+    } else {
+      setFormErrors({}) // Clear errors if validation passes
+      setActiveStep((prevActiveStep) => prevActiveStep + 1)
+    }
+  }
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
+    setFormErrors({}) // Clear errors when going back
+  }
+
+  const handleSubmit = () => {
+    // Handle final submission - in real app, send data to backend
+    console.log('Form submitted:', formData)
+    alert('Subscription successful! Your information has been submitted.') // Alert message in English
+    // In a real application, you would:
+    // 1. Send formData to your backend API
+    // 2. Handle success/error responses
+    // 3. Redirect to a confirmation page or show a success message
+  }
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target
+    setFormData({
+      ...formData,
+      [name]: value
+    })
+  }
+
+  const handlePlanChange = (event) => {
+    const selectedPlanSlug = event.target.value
+    const selectedPlan = servicePlans.find(plan => plan.slug === selectedPlanSlug)
+    setFormData({
+      ...formData,
+      plan: selectedPlanSlug,
+      deposit: selectedPlan ? selectedPlan.securityDeposit : 0
+    })
+  }
+
+
+  const getStepContent = (step) => {
+    switch (step) {
+    case 0:
+      return (
+        <Box sx={{ mb: 5, display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Card sx={{ p: 3, display: 'flex', flexDirection: 'column' }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                  Personal Information
+              </Typography>
+              <TextField
+                fullWidth
+                margin="normal"
+                id="fullName"
+                name="fullName"
+                label="Full Name" // Label in English
+                value={formData.fullName}
+                onChange={handleInputChange}
+                error={!!formErrors.fullName}
+                helperText={formErrors.fullName}
+                required
+              />
+              <TextField
+                fullWidth
+                margin="normal"
+                id="phone"
+                name="phone"
+                label="Phone Number" // Label in English
+                value={formData.phone}
+                onChange={handleInputChange}
+                error={!!formErrors.phone}
+                helperText={formErrors.phone}
+                required
+              />
+              <TextField
+                fullWidth
+                margin="normal"
+                id="email"
+                name="email"
+                label="Email" // Label in English
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                error={!!formErrors.email}
+                helperText={formErrors.email}
+                required
+              />
+              <TextField
+                fullWidth
+                margin="normal"
+                id="address"
+                name="address"
+                label="Address" // Label in English
+                multiline
+                rows={3}
+                value={formData.address}
+                onChange={handleInputChange}
+                error={!!formErrors.address}
+                helperText={formErrors.address}
+                required
+              />
+            </CardContent>
+          </Card>
+          <Card sx={{ p: 3, display: 'flex', flexDirection: 'column' }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                  Selected Service Plan
+              </Typography>
+              <FormControl fullWidth margin="normal" error={!!formErrors.plan} required>
+                <TextField
+                  id="plan"
+                  name="plan"
+                  value={selectedPlan.name}
+                  disabled
+                  onChange={handlePlanChange}
+                />
+                <FormHelperText>{formErrors.plan}</FormHelperText>
+              </FormControl>
+            </CardContent>
+          </Card>
+        </Box>
+      )
+    case 1:
+      return (
+        <Card sx={{ p: 4 }}>
+          <Typography variant="h5" component="h2" gutterBottom>
+              Confirm Subscription Information {/* Step title in English */}
+          </Typography>
+          <Typography variant="subtitle1" fontWeight="bold">Personal Information:</Typography> {/* Subtitle in English */}
+          <Typography variant="body1">Full Name: {formData.fullName}</Typography> {/* Label in English */}
+          <Typography variant="body1">Phone Number: {formData.phone}</Typography> {/* Label in English */}
+          <Typography variant="body1">Email: {formData.email}</Typography> {/* Label in English */}
+          <Typography variant="body1">Address: {formData.address}</Typography> {/* Label in English */}
+
+          <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Selected Service Plan:</Typography> {/* Subtitle in English */}
+          {selectedPlan && (
+            <>
+              <Typography variant="body1">Plan Name: {selectedPlan.name}</Typography> {/* Label in English */}
+              <Typography variant="body1">Security Deposit: {selectedPlan.securityDeposit}</Typography> {/* Label in English */}
+            </>
+          )}
+          <Typography variant="body1" sx={{ mt: 2 }}>
+              Please double-check your information before confirming your subscription. {/* Text in English */}
+          </Typography>
+        </Card>
+      )
+    case 2:
+      // eslint-disable-next-line no-case-declarations
+      const selectedPlanForPayment = selectedPlan.find(plan => plan.slug === formData.plan)
+      return (
+        <Card sx={{ p: 4 }}>
+          <Typography variant="h5" component="h2" gutterBottom>
+              Security Deposit Payment {/* Step title in English */}
+          </Typography>
+          {selectedPlanForPayment && (
+            <>
+              <Typography variant="body1" gutterBottom>
+                  Service Plan: <Typography component="span" fontWeight="bold">{selectedPlanForPayment.name}</Typography> {/* Label in English */}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                  Security Deposit Amount: <Typography component="span" fontWeight="bold" color="secondary">{selectedPlanForPayment.securityDeposit}</Typography> {/* Label in English */}
+              </Typography>
+            </>
+          )}
+
+          <Typography variant="body1" sx={{ mt: 2, mb: 3 }}>
+              Select Payment Method: (Placeholder - Payment Gateway Integration needed here) {/* Text in English */}
+          </Typography>
+
+          {/* Placeholder for Payment Gateway integration - In real app, add payment form here */}
+          <Box sx={{ textAlign: 'center' }}>
+            <Button variant="contained" color="success" size="large" disabled>
+                Pay (Not Available) {/* Button label in English */}
+            </Button>
+            <Typography variant="caption" display="block" mt={1} color="text.secondary">
+                Payment feature is under development. {/* Text in English */}
+            </Typography>
+          </Box>
+        </Card>
+      )
+    default:
+      return 'Unknown step'
+    }
+  }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={3}>
-          {/* Thông tin cơ bản */}
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Tên khách hàng"
-              {...register('customerName', { required: 'Trường này là bắt buộc' })}
-              error={!!errors.customerName}
-              helperText={errors.customerName?.message}
-            />
-          </Grid>
+    <Box>
+      <AppBar />
+      <Container maxWidth="md" sx={{ mt: 5, mb: 7 }}>
+        <Typography variant="h4" component="h1" gutterBottom textAlign="center" fontWeight="bold">
+          NEXUS Service Subscription {/* Page title in English */}
+        </Typography>
 
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Email"
-              type="email"
-              {...register('customerEmail', { 
-                required: 'Trường này là bắt buộc',
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Địa chỉ email không hợp lệ'
-                }
-              })}
-              error={!!errors.customerEmail}
-              helperText={errors.customerEmail?.message}
-            />
-          </Grid>
+        <Stepper activeStep={activeStep} alternativeLabel sx={{ mt: 3, mb: 5 }}>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
 
-          {/* Thông tin địa chỉ */}
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Địa chỉ"
-              {...register('customerAddress', { required: 'Trường này là bắt buộc' })}
-              error={!!errors.customerAddress}
-              helperText={errors.customerAddress?.message}
-            />
-          </Grid>
+        <Box sx={{ mb: 3 }}>
+          {getStepContent(activeStep)}
+        </Box>
 
-          {/* Thông tin cá nhân */}
-          <Grid item xs={12} md={4}>
-            <Controller
-              name="customerDOB"
-              control={control}
-              rules={{ required: 'Trường này là bắt buộc' }}
-              render={({ field }) => (
-                <DatePicker
-                  label="Ngày sinh"
-                  value={field.value || null}
-                  onChange={field.onChange}
-                  renderInput={(params) => (
-                    <TextField 
-                      {...params} 
-                      fullWidth 
-                      error={!!errors.customerDOB}
-                      helperText={errors.customerDOB?.message}
-                    />
-                  )}
-                />
-              )}
-            />
-          </Grid>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+          <Button
+            disabled={activeStep === 0}
+            onClick={handleBack}
+            variant="contained"
+            color="grey"
+          >
+            Back {/* Button label in English */}
+          </Button>
 
-          <Grid item xs={12} md={4}>
-            <FormControl fullWidth>
-              <InputLabel>Giới tính</InputLabel>
-              <Select
-                label="Giới tính"
-                {...register('customerGender', { required: 'Trường này là bắt buộc' })}
-                error={!!errors.customerGender}
-              >
-                <MenuItem value="Nam">Nam</MenuItem>
-                <MenuItem value="Nữ">Nữ</MenuItem>
-                <MenuItem value="Khác">Khác</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <TextField
-              fullWidth
-              label="Số điện thoại"
-              {...register('customerPhone', { 
-                required: 'Trường này là bắt buộc',
-                pattern: {
-                  value: /^[0-9]{10,11}$/,
-                  message: 'Số điện thoại không hợp lệ'
-                }
-              })}
-              error={!!errors.customerPhone}
-              helperText={errors.customerPhone?.message}
-            />
-          </Grid>
-
-          {/* Thông tin tài khoản */}
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Mật khẩu"
-              type="password"
-              {...register('customerPassword', { 
-                required: 'Trường này là bắt buộc',
-                minLength: {
-                  value: 8,
-                  message: 'Mật khẩu phải có ít nhất 8 ký tự'
-                }
-              })}
-              error={!!errors.customerPassword}
-              helperText={errors.customerPassword?.message}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <InputLabel>Trạng thái</InputLabel>
-              <Select
-                label="Trạng thái"
-                {...register('customerIsActive')}
-              >
-                <MenuItem value={true}>Hoạt động</MenuItem>
-                <MenuItem value={false}>Không hoạt động</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
-          {/* Thông tin bổ sung */}
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Số CMND/CCCD"
-              {...register('customerIdentity', { required: 'Trường này là bắt buộc' })}
-              error={!!errors.customerIdentity}
-              helperText={errors.customerIdentity?.message}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Mô tả"
-              {...register('customerDescription')}
-              multiline
-              rows={3}
-            />
-          </Grid>
-
-          {/* Nút submit */}
-          <Grid item xs={12}>
-            <Button type="submit" variant="contained" size="large">
-              Lưu thông tin
+          {activeStep === steps.length - 1 ? (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+            >
+              Complete Subscription {/* Button label in English */}
             </Button>
-          </Grid>
-        </Grid>
-      </Box>
-    </LocalizationProvider>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleNext}
+            >
+              Next
+            </Button>
+          )}
+        </Box>
+      </Container>
+      <Footer />
+    </Box>
   )
 }
 
-export default SubscribeForm
+export default SubscribePage

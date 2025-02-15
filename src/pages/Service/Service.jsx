@@ -90,7 +90,8 @@ const Service = () => {
       price: '$130',
       billingCycle: '3 months',
       icon: <DialpadIcon />,
-      slug: 'dial-up'
+      type: 'dial-up',
+      slug: 'dial-up-30-hours'
     },
     {
       id: 2,
@@ -100,7 +101,8 @@ const Service = () => {
       price: '$350',
       billingCycle: 'month',
       icon: <WifiIcon />,
-      slug: 'broadband'
+      type: 'broadband',
+      slug: 'broadband-64-kbps'
     },
     {
       id: 3,
@@ -110,7 +112,8 @@ const Service = () => {
       price: '$35',
       billingCycle: 'month',
       icon: <PhoneIcon />,
-      slug: 'landline'
+      type: 'landline',
+      slug: 'landline-local-monthly'
     },
     {
       id: 4,
@@ -120,7 +123,8 @@ const Service = () => {
       price: '$550',
       billingCycle: 'month',
       icon: <WifiIcon />,
-      slug: 'broadband'
+      type: 'broadband',
+      slug: 'broadband-unlimited-128-kbps'
     },
     {
       id: 5,
@@ -130,7 +134,8 @@ const Service = () => {
       price: '$225',
       billingCycle: '6 months',
       icon: <DialpadIcon />,
-      slug: 'dial-up'
+      type: 'dial-up',
+      slug: 'premium-dial-up-60-hours'
     },
     {
       id: 6,
@@ -140,7 +145,8 @@ const Service = () => {
       price: '$125',
       billingCycle: 'year',
       icon: <PhoneIcon />,
-      slug: 'landline'
+      type: 'landline',
+      slug: 'economy-landline-std'
     },
     {
       id: 7,
@@ -150,7 +156,8 @@ const Service = () => {
       price: '$750',
       billingCycle: 'month',
       icon: <WifiIcon />,
-      slug: 'broadband'
+      type: 'broadband',
+      slug: 'super-speed-broadband-256-kbps'
     },
     {
       id: 8,
@@ -160,12 +167,13 @@ const Service = () => {
       price: '$420',
       billingCycle: 'quarter',
       icon: <Icon> <WifiIcon /> + <PhoneIcon /></Icon>,
-      slug: 'combo'
+      type: 'combo',
+      slug: 'family-combo-package-broadband-landline'
     }
   ]
 
   const filteredServicePlans = slug
-    ? allServicePlans.filter(plan => plan.slug === slug)
+    ? allServicePlans.filter(plan => plan.type === slug)
     : allServicePlans
 
   return (
@@ -214,8 +222,11 @@ const Service = () => {
                   >
                     View Details
                   </Button>
-                  <Button sx={registerButtonStyle}>
-                    Register
+                  <Button sx={registerButtonStyle}
+                    component={RouterLink}
+                    to='/subscribe/broadband-128-kbps'
+                  >
+                    Subscribe
                   </Button>
                 </CardActions>
               </Card>
