@@ -13,9 +13,10 @@ import { Link } from 'react-router-dom'
 const ServiceDetailPage = () => {
   const serviceDetail = {
     id: 1,
-    name: 'Broadband 128 Kbps',
+    name: 'Broadband 64 Kbps',
     price: '$350/month',
     speed: '128 Kbps',
+    slug: 'broadband-128-kbps',
     description: 'High-speed internet for home and business users. Enjoy seamless streaming, fast downloads, and reliable connectivity for all your online activities.',
     similarPlans: [
       { id: 2, name: 'Broadband 64 Kbps', price: '$250/month', speed: '64 Kbps' },
@@ -82,7 +83,7 @@ const ServiceDetailPage = () => {
           <Typography variant="body1" color="text.secondary">
             {serviceDetail.description}
           </Typography>
-          <Link to={`/subscribe/${serviceDetail.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Link to={`/subscribe/${serviceDetail.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
             <Button variant="contained" color="primary" sx={{ mt: 4, display: 'block', margin: '0 auto' }}>
               Subscribe Now
             </Button>
