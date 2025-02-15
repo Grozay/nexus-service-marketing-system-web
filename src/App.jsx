@@ -10,9 +10,8 @@ import Box from '@mui/material/Box'
 import Profile from '~/pages/Profile/Profile'
 import Support from '~/pages/Support/Support'
 import AboutUs from '~/pages/AboutUs/AboutUs'
-import Equipment from '~/pages/Equipment/Equipment'
-import EquipmentDetail from '~/pages/Equipment/EquipmentDetail/EquipmentDetail'
-import Footer from '~/components/Footer/Footer'
+// import Equipment from '~/pages/Equipment/Equipment'
+// import EquipmentDetail from '~/pages/Equipment/EquipmentDetail/EquipmentDetail'
 function App() {
 
   return (
@@ -21,12 +20,12 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Auth />} />
         <Route path='/register' element={<Auth />} />
-        <Route path='/service' element={<Service />} />
+        <Route path='/service/:slug' element={<Service />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='/support' element={<Support />} />
         <Route path='/about-us' element={<AboutUs />} />
-        <Route path='/equipment' element={<Equipment />} />
-        <Route path='/equipment/:slug' element={<EquipmentDetail />} />
+        {/* <Route path='/equipment' element={<Equipment />} /> */}
+        {/* <Route path='/equipment/:slug' element={<EquipmentDetail />} /> */}
       </Routes>
     </Box>
   )

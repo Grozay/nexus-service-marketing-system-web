@@ -13,8 +13,8 @@ import DialpadIcon from '@mui/icons-material/Dialpad'
 import PhoneIcon from '@mui/icons-material/Phone'
 import { Link } from '@mui/material' // Import Link từ Material UI
 import AppBar from '~/components/AppBar/AppBar'
+import { useParams } from 'react-router-dom' // Import useParams
 
-// **Định nghĩa các style chung để đảm bảo tính nhất quán**
 const cardStyle = {
   height: '100%',
   display: 'flex',
@@ -81,7 +81,8 @@ const registerButtonStyle = {
 }
 
 const Service = () => {
-  const servicePlans = [
+  const { slug } = useParams() // Lấy slug từ URL params
+  const allServicePlans = [
     {
       id: 1,
       title: 'Dial-Up 30 Hours',
@@ -89,7 +90,8 @@ const Service = () => {
       description: 'Cost-effective, suitable for light usage needs.',
       price: '$130',
       billingCycle: '3 months',
-      icon: <DialpadIcon />
+      icon: <DialpadIcon />,
+      slug: 'dial-up'
     },
     {
       id: 2,
@@ -98,7 +100,8 @@ const Service = () => {
       description: 'Stable speed, smooth web browsing and video streaming.',
       price: '$350',
       billingCycle: 'month',
-      icon: <WifiIcon />
+      icon: <WifiIcon />,
+      slug: 'broadband'
     },
     {
       id: 3,
@@ -107,7 +110,8 @@ const Service = () => {
       description: 'Unlimited local calls, maximum savings.',
       price: '$35',
       billingCycle: 'month',
-      icon: <PhoneIcon />
+      icon: <PhoneIcon />,
+      slug: 'landline'
     },
     {
       id: 4,
@@ -116,7 +120,8 @@ const Service = () => {
       description: 'High speed, unlimited data, fast downloads.',
       price: '$550',
       billingCycle: 'month',
-      icon: <WifiIcon />
+      icon: <WifiIcon />,
+      slug: 'broadband'
     },
     {
       id: 5,
@@ -125,7 +130,8 @@ const Service = () => {
       description: 'Large capacity Dial-Up package with longer usage time.',
       price: '$225',
       billingCycle: '6 months',
-      icon: <DialpadIcon />
+      icon: <DialpadIcon />,
+      slug: 'dial-up'
     },
     {
       id: 6,
@@ -134,7 +140,8 @@ const Service = () => {
       description: 'Discounted inter-state call rates, easy to stay connected.',
       price: '$125',
       billingCycle: 'year',
-      icon: <PhoneIcon />
+      icon: <PhoneIcon />,
+      slug: 'landline'
     },
     {
       id: 7,
@@ -143,7 +150,8 @@ const Service = () => {
       description: 'Extremely fast speed, smooth experience for all applications.',
       price: '$750',
       billingCycle: 'month',
-      icon: <WifiIcon />
+      icon: <WifiIcon />,
+      slug: 'broadband'
     },
     {
       id: 8,
@@ -152,9 +160,14 @@ const Service = () => {
       description: 'Save more when using both Internet and Landline services.',
       price: '$420',
       billingCycle: 'quarter',
-      icon: <Icon> <WifiIcon /> + <PhoneIcon /></Icon>
+      icon: <Icon> <WifiIcon /> + <PhoneIcon /></Icon>,
+      slug: 'combo'
     }
   ]
+
+  const filteredServicePlans = slug // Lọc servicePlans dựa trên slug param
+    ? allServicePlans.filter(plan => plan.slug === slug)
+    : allServicePlans // Nếu không có slug, hiển thị tất cả (hoặc bạn có thể chọn không hiển thị gì)
 
   return (
     <Box>
@@ -169,7 +182,7 @@ const Service = () => {
           gap: 3,
           justifyContent: 'center'
         }}>
-          {servicePlans.map((plan) => (
+          {filteredServicePlans.map((plan) => ( // Sử dụng filteredServicePlans để map
             <Box key={plan.id} sx={{
               width: { xs: '100%', sm: 'calc(50% - 12px)', md: 'calc(33.33% - 16px)' },
               maxWidth: 400

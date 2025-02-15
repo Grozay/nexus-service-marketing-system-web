@@ -61,79 +61,79 @@ const EquipmentDetailPage = () => {
   return (
     <Box>
       <AppBar />
-    <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
-      {/* Page Header */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          {equipmentDetail.name}
-        </Typography>
-      </Box>
+      <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
+        {/* Page Header */}
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h4" component="h1" gutterBottom>
+            {equipmentDetail.name}
+          </Typography>
+        </Box>
 
-      <Grid container spacing={3}>
-        {/* Product Image Section */}
-        <Grid xs={12} md={6}>
-          <Card>
-            <CardMedia
-              component="img"
-              height="auto"
-              image={equipmentDetail.image}
-              alt={equipmentDetail.name}
-            />
-          </Card>
-        </Grid>
+        <Grid container spacing={3}>
+          {/* Product Image Section */}
+          <Grid xs={12} md={6}>
+            <Card>
+              <CardMedia
+                component="img"
+                height="auto"
+                image={equipmentDetail.image}
+                alt={equipmentDetail.name}
+              />
+            </Card>
+          </Grid>
 
-        {/* Product Details Section */}
-        <Grid xs={12} md={6}>
-          <Card sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <CardContent>
-              <Typography variant="h6" component="h2" gutterBottom>
+          {/* Product Details Section */}
+          <Grid xs={12} md={6}>
+            <Card sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <CardContent>
+                <Typography variant="h6" component="h2" gutterBottom>
                 Product Description
-              </Typography>
-              <Typography variant="body2" color="text.secondary" paragraph>
-                {equipmentDetail.description}
-              </Typography>
+                </Typography>
+                <Typography variant="body2" color="text.secondary" paragraph>
+                  {equipmentDetail.description}
+                </Typography>
 
-              <Typography variant="h6" component="h3" gutterBottom sx={{ mt: 3 }}>
+                <Typography variant="h6" component="h3" gutterBottom sx={{ mt: 3 }}>
                 Key Features
-              </Typography>
-              <List dense>
-                {equipmentDetail.features.map((feature, index) => (
-                  <ListItem key={index}>
-                    <ListItemIcon>
-                      <CheckCircleIcon color="primary" />
-                    </ListItemIcon>
-                    <ListItemText primary={feature} />
-                  </ListItem>
-                ))}
-              </List>
-            </CardContent>
+                </Typography>
+                <List dense>
+                  {equipmentDetail.features.map((feature, index) => (
+                    <ListItem key={index}>
+                      <ListItemIcon>
+                        <CheckCircleIcon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText primary={feature} />
+                    </ListItem>
+                  ))}
+                </List>
+              </CardContent>
 
-            <CardActions sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-              {equipmentDetail.price && (
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Icon><LocalOfferIcon color="primary" sx={{ mr: 0.5 }} /></Icon>
-                  <Typography variant="h6" component="p" fontWeight="bold">
+              <CardActions sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                {equipmentDetail.price && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Icon><LocalOfferIcon color="primary" sx={{ mr: 0.5 }} /></Icon>
+                    <Typography variant="h6" component="p" fontWeight="bold">
                     Price: {equipmentDetail.price}
-                  </Typography>
-                </Box>
-              )}
+                    </Typography>
+                  </Box>
+                )}
 
-              <Button variant="contained" size="large" startIcon={<AddShoppingCartIcon />} sx={{ mb: 1 }}>
+                <Button variant="contained" size="large" startIcon={<AddShoppingCartIcon />} sx={{ mb: 1 }}>
                 Subscription
-              </Button>
-              <Typography variant="body2" color="text.secondary">
+                </Button>
+                <Typography variant="body2" color="text.secondary">
                 Call our hotline or leave your information for the best support.
-              </Typography>
-            </CardActions>
-          </Card>
+                </Typography>
+              </CardActions>
+            </Card>
+          </Grid>
         </Grid>
-      </Grid>
 
-      <Box mt={6} textAlign="center">
-        <Typography variant="body2" color="text.secondary">
+        <Box mt={6} textAlign="center">
+          <Typography variant="body2" color="text.secondary">
           Still have questions? <MuiLink href="/contact">Contact us</MuiLink>
-        </Typography>
-      </Box>
+          </Typography>
+        </Box>
       </Container>
       <Footer />
     </Box>
