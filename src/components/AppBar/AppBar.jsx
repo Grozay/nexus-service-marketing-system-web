@@ -22,12 +22,17 @@ import ModeSelect from '../ModeSelect/ModeSelect'
 const NavBar = () => {
   const [anchorElNav, setAnchorElNav] = useState(null)
   const [anchorElUser, setAnchorElUser] = useState(null)
+  const [anchorElNavPlans, setAnchorElNavPlans] = useState(null)
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget)
   }
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget)
+  }
+
+  const handleOpenNavMenuPlans = (event) => {
+    setAnchorElNavPlans(event.currentTarget)
   }
 
   const handleCloseNavMenu = () => {
@@ -38,11 +43,15 @@ const NavBar = () => {
     setAnchorElUser(null)
   }
 
+  const handleCloseNavMenuPlans = () => {
+    setAnchorElNavPlans(null)
+  }
+
   return (
     <Box sx={{ height: (theme) => theme.nexus.appBarHeight }}>
       <AppBar
         sx={{
-          // backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#2c3e50' : '#22a6b3'
+          backgroundColor: (theme) => theme.palette.primary.main
         }}
       >
         <Container maxWidth="xl">
@@ -150,22 +159,43 @@ const NavBar = () => {
                   Home
                 </Button>
               </Link>
-              <Link to={'/service'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <Button
-                  onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
-                >
-                  Services
-                </Button>
-              </Link>
-              <Link to={'/equipment'} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Button
+                id="basic-button"
+                aria-controls={Boolean(anchorElNavPlans) ? 'basic-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={Boolean(anchorElNavPlans) ? 'true' : undefined}
+                onClick={handleOpenNavMenuPlans}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                Plans Services
+              </Button>
+              <Menu
+                id="basic-menu"
+                anchorEl={anchorElNavPlans}
+                open={Boolean(anchorElNavPlans)}
+                onClose={handleCloseNavMenuPlans}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button'
+                }}
+              >
+                <MenuItem component="a" href='/service/dial-up' onClick={handleCloseNavMenuPlans}>
+                  <Typography textAlign="center">Dial-up</Typography>
+                </MenuItem>
+                <MenuItem component="a" href='/service/broadband' onClick={handleCloseNavMenuPlans}>
+                  <Typography textAlign="center">Broadband</Typography>
+                </MenuItem>
+                <MenuItem component="a" href='/service/landline' onClick={handleCloseNavMenuPlans}>
+                  <Typography textAlign="center">Landline</Typography>
+                </MenuItem>
+              </Menu>
+              {/* <Link to={'/equipment'} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <Button
                   onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: 'white', display: 'block' }}
                 >
                   Equipment
                 </Button>
-              </Link>
+              </Link> */}
               <Link to={'/about-us'} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <Button
                   onClick={handleCloseNavMenu}

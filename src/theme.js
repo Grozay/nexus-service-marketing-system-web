@@ -1,4 +1,4 @@
-import { grey, deepOrange, orange, teal } from '@mui/material/colors'
+import { deepOrange, orange, teal, deepPurple } from '@mui/material/colors'
 import { createTheme } from '@mui/material/styles'
 
 const APP_BAR_HEIGHT = '64px'
@@ -21,7 +21,7 @@ const theme = createTheme({
     },
     dark: {
       palette: {
-        primary: grey,
+        primary: deepPurple,
         secondary: orange
       }
     }
