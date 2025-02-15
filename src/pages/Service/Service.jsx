@@ -6,15 +6,14 @@ import {
   Typography,
   Container,
   Icon,
-  Box // Import Box để sử dụng layout linh hoạt hơn
+  Box
 } from '@mui/material'
 import WifiIcon from '@mui/icons-material/Wifi'
 import DialpadIcon from '@mui/icons-material/Dialpad'
 import PhoneIcon from '@mui/icons-material/Phone'
-import { Link } from '@mui/material' // Import Link từ Material UI
+import { Link as RouterLink } from 'react-router-dom'
 import AppBar from '~/components/AppBar/AppBar'
-import { useParams } from 'react-router-dom' // Import useParams
-
+import { useParams } from 'react-router-dom'
 const cardStyle = {
   height: '100%',
   display: 'flex',
@@ -23,7 +22,7 @@ const cardStyle = {
 }
 
 const cardContentStyle = {
-  paddingBottom: '16px' // Tăng paddingBottom để tạo khoảng cách với CardActions
+  paddingBottom: '16px'
 }
 
 const cardTitleStyle = {
@@ -65,9 +64,9 @@ const cardBillingCycleStyle = {
 
 const cardActionsStyle = {
   padding: '16px',
-  display: 'flex', // Đảm bảo các button nằm trên cùng một hàng
-  justifyContent: 'space-between', // Căn đều button và box giá
-  alignItems: 'center' // Căn chỉnh button và box giá theo chiều dọc
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center'
 }
 
 const viewDetailsButtonStyle = {
@@ -165,9 +164,9 @@ const Service = () => {
     }
   ]
 
-  const filteredServicePlans = slug // Lọc servicePlans dựa trên slug param
+  const filteredServicePlans = slug
     ? allServicePlans.filter(plan => plan.slug === slug)
-    : allServicePlans // Nếu không có slug, hiển thị tất cả (hoặc bạn có thể chọn không hiển thị gì)
+    : allServicePlans
 
   return (
     <Box>
@@ -208,7 +207,11 @@ const Service = () => {
                       /{plan.billingCycle}
                     </Typography>
                   </Box>
-                  <Button sx={viewDetailsButtonStyle}>
+                  <Button
+                    sx={viewDetailsButtonStyle}
+                    component={RouterLink}
+                    to={`/service/${plan.slug}/detail`}
+                  >
                     View Details
                   </Button>
                   <Button sx={registerButtonStyle}>
@@ -222,7 +225,7 @@ const Service = () => {
 
         <Box mt={4} textAlign="center">
           <Typography variant="body2" color="text.secondary">
-            Do you have any questions or need advice? <Link href="/contact">Contact us</Link>
+            Do you have any questions or need advice? <RouterLink href="/contact">Contact us</RouterLink>
           </Typography>
         </Box>
       </Container>
