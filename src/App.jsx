@@ -12,6 +12,9 @@ import Profile from '~/pages/Profile/Profile'
 import Support from '~/pages/Support/Support'
 import AboutUs from '~/pages/AboutUs/AboutUs'
 import Subscribe from '~/pages/Subscribe/Subscribe'
+import RegisteredPlans from '~/pages/Profile/RegisteredPlans/RegisteredPlans'
+import RegisterPlansDetail from '~/pages/Profile/RegisteredPlans/RegisteredPlansDetail/RegisterPlansDetail'
+// import AccountAndConnection from '~/pages/Profile/AccountAndConnection/AccountAndConnection'
 // import Equipment from '~/pages/Equipment/Equipment'
 // import EquipmentDetail from '~/pages/Equipment/EquipmentDetail/EquipmentDetail'
 function App() {
@@ -28,6 +31,9 @@ function App() {
         <Route path='/support' element={<Support />} />
         <Route path='/about-us' element={<AboutUs />} />
         <Route path='/subscribe/:slug' element={<Subscribe />} />
+        <Route path='/profile/registered-plans' element={<RegisteredPlans />} />
+        <Route path='/profile/registered-plans/:slug' element={<RegisterPlansDetail />} />
+        {/* <Route path='/profile/account-and-connection' element={<AccountAndConnection />} /> */}
         {/* <Route path='/equipment' element={<Equipment />} /> */}
         {/* <Route path='/equipment/:slug' element={<EquipmentDetail />} /> */}
       </Routes>

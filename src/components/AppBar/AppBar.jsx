@@ -18,11 +18,13 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import CableIcon from '@mui/icons-material/Cable'
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck'
 import ModeSelect from '../ModeSelect/ModeSelect'
+import DrawerAppBar from './DrawerAppBar/DrawerAppBar'
 
 const NavBar = () => {
   const [anchorElNav, setAnchorElNav] = useState(null)
   const [anchorElUser, setAnchorElUser] = useState(null)
   const [anchorElNavPlans, setAnchorElNavPlans] = useState(null)
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget)
@@ -45,6 +47,13 @@ const NavBar = () => {
 
   const handleCloseNavMenuPlans = () => {
     setAnchorElNavPlans(null)
+  }
+
+  const toggleDrawer = (open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return
+    }
+    setDrawerOpen(open)
   }
 
   return (
@@ -80,56 +89,19 @@ const NavBar = () => {
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
               <IconButton
                 size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
+                aria-label="open drawer"
+                onClick={toggleDrawer(true)}
                 color="inherit"
               >
                 <MenuIcon />
               </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left'
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left'
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={{ display: { xs: 'block', md: 'none' } }}
-              >
-                <MenuItem onClick={handleCloseNavMenu}>
-                  <Link to={'/'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Typography sx={{ textAlign: 'center' }}>Home</Typography>
-                  </Link>
-                </MenuItem>
-                <MenuItem onClick={handleCloseNavMenu}>
-                  <Link to={'/service'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Typography sx={{ textAlign: 'center' }}>Services</Typography>
-                  </Link>
-                </MenuItem>
-                <MenuItem onClick={handleCloseNavMenu}>
-                  <Link to={'/equipment'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Typography sx={{ textAlign: 'center' }}>Equipment</Typography>
-                  </Link>
-                </MenuItem>
-                <MenuItem onClick={handleCloseNavMenu}>
-                  <Link to={'/about-us'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Typography sx={{ textAlign: 'center' }}>About Us</Typography>
-                  </Link>
-                </MenuItem>
-                <MenuItem onClick={handleCloseNavMenu}>
-                  <Link to={'/support'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Typography sx={{ textAlign: 'center' }}>Support</Typography>
-                  </Link>
-                </MenuItem>
-              </Menu>
+              <DrawerAppBar
+                drawerOpen={drawerOpen}
+                toggleDrawer={toggleDrawer}
+                anchorElNavPlans={anchorElNavPlans}
+                handleOpenNavMenuPlans={handleOpenNavMenuPlans}
+                handleCloseNavMenuPlans={handleCloseNavMenuPlans}
+              />
             </Box>
             <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
             <Typography
@@ -188,14 +160,6 @@ const NavBar = () => {
                   <Typography textAlign="center">Landline</Typography>
                 </MenuItem>
               </Menu>
-              {/* <Link to={'/equipment'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <Button
-                  onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
-                >
-                  Equipment
-                </Button>
-              </Link> */}
               <Link to={'/about-us'} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <Button
                   onClick={handleCloseNavMenu}
@@ -246,15 +210,7 @@ const NavBar = () => {
                     </Typography>
                   </MenuItem>
                 </Link>
-                <MenuItem onClick={handleCloseUserMenu}>
-                  <Link to={'/account-and-connection'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <CableIcon />
-                      Account and connection
-                    </Typography>
-                  </Link>
-                </MenuItem>
-                <Link to={'/register-plans'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link to={'/profile/registered-plans'} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <MenuItem onClick={handleCloseUserMenu}>
                     <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
                       <PlaylistAddCheckIcon fontSize="small" />
