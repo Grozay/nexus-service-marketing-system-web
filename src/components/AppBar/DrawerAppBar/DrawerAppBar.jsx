@@ -40,7 +40,7 @@ const DrawerAppBar = ({
         >
           <List>
             <ListItem disablePadding>
-              <ListItemButton component={Link} to={'/'}>
+              <ListItemButton component={Link} to={'/'} onClick={toggleDrawer(false)}>
                 <HomeIcon sx={{ mr: 1 }} />
                 <ListItemText primary="Home" />
               </ListItemButton>
@@ -54,28 +54,28 @@ const DrawerAppBar = ({
             </ListItem>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                <ListItemButton sx={{ pl: 4 }} component={Link} to='/service/dial-up'>
+                <ListItemButton sx={{ pl: 4 }} component={Link} to='/service/dial-up' onClick={toggleDrawer(false)}>
                   <DialerSipIcon sx={{ mr: 1 }} />
                   <ListItemText primary="Dial-up" />
                 </ListItemButton>
-                <ListItemButton sx={{ pl: 4 }} component={Link} to='/service/broadband'>
+                <ListItemButton sx={{ pl: 4 }} component={Link} to='/service/broadband' onClick={toggleDrawer(false)}>
                   <WifiIcon sx={{ mr: 1 }} />
                   <ListItemText primary="Broadband" />
                 </ListItemButton>
-                <ListItemButton sx={{ pl: 4 }} component={Link} to='/service/landline'>
+                <ListItemButton sx={{ pl: 4 }} component={Link} to='/service/landline' onClick={toggleDrawer(false)}>
                   <PhoneIcon sx={{ mr: 1 }} />
                   <ListItemText primary="Landline" />
                 </ListItemButton>
               </List>
             </Collapse>
             <ListItem disablePadding>
-              <ListItemButton component={Link} to={'/about-us'}>
+              <ListItemButton component={Link} to={'/about-us'} onClick={toggleDrawer(false)}>
                 <InfoIcon sx={{ mr: 1 }} />
                 <ListItemText primary="About Us" />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-              <ListItemButton component={Link} to={'/support'}>
+              <ListItemButton component={Link} to={'/support'} onClick={toggleDrawer(false)}>
                 <SupportAgentIcon sx={{ mr: 1 }} />
                 <ListItemText primary="Support" />
               </ListItemButton>

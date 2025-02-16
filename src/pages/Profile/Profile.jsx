@@ -219,7 +219,7 @@ const Profile = () => {
               </ListItemIcon>
               <ListItemText primary="Change Password" />
             </ListItem>
-            <ListItem component={Link} to="/profile/edit">
+            <ListItem component={Link} to="/profile/update-profile">
               <ListItemIcon>
                 <EditIcon />
               </ListItemIcon>
