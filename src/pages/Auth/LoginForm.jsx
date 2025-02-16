@@ -72,10 +72,16 @@ function LoginForm() {
               Login
             </Button>
           </CardActions>
-          <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
+          {/* <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
             <Typography>New to Nexus Service Marketing System?</Typography>
             <Link to="/register" style={{ textDecoration: 'none' }}>
               <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Create account!</Typography>
+            </Link>
+          </Box> */}
+          <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
+            <Typography>Forgot Password?</Typography>
+            <Link to="/forgot-password" style={{ textDecoration: 'none' }}>
+              <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Reset Password</Typography>
             </Link>
           </Box>
         </MuiCard>

@@ -17,6 +17,7 @@ import RegisterPlansDetail from '~/pages/Profile/RegisteredPlans/RegisteredPlans
 // import AccountAndConnection from '~/pages/Profile/AccountAndConnection/AccountAndConnection'
 // import Equipment from '~/pages/Equipment/Equipment'
 // import EquipmentDetail from '~/pages/Equipment/EquipmentDetail/EquipmentDetail'
+import ChangePassword from '~/pages/Profile/ChangePassword/ChangePassword'
 function App() {
 
   return (
@@ -36,6 +37,7 @@ function App() {
         {/* <Route path='/profile/account-and-connection' element={<AccountAndConnection />} /> */}
         {/* <Route path='/equipment' element={<Equipment />} /> */}
         {/* <Route path='/equipment/:slug' element={<EquipmentDetail />} /> */}
+        <Route path='/profile/change-password' element={<ChangePassword />} />
       </Routes>
     </Box>
   )

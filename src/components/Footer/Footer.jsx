@@ -8,9 +8,10 @@ import ListItem from '@mui/material/ListItem'
 import Divider from '@mui/material/Divider'
 import AdbIcon from '@mui/icons-material/Adb'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+
 const Footer = () => {
   return (
-    <Box component="footer" sx={{ bgcolor: '#0d47a1', color: 'white', py: 4, height: (theme) => theme.nexus.footerHeight }}>
+    <Box component="footer" sx={{ color: 'white', py: 4, height: (theme) => theme.nexus.footerHeight, backgroundColor: (theme) => theme.palette.primary.main }}>
       <Container maxWidth="lg">
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={4} justifyContent="space-between">
           {/* Logo and Description Section */}
