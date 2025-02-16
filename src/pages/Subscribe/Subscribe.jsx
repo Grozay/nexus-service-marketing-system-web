@@ -14,7 +14,7 @@ import FormHelperText from '@mui/material/FormHelperText'
 import AppBar from '~/components/AppBar/AppBar'
 import Footer from '~/components/Footer/Footer'
 import { useParams } from 'react-router-dom'
-const steps = ['Personal Information', 'Confirm Subscription', 'Payment'] // Step labels in English
+const steps = ['Personal Information', 'Confirm Subscription', 'Payment']
 
 const servicePlans = [
   {
@@ -34,45 +34,42 @@ const SubscribePage = () => {
     phone: '',
     email: '',
     address: '',
-    plan: '', // Store plan slug
-    deposit: 0 // You might calculate this based on the selected plan
+    plan: slug,
+    deposit: 0
   })
   const [formErrors, setFormErrors] = useState({})
   const selectedPlan = servicePlans.find(plan => plan?.slug === slug)
-  console.log(selectedPlan)
 
   const handleNext = () => {
-    // Basic validation before moving to the next step
     let errors = {}
     if (activeStep === 0) {
-      if (!formData.fullName) errors.fullName = 'Please enter your Full Name' // Error message in English
-      if (!formData.phone) errors.phone = 'Please enter your Phone Number' // Error message in English
-      if (!formData.email) errors.email = 'Please enter your Email' // Error message in English
-      if (!formData.address) errors.address = 'Please enter your Address' // Error message in English
+      if (!formData.fullName) errors.fullName = 'Please enter your Full Name'
+      if (!formData.phone) errors.phone = 'Please enter your Phone Number'
+      if (!formData.email) errors.email = 'Please enter your Email'
+      if (!formData.address) errors.address = 'Please enter your Address'
     }
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors)
-      return // Stop proceeding if there are errors
+      return
     } else {
-      setFormErrors({}) // Clear errors if validation passes
+      setFormErrors({})
       setActiveStep((prevActiveStep) => prevActiveStep + 1)
     }
   }
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1)
-    setFormErrors({}) // Clear errors when going back
+    setFormErrors({})
   }
 
   const handleSubmit = () => {
-    // Handle final submission - in real app, send data to backend
-    console.log('Form submitted:', formData)
-    alert('Subscription successful! Your information has been submitted.') // Alert message in English
-    // In a real application, you would:
-    // 1. Send formData to your backend API
-    // 2. Handle success/error responses
-    // 3. Redirect to a confirmation page or show a success message
+    const finalData = {
+      ...formData,
+      plan: selectedPlan ? selectedPlan.slug : formData.plan
+    }
+    console.log('Form submitted:', finalData)
+    alert('Subscription successful! Your information has been submitted.')
   }
 
   const handleInputChange = (event) => {
@@ -88,7 +85,7 @@ const SubscribePage = () => {
     const selectedPlan = servicePlans.find(plan => plan.slug === selectedPlanSlug)
     setFormData({
       ...formData,
-      plan: selectedPlanSlug,
+      plan: selectedPlan,
       deposit: selectedPlan ? selectedPlan.securityDeposit : 0
     })
   }
@@ -109,7 +106,7 @@ const SubscribePage = () => {
                 margin="normal"
                 id="fullName"
                 name="fullName"
-                label="Full Name" // Label in English
+                label="Full Name"
                 value={formData.fullName}
                 onChange={handleInputChange}
                 error={!!formErrors.fullName}
@@ -121,7 +118,7 @@ const SubscribePage = () => {
                 margin="normal"
                 id="phone"
                 name="phone"
-                label="Phone Number" // Label in English
+                label="Phone Number"
                 value={formData.phone}
                 onChange={handleInputChange}
                 error={!!formErrors.phone}
@@ -133,7 +130,7 @@ const SubscribePage = () => {
                 margin="normal"
                 id="email"
                 name="email"
-                label="Email" // Label in English
+                label="Email"
                 type="email"
                 value={formData.email}
                 onChange={handleInputChange}
@@ -146,7 +143,7 @@ const SubscribePage = () => {
                 margin="normal"
                 id="address"
                 name="address"
-                label="Address" // Label in English
+                label="Address"
                 multiline
                 rows={3}
                 value={formData.address}
@@ -180,33 +177,34 @@ const SubscribePage = () => {
       return (
         <Card sx={{ p: 4 }}>
           <Typography variant="h5" component="h2" gutterBottom>
-              Confirm Subscription Information {/* Step title in English */}
+              Confirm Subscription Information
           </Typography>
-          <Typography variant="subtitle1" fontWeight="bold">Personal Information:</Typography> {/* Subtitle in English */}
-          <Typography variant="body1">Full Name: {formData.fullName}</Typography> {/* Label in English */}
-          <Typography variant="body1">Phone Number: {formData.phone}</Typography> {/* Label in English */}
-          <Typography variant="body1">Email: {formData.email}</Typography> {/* Label in English */}
-          <Typography variant="body1">Address: {formData.address}</Typography> {/* Label in English */}
+          <Typography variant="subtitle1" fontWeight="bold">Personal Information:</Typography>
+          <Typography variant="body1">Full Name: {formData.fullName}</Typography>
+          <Typography variant="body1">Phone Number: {formData.phone}</Typography>
+          <Typography variant="body1">Email: {formData.email}</Typography>
+          <Typography variant="body1">Address: {formData.address}</Typography>
 
-          <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Selected Service Plan:</Typography> {/* Subtitle in English */}
+          <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Selected Service Plan:</Typography>
           {selectedPlan && (
             <>
-              <Typography variant="body1">Plan Name: {selectedPlan.name}</Typography> {/* Label in English */}
-              <Typography variant="body1">Security Deposit: {selectedPlan.securityDeposit}</Typography> {/* Label in English */}
+              <Typography variant="body1">Plan Name: {selectedPlan.name}</Typography>
+              <Typography variant="body1">Security Deposit: {selectedPlan.securityDeposit}</Typography>
             </>
           )}
           <Typography variant="body1" sx={{ mt: 2 }}>
-              Please double-check your information before confirming your subscription. {/* Text in English */}
+              Please double-check your information before confirming your subscription.
           </Typography>
         </Card>
       )
     case 2:
       // eslint-disable-next-line no-case-declarations
-      const selectedPlanForPayment = selectedPlan.find(plan => plan.slug === formData.plan)
+      const selectedPlanForPayment = selectedPlan || servicePlans.find(plan => plan.slug === formData.plan)
+      console.log('🚀 ~ getStepContent ~ selectedPlanForPayment:', selectedPlanForPayment)
       return (
         <Card sx={{ p: 4 }}>
           <Typography variant="h5" component="h2" gutterBottom>
-              Security Deposit Payment {/* Step title in English */}
+              Security Deposit Payment
           </Typography>
           {selectedPlanForPayment && (
             <>
@@ -214,22 +212,22 @@ const SubscribePage = () => {
                   Service Plan: <Typography component="span" fontWeight="bold">{selectedPlanForPayment.name}</Typography> {/* Label in English */}
               </Typography>
               <Typography variant="body1" gutterBottom>
-                  Security Deposit Amount: <Typography component="span" fontWeight="bold" color="secondary">{selectedPlanForPayment.securityDeposit}</Typography> {/* Label in English */}
+                  Security Deposit Amount: <Typography component="span" fontWeight="bold" color="secondary">{selectedPlanForPayment.securityDeposit}</Typography>
               </Typography>
             </>
           )}
 
           <Typography variant="body1" sx={{ mt: 2, mb: 3 }}>
-              Select Payment Method: (Placeholder - Payment Gateway Integration needed here) {/* Text in English */}
+              Select Payment Method: (Placeholder - Payment Gateway Integration needed here)
           </Typography>
 
           {/* Placeholder for Payment Gateway integration - In real app, add payment form here */}
           <Box sx={{ textAlign: 'center' }}>
             <Button variant="contained" color="success" size="large" disabled>
-                Pay (Not Available) {/* Button label in English */}
+                Pay (Not Available) Chưa có làm
             </Button>
             <Typography variant="caption" display="block" mt={1} color="text.secondary">
-                Payment feature is under development. {/* Text in English */}
+              {/* Payment feature is under development. */}
             </Typography>
           </Box>
         </Card>
@@ -244,7 +242,7 @@ const SubscribePage = () => {
       <AppBar />
       <Container maxWidth="md" sx={{ mt: 5, mb: 7 }}>
         <Typography variant="h4" component="h1" gutterBottom textAlign="center" fontWeight="bold">
-          NEXUS Service Subscription {/* Page title in English */}
+          NEXUS Service Subscription
         </Typography>
 
         <Stepper activeStep={activeStep} alternativeLabel sx={{ mt: 3, mb: 5 }}>
@@ -266,7 +264,7 @@ const SubscribePage = () => {
             variant="contained"
             color="grey"
           >
-            Back {/* Button label in English */}
+            Back
           </Button>
 
           {activeStep === steps.length - 1 ? (
@@ -275,7 +273,7 @@ const SubscribePage = () => {
               color="primary"
               onClick={handleSubmit}
             >
-              Complete Subscription {/* Button label in English */}
+              Complete Subscription
             </Button>
           ) : (
             <Button
