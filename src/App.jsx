@@ -19,6 +19,7 @@ import RegisterPlansDetail from '~/pages/Profile/RegisteredPlans/RegisteredPlans
 // import EquipmentDetail from '~/pages/Equipment/EquipmentDetail/EquipmentDetail'
 import ChangePassword from '~/pages/Profile/ChangePassword/ChangePassword'
 import UpdateProfile from '~/pages/Profile/UpdateProfile/UpdateProfile'
+import Feedback from '~/pages/Feedback/feedback'
 function App() {
 
   return (
@@ -40,6 +41,7 @@ function App() {
         {/* <Route path='/equipment' element={<Equipment />} /> */}
         {/* <Route path='/equipment/:slug' element={<EquipmentDetail />} /> */}
         <Route path='/profile/change-password' element={<ChangePassword />} />
+        <Route path='/feedback' element={<Feedback />} />
       </Routes>
     </Box>
   )
