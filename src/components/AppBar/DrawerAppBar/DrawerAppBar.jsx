@@ -14,7 +14,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess'
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import Collapse from '@mui/material/Collapse'
 import HomeIcon from '@mui/icons-material/Home'
-import DialerSipIcon from '@mui/icons-material/DialerSip'
+import DialpadIcon from '@mui/icons-material/Dialpad'
 import WifiIcon from '@mui/icons-material/Wifi'
 import PhoneIcon from '@mui/icons-material/Phone'
 import InfoIcon from '@mui/icons-material/Info'
@@ -54,15 +54,15 @@ const DrawerAppBar = ({
             </ListItem>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                <ListItemButton sx={{ pl: 4 }} component={Link} to='/service/dial-up' onClick={toggleDrawer(false)}>
-                  <DialerSipIcon sx={{ mr: 1 }} />
+                <ListItemButton sx={{ pl: 4 }} component={Link} to='/service/dial-up-connection' onClick={toggleDrawer(false)}>
+                  <DialpadIcon sx={{ mr: 1 }} />
                   <ListItemText primary="Dial-up" />
                 </ListItemButton>
-                <ListItemButton sx={{ pl: 4 }} component={Link} to='/service/broadband' onClick={toggleDrawer(false)}>
+                <ListItemButton sx={{ pl: 4 }} component={Link} to='/service/broadband-connection' onClick={toggleDrawer(false)}>
                   <WifiIcon sx={{ mr: 1 }} />
                   <ListItemText primary="Broadband" />
                 </ListItemButton>
-                <ListItemButton sx={{ pl: 4 }} component={Link} to='/service/landline' onClick={toggleDrawer(false)}>
+                <ListItemButton sx={{ pl: 4 }} component={Link} to='/service/landline-connection' onClick={toggleDrawer(false)}>
                   <PhoneIcon sx={{ mr: 1 }} />
                   <ListItemText primary="Landline" />
                 </ListItemButton>

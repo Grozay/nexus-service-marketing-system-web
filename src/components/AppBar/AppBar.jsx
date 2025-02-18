@@ -150,13 +150,13 @@ const NavBar = () => {
                   'aria-labelledby': 'basic-button'
                 }}
               >
-                <MenuItem component="a" href='/service/dial-up' onClick={handleCloseNavMenuPlans}>
+                <MenuItem component={Link} to='/service/dial-up-connection' onClick={handleCloseNavMenuPlans}>
                   <Typography textAlign="center">Dial-up</Typography>
                 </MenuItem>
-                <MenuItem component="a" href='/service/broadband' onClick={handleCloseNavMenuPlans}>
+                <MenuItem component={Link} to='/service/broadband-connection' onClick={handleCloseNavMenuPlans}>
                   <Typography textAlign="center">Broadband</Typography>
                 </MenuItem>
-                <MenuItem component="a" href='/service/landline' onClick={handleCloseNavMenuPlans}>
+                <MenuItem component={Link} to='/service/landline-connection' onClick={handleCloseNavMenuPlans}>
                   <Typography textAlign="center">Landline</Typography>
                 </MenuItem>
               </Menu>
