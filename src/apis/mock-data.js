@@ -77,6 +77,32 @@ export const Order = [
     'depositId': 1,
     'orderCreateAt': '2023-01-03T00:00:00Z',
     'orderStatus': 'Completed'
+  },
+  {
+    'orderId': 'D1234567891',
+    'orderName': 'Order 2',
+    'orderDescription': 'Monthly subscription',
+    'orderAmount': 100.00,
+    'planId': 1,
+    'customerId': 'DTB1234567890123',
+    'employeeId': 'EMP001',
+    'storeId': 'STORE001',
+    'depositId': 1,
+    'orderCreateAt': '2023-01-03T00:00:00Z',
+    'orderStatus': 'Pending'
+  },
+  {
+    'orderId': 'D1234567892',
+    'orderName': 'Order 3',
+    'orderDescription': 'Monthly subscription',
+    'orderAmount': 100.00,
+    'planId': 1,
+    'customerId': 'DTB1234567890123',
+    'employeeId': 'EMP001',
+    'storeId': 'STORE001',
+    'depositId': 1,
+    'orderCreateAt': '2023-01-03T00:00:00Z',
+    'orderStatus': 'Cancelled'
   }
 ]
 

@@ -19,6 +19,7 @@ import CableIcon from '@mui/icons-material/Cable'
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck'
 import ModeSelect from '../ModeSelect/ModeSelect'
 import DrawerAppBar from './DrawerAppBar/DrawerAppBar'
+import LocalShippingIcon from '@mui/icons-material/LocalShipping'
 
 const NavBar = () => {
   const [anchorElNav, setAnchorElNav] = useState(null)
@@ -215,6 +216,14 @@ const NavBar = () => {
                     <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
                       <PlaylistAddCheckIcon fontSize="small" />
                       Registered Plans
+                    </Typography>
+                  </MenuItem>
+                </Link>
+                <Link to={'/profile/order-status'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <LocalShippingIcon fontSize="small" />
+                      Order Status
                     </Typography>
                   </MenuItem>
                 </Link>
