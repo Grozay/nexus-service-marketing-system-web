@@ -1,19 +1,20 @@
-import {
-  Card,
-  CardContent,
-  CardActions,
-  Button,
-  Typography,
-  Container,
-  Icon,
-  Box
-} from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import CardActions from '@mui/material/CardActions'
+import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
+import Container from '@mui/material/Container'
+import Icon from '@mui/material/Icon'
+import Box from '@mui/material/Box'
 import WifiIcon from '@mui/icons-material/Wifi'
 import DialpadIcon from '@mui/icons-material/Dialpad'
 import PhoneIcon from '@mui/icons-material/Phone'
 import { Link as RouterLink } from 'react-router-dom'
 import AppBar from '~/components/AppBar/AppBar'
 import { useParams } from 'react-router-dom'
+import { connectionsPlans } from '~/apis/connections-plans'
+
 const cardStyle = {
   height: '100%',
   display: 'flex',
@@ -80,101 +81,54 @@ const registerButtonStyle = {
 }
 
 const Service = () => {
-  const { slug } = useParams() // Lấy slug từ URL params
-  const allServicePlans = [
-    {
-      id: 1,
-      title: 'Dial-Up 30 Hours',
-      connectionType: 'Dial-Up',
-      description: 'Cost-effective, suitable for light usage needs.',
-      price: '$130',
-      billingCycle: '3 months',
-      icon: <DialpadIcon />,
-      type: 'dial-up',
-      slug: 'dial-up-30-hours'
-    },
-    {
-      id: 2,
-      title: 'Broadband 64 Kbps',
-      connectionType: 'Broadband',
-      description: 'Stable speed, smooth web browsing and video streaming.',
-      price: '$350',
-      billingCycle: 'month',
-      icon: <WifiIcon />,
-      type: 'broadband',
-      slug: 'broadband-64-kbps'
-    },
-    {
-      id: 3,
-      title: 'Landline Local - Monthly',
-      connectionType: 'Landline',
-      description: 'Unlimited local calls, maximum savings.',
-      price: '$35',
-      billingCycle: 'month',
-      icon: <PhoneIcon />,
-      type: 'landline',
-      slug: 'landline-local-monthly'
-    },
-    {
-      id: 4,
-      title: 'Broadband Unlimited 128 Kbps',
-      connectionType: 'Broadband',
-      description: 'High speed, unlimited data, fast downloads.',
-      price: '$550',
-      billingCycle: 'month',
-      icon: <WifiIcon />,
-      type: 'broadband',
-      slug: 'broadband-unlimited-128-kbps'
-    },
-    {
-      id: 5,
-      title: 'Premium Dial-Up 60 Hours',
-      connectionType: 'Dial-Up',
-      description: 'Large capacity Dial-Up package with longer usage time.',
-      price: '$225',
-      billingCycle: '6 months',
-      icon: <DialpadIcon />,
-      type: 'dial-up',
-      slug: 'premium-dial-up-60-hours'
-    },
-    {
-      id: 6,
-      title: 'Economy Landline STD',
-      connectionType: 'Landline',
-      description: 'Discounted inter-state call rates, easy to stay connected.',
-      price: '$125',
-      billingCycle: 'year',
-      icon: <PhoneIcon />,
-      type: 'landline',
-      slug: 'economy-landline-std'
-    },
-    {
-      id: 7,
-      title: 'Super Speed Broadband 256 Kbps',
-      connectionType: 'Broadband',
-      description: 'Extremely fast speed, smooth experience for all applications.',
-      price: '$750',
-      billingCycle: 'month',
-      icon: <WifiIcon />,
-      type: 'broadband',
-      slug: 'super-speed-broadband-256-kbps'
-    },
-    {
-      id: 8,
-      title: 'Family Combo Package (Broadband + Landline)',
-      connectionType: 'Combo',
-      description: 'Save more when using both Internet and Landline services.',
-      price: '$420',
-      billingCycle: 'quarter',
-      icon: <Icon> <WifiIcon /> + <PhoneIcon /></Icon>,
-      type: 'combo',
-      slug: 'family-combo-package-broadband-landline'
+  const { slug } = useParams()
+  const [servicePlans, setServicePlans] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const transformedPlans = connectionsPlans.flatMap(connection =>
+          connection.plans.map(plan => ({
+            id: plan.planId,
+            title: plan.planName,
+            connectionType: connection.connectionName,
+            description: plan.planDescription,
+            price: `$${plan.planPrice}`,
+            billingCycle: plan.planValidity,
+            icon: connection.connectionName.includes('Dial-Up') ? <DialpadIcon /> :
+              connection.connectionName.includes('Broadband') ? <WifiIcon /> : <PhoneIcon />,
+            type: connection.slug,
+            slug: plan.planId.toLowerCase().replace(/ /g, '-')
+          }))
+        )
+
+        setServicePlans(transformedPlans)
+        setLoading(false)
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching service plans:', error)
+        setLoading(false)
+      }
     }
-  ]
+
+    fetchData()
+  }, [])
 
   const filteredServicePlans = slug
-    ? allServicePlans.filter(plan => plan.type === slug)
-    : allServicePlans
+    ? servicePlans.filter(plan => plan.type === slug)
+    : servicePlans
+
+  if (loading) {
+    return (
+      <Box>
+        <AppBar />
+        <Container maxWidth="md" sx={{ mt: 4, mb: 4, textAlign: 'center' }}>
+          <Typography variant="h6">Loading service plans...</Typography>
+        </Container>
+      </Box>
+    )
+  }
 
   return (
     <Box>
@@ -189,7 +143,7 @@ const Service = () => {
           gap: 3,
           justifyContent: 'center'
         }}>
-          {filteredServicePlans.map((plan) => ( // Sử dụng filteredServicePlans để map
+          {filteredServicePlans.map((plan) => (
             <Box key={plan.id} sx={{
               width: { xs: '100%', sm: 'calc(50% - 12px)', md: 'calc(33.33% - 16px)' },
               maxWidth: 400
@@ -224,7 +178,7 @@ const Service = () => {
                   </Button>
                   <Button sx={registerButtonStyle}
                     component={RouterLink}
-                    to='/subscribe/broadband-128-kbps'
+                    to={`/subscribe/${plan.slug}`}
                   >
                     Subscribe
                   </Button>
