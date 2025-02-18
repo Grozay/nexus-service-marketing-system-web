@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -14,17 +14,9 @@ import FormHelperText from '@mui/material/FormHelperText'
 import AppBar from '~/components/AppBar/AppBar'
 import Footer from '~/components/Footer/Footer'
 import { useParams } from 'react-router-dom'
-const steps = ['Personal Information', 'Confirm Subscription', 'Payment']
+import { connectionsPlans } from '~/apis/connections-plans'
 
-const servicePlans = [
-  {
-    id: 1,
-    name: 'Broadband 64 Kbps',
-    securityDeposit: '$350',
-    slug: 'broadband-128-kbps',
-    description: 'High-speed internet for home and business users. Enjoy seamless streaming, fast downloads, and reliable connectivity for all your online activities.'
-  }
-]
+const steps = ['Personal Information', 'Confirm Subscription', 'Payment']
 
 const SubscribePage = () => {
   const { slug } = useParams()
@@ -38,7 +30,30 @@ const SubscribePage = () => {
     deposit: 0
   })
   const [formErrors, setFormErrors] = useState({})
-  const selectedPlan = servicePlans.find(plan => plan?.slug === slug)
+  const [selectedPlan, setSelectedPlan] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const findPlan = () => {
+      for (const connection of connectionsPlans) {
+        const plan = connection.plans.find(p => p.slug === slug)
+        if (plan) {
+          setSelectedPlan({
+            ...plan,
+            connectionName: connection.connectionName
+          })
+          setFormData(prev => ({
+            ...prev,
+            deposit: plan.planPrice
+          }))
+          break
+        }
+      }
+      setLoading(false)
+    }
+
+    findPlan()
+  }, [slug])
 
   const handleNext = () => {
     let errors = {}
@@ -82,159 +97,131 @@ const SubscribePage = () => {
 
   const handlePlanChange = (event) => {
     const selectedPlanSlug = event.target.value
-    const selectedPlan = servicePlans.find(plan => plan.slug === selectedPlanSlug)
+    const selectedPlan = connectionsPlans.find(plan => plan.slug === selectedPlanSlug)
     setFormData({
       ...formData,
       plan: selectedPlan,
-      deposit: selectedPlan ? selectedPlan.securityDeposit : 0
+      deposit: selectedPlan ? selectedPlan.planPrice : 0
     })
   }
-
 
   const getStepContent = (step) => {
     switch (step) {
     case 0:
       return (
-        <Box sx={{ mb: 5, display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <Card sx={{ p: 3, display: 'flex', flexDirection: 'column' }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                  Personal Information
-              </Typography>
-              <TextField
-                fullWidth
-                margin="normal"
-                id="fullName"
-                name="fullName"
-                label="Full Name"
-                value={formData.fullName}
-                onChange={handleInputChange}
-                error={!!formErrors.fullName}
-                helperText={formErrors.fullName}
-                required
-              />
-              <TextField
-                fullWidth
-                margin="normal"
-                id="phone"
-                name="phone"
-                label="Phone Number"
-                value={formData.phone}
-                onChange={handleInputChange}
-                error={!!formErrors.phone}
-                helperText={formErrors.phone}
-                required
-              />
-              <TextField
-                fullWidth
-                margin="normal"
-                id="email"
-                name="email"
-                label="Email"
-                type="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                error={!!formErrors.email}
-                helperText={formErrors.email}
-                required
-              />
-              <TextField
-                fullWidth
-                margin="normal"
-                id="address"
-                name="address"
-                label="Address"
-                multiline
-                rows={3}
-                value={formData.address}
-                onChange={handleInputChange}
-                error={!!formErrors.address}
-                helperText={formErrors.address}
-                required
-              />
-            </CardContent>
-          </Card>
-          <Card sx={{ p: 3, display: 'flex', flexDirection: 'column' }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                  Selected Service Plan
-              </Typography>
-              <FormControl fullWidth margin="normal" error={!!formErrors.plan} required>
-                <TextField
-                  id="plan"
-                  name="plan"
-                  value={selectedPlan.name}
-                  disabled
-                  onChange={handlePlanChange}
-                />
-                <FormHelperText>{formErrors.plan}</FormHelperText>
-              </FormControl>
-            </CardContent>
-          </Card>
-        </Box>
+        <Card sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Personal Information
+          </Typography>
+          <FormControl fullWidth sx={{ mb: 3 }}>
+            <TextField
+              label="Full Name"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleInputChange}
+              error={!!formErrors.fullName}
+            />
+            {formErrors.fullName && <FormHelperText error>{formErrors.fullName}</FormHelperText>}
+          </FormControl>
+          <FormControl fullWidth sx={{ mb: 3 }}>
+            <TextField
+              label="Phone Number"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              error={!!formErrors.phone}
+            />
+            {formErrors.phone && <FormHelperText error>{formErrors.phone}</FormHelperText>}
+          </FormControl>
+          <FormControl fullWidth sx={{ mb: 3 }}>
+            <TextField
+              label="Email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              error={!!formErrors.email}
+            />
+            {formErrors.email && <FormHelperText error>{formErrors.email}</FormHelperText>}
+          </FormControl>
+          <FormControl fullWidth sx={{ mb: 3 }}>
+            <TextField
+              label="Address"
+              name="address"
+              multiline
+              rows={3}
+              value={formData.address}
+              onChange={handleInputChange}
+              error={!!formErrors.address}
+            />
+            {formErrors.address && <FormHelperText error>{formErrors.address}</FormHelperText>}
+          </FormControl>
+        </Card>
       )
     case 1:
       return (
-        <Card sx={{ p: 4 }}>
-          <Typography variant="h5" component="h2" gutterBottom>
-              Confirm Subscription Information
+        <Card sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Confirm Subscription
           </Typography>
-          <Typography variant="subtitle1" fontWeight="bold">Personal Information:</Typography>
-          <Typography variant="body1">Full Name: {formData.fullName}</Typography>
-          <Typography variant="body1">Phone Number: {formData.phone}</Typography>
-          <Typography variant="body1">Email: {formData.email}</Typography>
-          <Typography variant="body1">Address: {formData.address}</Typography>
-
-          <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Selected Service Plan:</Typography>
           {selectedPlan && (
             <>
-              <Typography variant="body1">Plan Name: {selectedPlan.name}</Typography>
-              <Typography variant="body1">Security Deposit: {selectedPlan.securityDeposit}</Typography>
+              <Typography variant="body1" gutterBottom>
+                Plan Name: {selectedPlan.planName}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Connection Type: {selectedPlan.connectionName}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Price: ${selectedPlan.planPrice}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Validity: {selectedPlan.planValidity}
+              </Typography>
             </>
           )}
-          <Typography variant="body1" sx={{ mt: 2 }}>
-              Please double-check your information before confirming your subscription.
-          </Typography>
         </Card>
       )
     case 2:
-      // eslint-disable-next-line no-case-declarations
-      const selectedPlanForPayment = selectedPlan || servicePlans.find(plan => plan.slug === formData.plan)
-      console.log('🚀 ~ getStepContent ~ selectedPlanForPayment:', selectedPlanForPayment)
       return (
-        <Card sx={{ p: 4 }}>
-          <Typography variant="h5" component="h2" gutterBottom>
-              Security Deposit Payment
+        <Card sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Payment
           </Typography>
-          {selectedPlanForPayment && (
+          {selectedPlan && (
             <>
               <Typography variant="body1" gutterBottom>
-                  Service Plan: <Typography component="span" fontWeight="bold">{selectedPlanForPayment.name}</Typography> {/* Label in English */}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                  Security Deposit Amount: <Typography component="span" fontWeight="bold" color="secondary">{selectedPlanForPayment.securityDeposit}</Typography>
+                Total Amount: <Typography component="span" fontWeight="bold" color="secondary">${selectedPlan.planPrice}</Typography>
               </Typography>
             </>
           )}
-
-          <Typography variant="body1" sx={{ mt: 2, mb: 3 }}>
-              Select Payment Method: (Placeholder - Payment Gateway Integration needed here)
-          </Typography>
-
-          {/* Placeholder for Payment Gateway integration - In real app, add payment form here */}
-          <Box sx={{ textAlign: 'center' }}>
-            <Button variant="contained" color="success" size="large" disabled>
-                Pay (Not Available) Chưa có làm
-            </Button>
-            <Typography variant="caption" display="block" mt={1} color="text.secondary">
-              {/* Payment feature is under development. */}
-            </Typography>
-          </Box>
         </Card>
       )
     default:
       return 'Unknown step'
     }
+  }
+
+  if (loading) {
+    return (
+      <Box>
+        <AppBar />
+        <Container maxWidth="md" sx={{ mt: 4, mb: 4, textAlign: 'center' }}>
+          <Typography variant="h6">Loading plan details...</Typography>
+        </Container>
+      </Box>
+    )
+  }
+
+  if (!selectedPlan) {
+    return (
+      <Box>
+        <AppBar />
+        <Container maxWidth="md" sx={{ mt: 4, mb: 4, textAlign: 'center' }}>
+          <Typography variant="h6">Plan not found</Typography>
+        </Container>
+      </Box>
+    )
   }
 
   return (

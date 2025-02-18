@@ -99,7 +99,7 @@ const Service = () => {
             icon: connection.connectionName.includes('Dial-Up') ? <DialpadIcon /> :
               connection.connectionName.includes('Broadband') ? <WifiIcon /> : <PhoneIcon />,
             type: connection.slug,
-            slug: plan.planId.toLowerCase().replace(/ /g, '-')
+            slug: plan.slug
           }))
         )
 
