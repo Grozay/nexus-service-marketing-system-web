@@ -20,6 +20,7 @@ import RegisterPlansDetail from '~/pages/Profile/RegisteredPlans/RegisteredPlans
 import ChangePassword from '~/pages/Profile/ChangePassword/ChangePassword'
 import UpdateProfile from '~/pages/Profile/UpdateProfile/UpdateProfile'
 import Feedback from '~/pages/Feedback/feedback'
+import OrderStatus from '~/pages/Profile/OrderStatus/OrderStatus'
 function App() {
 
   return (
@@ -42,6 +43,7 @@ function App() {
         {/* <Route path='/equipment/:slug' element={<EquipmentDetail />} /> */}
         <Route path='/profile/change-password' element={<ChangePassword />} />
         <Route path='/feedback' element={<Feedback />} />
+        <Route path='/profile/order-status' element={<OrderStatus />} />
       </Routes>
     </Box>
   )
