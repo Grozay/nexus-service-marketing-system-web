@@ -96,30 +96,28 @@ const OrderStatus = () => {
                     <ListItemIcon>
                       {getStatusIcon(order.orderStatus)}
                     </ListItemIcon>
-                    <ListItemText
-                      primary={`Order #${order.orderId}`}
-                      secondary={
-                        <>
-                          <Typography variant="body2" color="text.primary">
-                            {order.orderName}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {order.orderDescription}
-                          </Typography>
-                          <Box sx={{ mt: 1 }}>
-                            <Chip
-                              label={order.orderStatus}
-                              size="small"
-                              color={
-                                order.orderStatus === 'Completed' ? 'success' :
-                                  order.orderStatus === 'Pending' ? 'warning' :
-                                    order.orderStatus === 'Cancelled' ? 'error' : 'info'
-                              }
-                            />
-                          </Box>
-                        </>
-                      }
-                    />
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Typography variant="body1" component="div">
+                        Order #{order.orderId}
+                      </Typography>
+                      <Typography variant="body2" color="text.primary" component="div">
+                        {order.orderName}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" component="div">
+                        {order.orderDescription}
+                      </Typography>
+                      <Box sx={{ mt: 1 }}>
+                        <Chip
+                          label={order.orderStatus}
+                          size="small"
+                          color={
+                            order.orderStatus === 'Completed' ? 'success' :
+                              order.orderStatus === 'Pending' ? 'warning' :
+                                order.orderStatus === 'Cancelled' ? 'error' : 'info'
+                          }
+                        />
+                      </Box>
+                    </Box>
                     <Button
                       variant="outlined"
                       size="small"
@@ -149,20 +147,20 @@ const OrderStatus = () => {
                 <Typography variant="h6" component="h2" gutterBottom>
                   Order Details
                 </Typography>
-                <Typography variant="body1" gutterBottom>
+                <Typography variant="body1" gutterBottom component={'div'}>
                   <strong>Order ID:</strong> {selectedOrder.orderId}
                 </Typography>
-                <Typography variant="body1" gutterBottom>
+                <Typography variant="body1" gutterBottom component={'div'}>
                   <strong>Order Name:</strong> {selectedOrder.orderName}
                 </Typography>
-                <Typography variant="body1" gutterBottom>
+                <Typography variant="body1" gutterBottom component={'div'}>
                   <strong>Description:</strong> {selectedOrder.orderDescription}
                 </Typography>
-                <Typography variant="body1" gutterBottom>
+                <Typography variant="body1" gutterBottom component={'div'}>
                   <strong>Amount:</strong> ${selectedOrder.orderAmount}
                 </Typography>
-                <Typography variant="body1" gutterBottom>
-                  <strong>Status:</strong> 
+                <Typography variant="body1" gutterBottom component={'div'}>
+                  <strong>Status:</strong>
                   <Chip
                     label={selectedOrder.orderStatus}
                     size="small"
@@ -175,8 +173,8 @@ const OrderStatus = () => {
                   />
                 </Typography>
                 <Box sx={{ mt: 2, textAlign: 'right' }}>
-                  <Button 
-                    variant="contained" 
+                  <Button
+                    variant="contained"
                     onClick={handleCloseModal}
                   >
                     Close
@@ -189,7 +187,7 @@ const OrderStatus = () => {
 
         {/* Call to Action */}
         <Box sx={{ mt: 4, textAlign: 'center' }}>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }} component={'div'}>
             Need help with your order?
           </Typography>
           <Button

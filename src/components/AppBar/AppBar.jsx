@@ -34,7 +34,7 @@ const NavBar = () => {
     setAnchorElUser(event.currentTarget)
   }
 
-  const handleOpenNavMenuPlans = (event) => {
+  const handleOpenNavMenuPlans = (event) => { 
     setAnchorElNavPlans(event.currentTarget)
   }
 
