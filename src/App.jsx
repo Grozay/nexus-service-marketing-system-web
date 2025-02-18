@@ -21,6 +21,8 @@ import ChangePassword from '~/pages/Profile/ChangePassword/ChangePassword'
 import UpdateProfile from '~/pages/Profile/UpdateProfile/UpdateProfile'
 import Feedback from '~/pages/Feedback/feedback'
 import OrderStatus from '~/pages/Profile/OrderStatus/OrderStatus'
+import News from '~/pages/News/News'
+import NewsDetail from '~/pages/News/NewsDetail/NewsDetail'
 function App() {
 
   return (
@@ -44,6 +46,8 @@ function App() {
         <Route path='/profile/change-password' element={<ChangePassword />} />
         <Route path='/feedback' element={<Feedback />} />
         <Route path='/profile/order-status' element={<OrderStatus />} />
+        <Route path='/news' element={<News />} />
+        <Route path='/news/:slug' element={<NewsDetail />} />
       </Routes>
     </Box>
   )

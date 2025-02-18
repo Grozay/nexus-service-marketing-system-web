@@ -16,7 +16,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 0,
         'planMessagingCharge': 0,
         'planDescription': '10 Hours Dial-Up Plan',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'dial-up-10-hours-plan'
       },
       {
         'planId': 'PLAN002D',
@@ -30,7 +31,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 0,
         'planMessagingCharge': 0,
         'planDescription': '30 Hours Dial-Up Plan',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'dial-up-30-hours-plan'
       },
       {
         'planId': 'PLAN003D',
@@ -44,7 +46,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 0,
         'planMessagingCharge': 0,
         'planDescription': '60 Hours Dial-Up Plan',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'dial-up-60-hours-plan'
       },
       {
         'planId': 'PLAN004D',
@@ -58,7 +61,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 0,
         'planMessagingCharge': 0,
         'planDescription': 'Unlimited 28Kbps Dial-Up Plan',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'dial-up-unlimited-28kbps-monthly-plan'
       },
       {
         'planId': 'PLAN005D',
@@ -72,7 +76,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 0,
         'planMessagingCharge': 0,
         'planDescription': 'Unlimited 28Kbps Dial-Up Plan',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'dial-up-unlimited-28kbps-quarterly-plan'
       },
       {
         'planId': 'PLAN006D',
@@ -86,7 +91,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 0,
         'planMessagingCharge': 0,
         'planDescription': 'Unlimited 56Kbps Dial-Up Plan',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'dial-up-unlimited-56kbps-monthly-plan'
       },
       {
         'planId': 'PLAN007D',
@@ -100,7 +106,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 0,
         'planMessagingCharge': 0,
         'planDescription': 'Unlimited 56Kbps Dial-Up Plan',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'dial-up-unlimited-56kbps-quarterly-plan'
       }
     ]
   },
@@ -121,7 +128,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 0,
         'planMessagingCharge': 0,
         'planDescription': '30 Hours Broadband Plan',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'broadband-30-hours-plan'
       },
       {
         'planId': 'PLAN009B',
@@ -135,7 +143,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 0,
         'planMessagingCharge': 0,
         'planDescription': '60 Hours Broadband Plan',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'broadband-60-hours-plan'
       },
       {
         'planId': 'PLAN010B',
@@ -149,7 +158,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 0,
         'planMessagingCharge': 0,
         'planDescription': 'Unlimited 64Kbps Broadband Plan',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'broadband-unlimited-64kbps-monthly-plan'
       },
       {
         'planId': 'PLAN011B',
@@ -163,7 +173,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 0,
         'planMessagingCharge': 0,
         'planDescription': 'Unlimited 64Kbps Broadband Plan',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'broadband-unlimited-64kbps-quarterly-plan'
       },
       {
         'planId': 'PLAN012B',
@@ -177,7 +188,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 0,
         'planMessagingCharge': 0,
         'planDescription': 'Unlimited 128Kbps Broadband Plan',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'broadband-unlimited-128kbps-monthly-plan'
       },
       {
         'planId': 'PLAN013B',
@@ -191,7 +203,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 0,
         'planMessagingCharge': 0,
         'planDescription': 'Unlimited 128Kbps Broadband Plan',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'broadband-unlimited-128kbps-quarterly-plan'
       }
     ]
   },
@@ -212,7 +225,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 0,
         'planMessagingCharge': 0,
         'planDescription': 'Unlimited Local Calls with Rental',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'landline-unlimited-rental'
       },
       {
         'planId': 'PLAN015T',
@@ -226,7 +240,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 0,
         'planMessagingCharge': 0,
         'planDescription': 'Monthly Local Calls with Rental',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'landline-monthly-rental'
       },
       {
         'planId': 'PLAN016T',
@@ -240,7 +255,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 2.25,
         'planMessagingCharge': 1,
         'planDescription': 'Monthly STD Plan with Messaging',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'landline-std-monthly-rental'
       },
       {
         'planId': 'PLAN017T',
@@ -254,7 +270,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 2,
         'planMessagingCharge': 1.15,
         'planDescription': 'Half-Yearly STD Plan with Messaging',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'landline-std-half-yearly-rental'
       },
       {
         'planId': 'PLAN018T',
@@ -268,7 +285,8 @@ export const connectionsPlans = [
         'planSTDCallCharge': 1.75,
         'planMessagingCharge': 1.25,
         'planDescription': 'Yearly STD Plan with Messaging',
-        'planIsActive': true
+        'planIsActive': true,
+        'slug': 'landline-std-yearly-rental'
       }
     ]
   }

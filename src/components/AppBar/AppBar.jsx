@@ -34,7 +34,7 @@ const NavBar = () => {
     setAnchorElUser(event.currentTarget)
   }
 
-  const handleOpenNavMenuPlans = (event) => { 
+  const handleOpenNavMenuPlans = (event) => {
     setAnchorElNavPlans(event.currentTarget)
   }
 
@@ -175,6 +175,14 @@ const NavBar = () => {
                   sx={{ my: 2, color: 'white', display: 'block' }}
                 >
                   Support
+                </Button>
+              </Link>
+              <Link to={'/news'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Button
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                >
+                News
                 </Button>
               </Link>
             </Box>

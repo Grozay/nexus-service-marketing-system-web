@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
+import Grid from '@mui/material/Grid2'
 import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import CardContent from '@mui/material/CardContent'
@@ -210,7 +210,7 @@ const Home = () => {
 
         <Grid container spacing={4}>
           {services.map((service, index) => (
-            <Grid item xs={12} md={4} key={service.id}>
+            <Grid size={{ xs: 12, md: 4 }} key={service.id}>
               <ScrollAnimation animateIn="fadeInUp" delay={index * 200} animateOnce={true}>
                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <CardMedia
@@ -249,7 +249,7 @@ const Home = () => {
           </ScrollAnimation>
           <ScrollAnimation animateIn="fadeInUp" animateOnce={true}>
             <Grid container spacing={4} sx={{ mt: 4 }}>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Grid container spacing={3}>
                   {[
                     {
@@ -273,7 +273,7 @@ const Home = () => {
                       description: 'Dedicated support team available round the clock'
                     }
                   ].map((item, index) => (
-                    <Grid item xs={12} sm={6} key={index}>
+                    <Grid size={{ xs: 12, sm: 6 }} key={index}>
                       <ScrollAnimation animateIn="fadeInUp" delay={index * 100} animateOnce={true}>
                         <Card sx={{ 
                           height: '100%', 
@@ -305,7 +305,7 @@ const Home = () => {
                   ))}
                 </Grid>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <ScrollAnimation animateIn="fadeInUp" animateOnce={true}>
                   <Box
                     component="img"
@@ -334,7 +334,7 @@ const Home = () => {
           </ScrollAnimation>
           <Grid container spacing={4} sx={{ mt: 4 }}>
             {testimonials.map((testimonial) => (
-              <Grid item xs={12} md={4} key={testimonial.id}>
+              <Grid size={{ xs: 12, md: 4 }} key={testimonial.id}>
                 <Card sx={{ height: '100%', p: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <Avatar src={testimonial.avatar} sx={{ mr: 2 }} />
