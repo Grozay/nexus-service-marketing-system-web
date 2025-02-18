@@ -23,6 +23,7 @@ import Feedback from '~/pages/Feedback/feedback'
 import OrderStatus from '~/pages/Profile/OrderStatus/OrderStatus'
 import News from '~/pages/News/News'
 import NewsDetail from '~/pages/News/NewsDetail/NewsDetail'
+import NotFound from '~/pages/NotFound/NotFound'
 function App() {
 
   return (
@@ -48,6 +49,7 @@ function App() {
         <Route path='/profile/order-status' element={<OrderStatus />} />
         <Route path='/news' element={<News />} />
         <Route path='/news/:slug' element={<NewsDetail />} />
+        <Route path='*' element={<NotFound />} />
       </Routes>
     </Box>
   )
