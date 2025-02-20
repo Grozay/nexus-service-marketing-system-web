@@ -3,27 +3,28 @@
 // import Stack from '@mui/material/Stack'
 // import Button from '@mui/material/Button'
 import Auth from '~/pages/Auth/Auth'
-import Home from '~/pages/Home/Home'
-import Service from '~/pages/Service/Service'
-import ServiceDetail from '~/pages/Service/ServiceDetail/ServiceDetail'
+import Home from '~/pages/Customer/Home/Home'
+import Service from '~/pages/Customer/Service/Service'
+import ServiceDetail from '~/pages/Customer/Service/ServiceDetail/ServiceDetail'
 import { Routes, Route } from 'react-router-dom'
 import Box from '@mui/material/Box'
-import Profile from '~/pages/Profile/Profile'
-import Support from '~/pages/Support/Support'
-import AboutUs from '~/pages/AboutUs/AboutUs'
-import Subscribe from '~/pages/Subscribe/Subscribe'
-import RegisteredPlans from '~/pages/Profile/RegisteredPlans/RegisteredPlans'
-import RegisterPlansDetail from '~/pages/Profile/RegisteredPlans/RegisteredPlansDetail/RegisterPlansDetail'
+import Profile from '~/pages/Customer/Profile/Profile'
+import Support from '~/pages/Customer/Support/Support'
+import AboutUs from '~/pages/Customer/AboutUs/AboutUs'
+import Subscribe from '~/pages/Customer/Subscribe/Subscribe'
+import RegisteredPlans from '~/pages/Customer/Profile/RegisteredPlans/RegisteredPlans'
+import RegisterPlansDetail from '~/pages/Customer/Profile/RegisteredPlans/RegisteredPlansDetail/RegisterPlansDetail'
 // import AccountAndConnection from '~/pages/Profile/AccountAndConnection/AccountAndConnection'
 // import Equipment from '~/pages/Equipment/Equipment'
 // import EquipmentDetail from '~/pages/Equipment/EquipmentDetail/EquipmentDetail'
-import ChangePassword from '~/pages/Profile/ChangePassword/ChangePassword'
-import UpdateProfile from '~/pages/Profile/UpdateProfile/UpdateProfile'
-import Feedback from '~/pages/Feedback/feedback'
-import OrderStatus from '~/pages/Profile/OrderStatus/OrderStatus'
-import News from '~/pages/News/News'
-import NewsDetail from '~/pages/News/NewsDetail/NewsDetail'
-import NotFound from '~/pages/NotFound/NotFound'
+import ChangePassword from '~/pages/Customer/Profile/ChangePassword/ChangePassword'
+import UpdateProfile from '~/pages/Customer/Profile/UpdateProfile/UpdateProfile'
+import Feedback from '~/pages/Customer/Feedback/feedback'
+import OrderStatus from '~/pages/Customer/Profile/OrderStatus/OrderStatus'
+import News from '~/pages/Customer/News/News'
+import NewsDetail from '~/pages/Customer/News/NewsDetail/NewsDetail'
+import NotFound from '~/pages/Customer/NotFound/NotFound'
+import Admin from '~/pages/Admin/NavBar/NavBar'
 function App() {
 
   return (
@@ -50,6 +51,7 @@ function App() {
         <Route path='/news' element={<News />} />
         <Route path='/news/:slug' element={<NewsDetail />} />
         <Route path='*' element={<NotFound />} />
+        <Route path='/admin' element={<Admin />} />
       </Routes>
     </Box>
   )
