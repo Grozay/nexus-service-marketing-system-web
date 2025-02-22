@@ -16,7 +16,7 @@ import FeedbackIcon from '@mui/icons-material/Feedback'
 
 import Dashboard from '~/pages/Admin/Dashboard/Dashboard'
 import Employee from '~/pages/Admin/Employee/Employee'
-// import Equipment from '~/pages/Admin/Equipment/Equipment'
+import Equipment from '~/pages/Admin/Equipment/Equipment'
 // import Vendor from '~/pages/Admin/Vendors/Vendors'
 // import RetailShop from '~/pages/Admin/RetailShops/RetailShops'
 // import ConnectionPlan from '~/pages/Admin/ConnectionPlans/ConnectionPlans'
@@ -44,8 +44,8 @@ const NAVIGATION = [
   {
     segment: 'admin/equipment',
     title: 'Equipment',
-    icon: <InventoryIcon />
-    // component: Equipment
+    icon: <InventoryIcon />,
+    component: Equipment
   },
   {
     segment: 'admin/vendors',
@@ -147,8 +147,8 @@ function Layout() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="employee" element={<Employee />} />
-          {/* <Route path="equipment" element={<Equipment />} />
-          <Route path="vendor" element={<Vendor />} />
+          <Route path="equipment" element={<Equipment />} />
+          {/* <Route path="vendor" element={<Vendor />} />
           <Route path="retail-shop" element={<RetailShop />} />
           <Route path="connection-plan" element={<ConnectionPlan />} />
           <Route path="order" element={<Order />} />
