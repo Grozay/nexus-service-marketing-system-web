@@ -15,7 +15,7 @@ import PaymentIcon from '@mui/icons-material/Payment'
 import FeedbackIcon from '@mui/icons-material/Feedback'
 
 import Dashboard from '~/pages/Admin/Dashboard/Dashboard'
-import Employee from '~/pages/Admin/Employees/Employees'
+import Employee from '~/pages/Admin/Employee/Employee'
 // import Equipment from '~/pages/Admin/Equipment/Equipment'
 // import Vendor from '~/pages/Admin/Vendors/Vendors'
 // import RetailShop from '~/pages/Admin/RetailShops/RetailShops'
@@ -29,12 +29,14 @@ import NotFound from '~/pages/Admin/NotFound/NotFound'
 const NAVIGATION = [
   {
     segment: 'admin/',
+    // link: '/admin/',
     title: 'Dashboard',
     icon: <DashboardIcon />,
     component: Dashboard
   },
   {
-    segment: 'admin/employees',
+    segment: 'admin/employee',
+    // link: '/admin/employee',
     title: 'Employee',
     icon: <PeopleIcon />,
     component: Employee
@@ -42,49 +44,49 @@ const NAVIGATION = [
   {
     segment: 'admin/equipment',
     title: 'Equipment',
-    icon: <InventoryIcon />,
+    icon: <InventoryIcon />
     // component: Equipment
   },
   {
     segment: 'admin/vendors',
     title: 'Vendor',
-    icon: <BusinessIcon />,
+    icon: <BusinessIcon />
     // component: Vendor
   },
   {
     segment: 'admin/retail-shops',
     title: 'Retail Shop',
-    icon: <StoreIcon />,
+    icon: <StoreIcon />
     // component: RetailShop
   },
   {
     segment: 'admin/connection-plans',
     title: 'Connection Plan',
-    icon: <LanIcon />,
+    icon: <LanIcon />
     // component: ConnectionPlan
   },
   {
     segment: 'admin/orders',
     title: 'Order',
-    icon: <AssignmentIcon />,
+    icon: <AssignmentIcon />
     // component: Order
   },
   {
     segment: 'admin/billing',
     title: 'Billing',
-    icon: <ReceiptIcon />,
+    icon: <ReceiptIcon />
     // component: Billing
   },
   {
     segment: 'admin/payments',
     title: 'Payment',
-    icon: <PaymentIcon />,
+    icon: <PaymentIcon />
     // component: Payment
   },
   {
     segment: 'admin/feedbacks',
     title: 'Feedback',
-    icon: <FeedbackIcon />,
+    icon: <FeedbackIcon />
     // component: Feedback
   }
 ]
