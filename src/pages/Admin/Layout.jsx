@@ -25,7 +25,7 @@ import Equipment from '~/pages/Admin/Equipment/Equipment'
 // import Payment from '~/pages/Admin/Payments/Payments'`
 // import Feedback from '~/pages/Admin/Feedbacks/Feedbacks'
 import NotFound from '~/pages/Admin/NotFound/NotFound'
-
+import Vendor from '~/pages/Admin/Vendor/Vendor'
 const NAVIGATION = [
   {
     segment: 'admin/',
@@ -48,10 +48,10 @@ const NAVIGATION = [
     component: Equipment
   },
   {
-    segment: 'admin/vendors',
+    segment: 'admin/vendor',
     title: 'Vendor',
-    icon: <BusinessIcon />
-    // component: Vendor
+    icon: <BusinessIcon />,
+    component: Vendor
   },
   {
     segment: 'admin/retail-shops',
@@ -148,8 +148,8 @@ function Layout() {
           <Route path="/" element={<Dashboard />} />
           <Route path="employee" element={<Employee />} />
           <Route path="equipment" element={<Equipment />} />
-          {/* <Route path="vendor" element={<Vendor />} />
-          <Route path="retail-shop" element={<RetailShop />} />
+          <Route path="vendor" element={<Vendor />} />
+          {/* <Route path="retail-shop" element={<RetailShop />} />
           <Route path="connection-plan" element={<ConnectionPlan />} />
           <Route path="order" element={<Order />} />
           <Route path="billing" element={<Billing />} />
