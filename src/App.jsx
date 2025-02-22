@@ -1,34 +1,30 @@
-// import { useState } from 'react'
-// import reactLogo from '~/assets/react.svg'
-// import Stack from '@mui/material/Stack'
-// import Button from '@mui/material/Button'
-import Auth from '~/pages/Auth/Auth'
-import Home from '~/pages/Customer/Home/Home'
-import Service from '~/pages/Customer/Service/Service'
-import ServiceDetail from '~/pages/Customer/Service/ServiceDetail/ServiceDetail'
+import { lazy } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Box from '@mui/material/Box'
-import Profile from '~/pages/Customer/Profile/Profile'
-import Support from '~/pages/Customer/Support/Support'
-import AboutUs from '~/pages/Customer/AboutUs/AboutUs'
-import Subscribe from '~/pages/Customer/Subscribe/Subscribe'
-import RegisteredPlans from '~/pages/Customer/Profile/RegisteredPlans/RegisteredPlans'
-import RegisterPlansDetail from '~/pages/Customer/Profile/RegisteredPlans/RegisteredPlansDetail/RegisterPlansDetail'
-// import AccountAndConnection from '~/pages/Profile/AccountAndConnection/AccountAndConnection'
-// import Equipment from '~/pages/Equipment/Equipment'
-// import EquipmentDetail from '~/pages/Equipment/EquipmentDetail/EquipmentDetail'
-import ChangePassword from '~/pages/Customer/Profile/ChangePassword/ChangePassword'
-import UpdateProfile from '~/pages/Customer/Profile/UpdateProfile/UpdateProfile'
-import Feedback from '~/pages/Customer/Feedback/feedback'
-import OrderStatus from '~/pages/Customer/Profile/OrderStatus/OrderStatus'
-import News from '~/pages/Customer/News/News'
-import NewsDetail from '~/pages/Customer/News/NewsDetail/NewsDetail'
-import NotFound from '~/pages/Customer/NotFound/NotFound'
-import Admin from '~/pages/Admin/NavBar/NavBar'
-function App() {
+// import Loading from '~/components/Loading/Loading'
+import Layout from '~/pages/Admin/Layout'
+const Auth = lazy(() => import('~/pages/Auth/Auth'))
+const Home = lazy(() => import('~/pages/Customer/Home/Home'))
+const Service = lazy(() => import('~/pages/Customer/Service/Service'))
+const ServiceDetail = lazy(() => import('~/pages/Customer/Service/ServiceDetail/ServiceDetail'))
+const Profile = lazy(() => import('~/pages/Customer/Profile/Profile'))
+const Support = lazy(() => import('~/pages/Customer/Support/Support'))
+const AboutUs = lazy(() => import('~/pages/Customer/AboutUs/AboutUs'))
+const Subscribe = lazy(() => import('~/pages/Customer/Subscribe/Subscribe'))
+const RegisteredPlans = lazy(() => import('~/pages/Customer/Profile/RegisteredPlans/RegisteredPlans'))
+const RegisterPlansDetail = lazy(() => import('~/pages/Customer/Profile/RegisteredPlans/RegisteredPlansDetail/RegisterPlansDetail'))
+const ChangePassword = lazy(() => import('~/pages/Customer/Profile/ChangePassword/ChangePassword'))
+const UpdateProfile = lazy(() => import('~/pages/Customer/Profile/UpdateProfile/UpdateProfile'))
+const Feedback = lazy(() => import('~/pages/Customer/Feedback/feedback'))
+const OrderStatus = lazy(() => import('~/pages/Customer/Profile/OrderStatus/OrderStatus'))
+const News = lazy(() => import('~/pages/Customer/News/News'))
+const NewsDetail = lazy(() => import('~/pages/Customer/News/NewsDetail/NewsDetail'))
+const NotFound = lazy(() => import('~/pages/Customer/NotFound/NotFound'))
 
+function App() {
   return (
     <Box>
+      {/* <Suspense fallback={<Loading />}> */}
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Auth />} />
@@ -51,8 +47,9 @@ function App() {
         <Route path='/news' element={<News />} />
         <Route path='/news/:slug' element={<NewsDetail />} />
         <Route path='*' element={<NotFound />} />
-        <Route path='/admin' element={<Admin />} />
+        <Route path='/admin/*' element={<Layout />} />
       </Routes>
+      {/* </Suspense> */}
     </Box>
   )
 }
