@@ -15,32 +15,32 @@ import {
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import marker from 'leaflet/dist/images/marker-icon.png';
-import marker2x from 'leaflet/dist/images/marker-icon-2x.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import marker from 'leaflet/dist/images/marker-icon.png'
+import marker2x from 'leaflet/dist/images/marker-icon-2x.png'
+import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 
 // Mock data for retail shops
 const initialRows = [
   {
     id: 1,
     storeName: 'Main Store',
-    storeAddress: '123 Main St',
-    storeCity: 'New York',
-    storeLatitude: '40.7128',
-    storeLongitude: '-74.0060',
-    storeOpenHours: '9:00 AM - 9:00 PM',
-    storePhone: '123-456-7890',
+    storeAddress: '123 Le Loi Street',
+    storeCity: 'Hanoi',
+    storeLatitude: '21.0278',
+    storeLongitude: '105.8342',
+    storeOpenHours: '8:00 - 22:00',
+    storePhone: '024 3824 5678',
     storeStatus: 'Active'
   },
   {
     id: 2,
-    storeName: 'Downtown Store',
-    storeAddress: '456 Elm St',
-    storeCity: 'Los Angeles',
-    storeLatitude: '34.0522',
-    storeLongitude: '-118.2437',
-    storeOpenHours: '10:00 AM - 8:00 PM',
-    storePhone: '987-654-3210',
+    storeName: 'District 1 Store',
+    storeAddress: '456 Nguyen Hue Street',
+    storeCity: 'Ho Chi Minh City',
+    storeLatitude: '10.7769',
+    storeLongitude: '106.7009',
+    storeOpenHours: '9:00 - 21:00',
+    storePhone: '028 3822 1234',
     storeStatus: 'Inactive'
   }
 ]
@@ -243,14 +243,14 @@ function RetailShopManagement() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Typography variant="h4" gutterBottom>Retail Shop Management</Typography>
-      
+
       <Box sx={{ display: 'flex', gap: 3 }}>
         <Box sx={{ flex: 1 }}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6" gutterBottom>Retail Shops Map</Typography>
-            <MapContainer 
-              center={[37.7749, -122.4194]} 
-              zoom={4} 
+            <MapContainer
+              center={[21.0278, 105.8342]}
+              zoom={4}
               style={{ height: '400px', width: '100%' }}
             >
               <TileLayer
