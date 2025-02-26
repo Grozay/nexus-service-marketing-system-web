@@ -1,118 +1,41 @@
 import { createTheme } from '@mui/material/styles'
 import { AppProvider } from '@toolpad/core/AppProvider'
 import { DashboardLayout } from '@toolpad/core/DashboardLayout'
-import { Routes, Route, createBrowserRouter, Link } from 'react-router-dom'
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { useState, useMemo } from 'react'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import PeopleIcon from '@mui/icons-material/People'
 import InventoryIcon from '@mui/icons-material/Inventory'
 import BusinessIcon from '@mui/icons-material/Business'
 import StoreIcon from '@mui/icons-material/Store'
-import LanIcon from '@mui/icons-material/Lan'
-import AssignmentIcon from '@mui/icons-material/Assignment'
-import ReceiptIcon from '@mui/icons-material/Receipt'
-import PaymentIcon from '@mui/icons-material/Payment'
-import FeedbackIcon from '@mui/icons-material/Feedback'
+import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople'
 
 import Dashboard from '~/pages/Admin/Dashboard/Dashboard'
 import Employee from '~/pages/Admin/Employee/Employee'
 import Equipment from '~/pages/Admin/Equipment/Equipment'
-// import Vendor from '~/pages/Admin/Vendors/Vendors'
-// import RetailShop from '~/pages/Admin/RetailShops/RetailShops'
-// import ConnectionPlan from '~/pages/Admin/ConnectionPlans/ConnectionPlans'
-// import Order from '~/pages/Admin/Orders/Orders'
-// import Billing from '~/pages/Admin/Billing/Billing'
-// import Payment from '~/pages/Admin/Payments/Payments'`
-// import Feedback from '~/pages/Admin/Feedbacks/Feedbacks'
-import NotFound from '~/pages/Admin/NotFound/NotFound'
 import Vendor from '~/pages/Admin/Vendor/Vendor'
 import RetailShop from '~/pages/Admin/RetailShop/RetailShop'
 import Customer from '~/pages/Admin/Customer/Customer'
-import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople'
+import NotFound from '~/pages/Admin/NotFound/NotFound'
 
 const NAVIGATION = [
-  {
-    segment: 'admin/',
-    title: 'Dashboard',
-    icon: <DashboardIcon />,
-    component: Dashboard
-  },
-  {
-    segment: 'admin/employee',
-    title: 'Employee',
-    icon: <PeopleIcon />,
-    component: Employee
-  },
-  {
-    segment: 'admin/customer',
-    title: 'Customer',
-    icon: <EmojiPeopleIcon />,
-    component: Customer
-  },
-  {
-    segment: 'admin/equipment',
-    title: 'Equipment',
-    icon: <InventoryIcon />,
-    component: Equipment
-  },
-  {
-    segment: 'admin/vendor',
-    title: 'Vendor',
-    icon: <BusinessIcon />,
-    component: Vendor
-  },
-  {
-    segment: 'admin/retail-shop',
-    title: 'Retail Shop',
-    icon: <StoreIcon />,
-    component: RetailShop
-  },
-  {
-    segment: 'admin/connection-plans',
-    title: 'Connection Plan',
-    icon: <LanIcon />
-    // component: ConnectionPlan
-  },
-  {
-    segment: 'admin/orders',
-    title: 'Order',
-    icon: <AssignmentIcon />
-    // component: Order
-  },
-  {
-    segment: 'admin/billing',
-    title: 'Billing',
-    icon: <ReceiptIcon />
-    // component: Billing
-  },
-  {
-    segment: 'admin/payments',
-    title: 'Payment',
-    icon: <PaymentIcon />
-    // component: Payment
-  },
-  {
-    segment: 'admin/feedbacks',
-    title: 'Feedback',
-    icon: <FeedbackIcon />
-    // component: Feedback
-  }
+  { segment: 'admin/', title: 'Dashboard', icon: <DashboardIcon /> },
+  { segment: 'admin/employee', title: 'Employee', icon: <PeopleIcon /> },
+  { segment: 'admin/customer', title: 'Customer', icon: <EmojiPeopleIcon /> },
+  { segment: 'admin/equipment', title: 'Equipment', icon: <InventoryIcon /> },
+  { segment: 'admin/vendor', title: 'Vendor', icon: <BusinessIcon /> },
+  { segment: 'admin/retail-shop', title: 'Retail Shop', icon: <StoreIcon /> }
+  // { segment: 'connection-plans', title: 'Connection Plan', icon: <LanIcon /> },
+  // { segment: 'orders', title: 'Order', icon: <AssignmentIcon /> },
+  // { segment: 'billing', title: 'Billing', icon: <ReceiptIcon /> },
+  // { segment: 'payments', title: 'Payment', icon: <PaymentIcon /> },
+  // { segment: 'feedbacks', title: 'Feedback', icon: <FeedbackIcon /> }
 ]
 
 const demoTheme = createTheme({
-  cssVariables: {
-    colorSchemeSelector: 'data-toolpad-color-scheme'
-  },
+  cssVariables: { colorSchemeSelector: 'data-toolpad-color-scheme' },
   colorSchemes: { light: true, dark: true },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 600,
-      lg: 1200,
-      xl: 1536
-    }
-  }
+  breakpoints: { values: { xs: 0, sm: 600, md: 600, lg: 1200, xl: 1536 } }
 })
 
 function Layout(props) {
@@ -126,8 +49,8 @@ function Layout(props) {
   })
   const demoWindow = window !== undefined ? window() : undefined
 
-  const [pathname, setPathname] = useState('/admin')
-  const [mainContent, setMainContent] = useState(<Dashboard />)
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const authentication = useMemo(() => {
     return {
@@ -140,40 +63,17 @@ function Layout(props) {
           }
         })
       },
-      signOut: () => {
-        setSession(null)
-      }
+      signOut: () => setSession(null)
     }
   }, [])
 
   const router = useMemo(() => {
-    switch (pathname) {
-    case '/admin/':
-      setMainContent(<Dashboard />)
-      break
-    case '/admin/employee':
-      setMainContent(<Employee />)
-      break
-    case '/admin/equipment':
-      setMainContent(<Equipment />)
-      break
-    case '/admin/vendor':
-      setMainContent(<Vendor />)
-      break
-    case '/admin/retail-shop':
-      setMainContent(<RetailShop />)
-      break
-    default:
-      setMainContent(<NotFound />)
-      break
-    }
-
     return {
-      pathname,
-      searchParams: new URLSearchParams(),
-      navigate: (path) => setPathname(String(path))
+      pathname: location.pathname,
+      searchParams: new URLSearchParams(location.search),
+      navigate: (path) => navigate(path)
     }
-  }, [pathname])
+  }, [location, navigate])
 
   return (
     <AppProvider
@@ -183,12 +83,18 @@ function Layout(props) {
       theme={demoTheme}
       router={router}
       window={demoWindow}
-      branding={{
-        title: 'Nexus Admin'
-      }}
+      branding={{ title: 'Nexus Admin' }}
     >
       <DashboardLayout>
-        {mainContent}
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="employee" element={<Employee />} />
+          <Route path="customer" element={<Customer />} />
+          <Route path="equipment" element={<Equipment />} />
+          <Route path="vendor" element={<Vendor />} />
+          <Route path="retail-shop" element={<RetailShop />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </DashboardLayout>
     </AppProvider>
   )
