@@ -1,6 +1,15 @@
-import * as React from 'react'
-import { Box, Button, Typography, Paper } from '@mui/material'
-import { Add, Edit, DeleteOutlined, Save, Close } from '@mui/icons-material'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
+import Paper from '@mui/material/Paper'
+import Add from '@mui/icons-material/Add'
+import Save from '@mui/icons-material/Save'
+import Close from '@mui/icons-material/Close'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import {
   GridRowModes,
   DataGrid,
@@ -18,6 +27,7 @@ import L from 'leaflet'
 import marker from 'leaflet/dist/images/marker-icon.png'
 import marker2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+import { useState } from 'react'
 
 // Mock data for retail shops
 const initialRows = [
@@ -93,10 +103,11 @@ function EditToolbar(props) {
 }
 
 function RetailShopManagement() {
-  const [rows, setRows] = React.useState(initialRows)
-  const [rowModesModel, setRowModesModel] = React.useState({})
-  const [selectedShop, setSelectedShop] = React.useState(null)
-
+  const [rows, setRows] = useState(initialRows)
+  const [rowModesModel, setRowModesModel] = useState({})
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [selectedShop, setSelectedShop] = useState(null)
+  const [selectedId, setSelectedId] = useState(null)
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true
@@ -139,6 +150,16 @@ function RetailShopManagement() {
 
   const handleMarkerClick = (shop) => {
     setSelectedShop(shop)
+  }
+
+  const handleMoreClick = (id) => (event) => {
+    setAnchorEl(event.currentTarget)
+    setSelectedId(id)
+  }
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null)
+    setSelectedId(null)
   }
 
   const ShopDetails = ({ shop }) => {
@@ -222,17 +243,10 @@ function RetailShopManagement() {
         return [
           <GridActionsCellItem
             key={id}
-            icon={<Edit />}
-            label="Edit"
+            icon={<MoreHorizIcon />}
+            label="More"
             className="textPrimary"
-            onClick={handleEditClick(id)}
-            color="inherit"
-          />,
-          <GridActionsCellItem
-            key={id}
-            icon={<DeleteOutlined />}
-            label="Delete"
-            onClick={handleDeleteClick(id)}
+            onClick={handleMoreClick(id)}
             color="inherit"
           />
         ]
@@ -250,7 +264,7 @@ function RetailShopManagement() {
             <Typography variant="h6" gutterBottom>Retail Shops Map</Typography>
             <MapContainer
               center={[21.0278, 105.8342]}
-              zoom={4}
+              zoom={7}
               style={{ height: '400px', width: '100%' }}
             >
               <TileLayer
@@ -284,7 +298,7 @@ function RetailShopManagement() {
 
       <Paper sx={{ p: 2 }}>
         <Typography variant="h6" gutterBottom>Retail Shops List</Typography>
-        <Box sx={{ height: 400, width: '100%' }}>
+        <Box sx={{ height: '100vh', width: '100%' }}>
           <DataGrid
             rows={rows}
             columns={columns}
@@ -298,6 +312,26 @@ function RetailShopManagement() {
               toolbar: { setRows, setRowModesModel }
             }}
           />
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleCloseMenu}
+          >
+            <MenuItem onClick={() => {
+              handleEditClick(selectedId)()
+              handleCloseMenu()
+            }}>
+              <EditIcon fontSize="small" sx={{ mr: 1 }} />
+          Edit
+            </MenuItem>
+            <MenuItem onClick={() => {
+              handleDeleteClick(selectedId)()
+              handleCloseMenu()
+            }}>
+              <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
+          Delete
+            </MenuItem>
+          </Menu>
         </Box>
       </Paper>
     </Box>
