@@ -5,6 +5,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Close'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import { useState } from 'react'
 import {
   GridRowModes,
@@ -17,7 +18,10 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons
 } from '@mui/x-data-grid'
+
 import { Employee } from '~/apis/mock-data'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
 
 const initialRows = Employee.map((emp) => ({
   id: emp.employeeId,
@@ -69,6 +73,8 @@ function EditToolbar(props) {
 export default function EmployeeManagement() {
   const [rows, setRows] = useState(initialRows)
   const [rowModesModel, setRowModesModel] = useState({})
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [selectedId, setSelectedId] = useState(null)
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -110,47 +116,49 @@ export default function EmployeeManagement() {
     setRowModesModel(newRowModesModel)
   }
 
+  const handleMoreClick = (id) => (event) => {
+    setAnchorEl(event.currentTarget)
+    setSelectedId(id)
+  }
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null)
+    setSelectedId(null)
+  }
+
   const columns = [
-    { field: 'name', headerName: 'Name', width: 180, editable: true, filterable: true },
-    {
-      field: 'email',
-      headerName: 'Email',
-      width: 220,
-      editable: true,
-      filterable: true
-    },
-    {
-      field: 'phone',
-      headerName: 'Phone',
-      width: 180,
-      editable: true,
-      filterable: true
-    },
+    { field: 'id', headerName: 'Employee ID', width: 150, editable: false },
+    { field: 'name', headerName: 'Name', width: 150, editable: true },
+    { field: 'email', headerName: 'Email', width: 200, editable: true },
+    { field: 'phone', headerName: 'Phone', width: 150, editable: true },
     {
       field: 'role',
-      headerName: 'Department',
-      width: 220,
+      headerName: 'Role',
+      width: 150,
       editable: true,
-      type: 'singleSelect',
-      valueOptions: ['Account Staff', 'Retail Staff', 'Technical Staff'],
-      filterable: true
+      editCellProps: {
+        select: true,
+        children: [
+          <MenuItem key="Account Staff" value="Account Staff">Account Staff</MenuItem>,
+          <MenuItem key="Retail Staff" value="Retail Staff">Retail Staff</MenuItem>,
+          <MenuItem key="Technical Staff" value="Technical Staff">Technical Staff</MenuItem>
+        ]
+      }
     },
     {
       field: 'status',
       headerName: 'Status',
-      width: 180,
+      width: 100,
       editable: true,
       type: 'singleSelect',
-      valueOptions: ['Active', 'Inactive'],
-      filterable: true
+      valueOptions: ['Active', 'Inactive']
     },
     {
       field: 'joinDate',
-      headerName: 'Join date',
-      type: 'date',
-      width: 180,
+      headerName: 'Join Date',
+      width: 150,
       editable: true,
-      filterable: true
+      type: 'date'
     },
     {
       field: 'actions',
@@ -186,17 +194,10 @@ export default function EmployeeManagement() {
         return [
           <GridActionsCellItem
             key={id}
-            icon={<EditIcon />}
-            label="Edit"
+            icon={<MoreHorizIcon />}
+            label="More"
             className="textPrimary"
-            onClick={handleEditClick(id)}
-            color="inherit"
-          />,
-          <GridActionsCellItem
-            key={id}
-            icon={<DeleteIcon />}
-            label="Delete"
-            onClick={handleDeleteClick(id)}
+            onClick={handleMoreClick(id)}
             color="inherit"
           />
         ]
@@ -207,7 +208,7 @@ export default function EmployeeManagement() {
   return (
     <Box
       sx={{
-        height: 500,
+        height: '100vh',
         width: '100%',
         '& .actions': {
           color: 'text.secondary'
@@ -230,6 +231,26 @@ export default function EmployeeManagement() {
           toolbar: { setRows, setRowModesModel }
         }}
       />
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+      >
+        <MenuItem onClick={() => {
+          handleEditClick(selectedId)()
+          handleCloseMenu()
+        }}>
+          <EditIcon fontSize="small" sx={{ mr: 1 }} />
+          Edit
+        </MenuItem>
+        <MenuItem onClick={() => {
+          handleDeleteClick(selectedId)()
+          handleCloseMenu()
+        }}>
+          <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
+          Delete
+        </MenuItem>
+      </Menu>
     </Box>
   )
 }

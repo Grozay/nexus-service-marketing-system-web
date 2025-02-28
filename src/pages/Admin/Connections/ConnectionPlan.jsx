@@ -1,63 +1,49 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import AddIcon from '@mui/icons-material/Add'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Add from '@mui/icons-material/Add'
+import Save from '@mui/icons-material/Save'
+import Close from '@mui/icons-material/Close'
 import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/DeleteOutlined'
-import SaveIcon from '@mui/icons-material/Save'
-import CancelIcon from '@mui/icons-material/Close'
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import { useState } from 'react'
+import DeleteIcon from '@mui/icons-material/Delete'
+import MoreHoriz from '@mui/icons-material/MoreHoriz'
 import {
   GridRowModes,
   DataGrid,
   GridToolbarContainer,
+  GridActionsCellItem,
+  GridRowEditStopReasons,
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
   GridToolbarExport,
-  GridToolbarDensitySelector,
-  GridActionsCellItem,
-  GridRowEditStopReasons
+  GridToolbarDensitySelector
 } from '@mui/x-data-grid'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
+import { useState } from 'react'
+import { connectionsPlans } from '~/apis/connections-plans'
 
-// Mock data for customers
-const initialRows = [
-  {
-    id: 'CUS001',
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '123-456-7890',
-    status: 'Active',
-    joinDate: new Date('2023-01-01'),
-    address: '123 Main St'
-  },
-  {
-    id: 'CUS002',
-    name: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    phone: '987-654-3210',
-    status: 'Inactive',
-    joinDate: new Date('2023-02-01'),
-    address: '456 Elm St'
-  }
-]
+// Transform mock data
+const initialRows = connectionsPlans.map(plan => ({
+  id: plan.connectionId,
+  name: plan.connectionName,
+  slug: plan.slug,
+  plansCount: plan.plans.length,
+  status: 'Active' // Default status
+}))
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props
 
-  const handleClick = () => {
-    const id = `CUS${String(initialRows.length + 1).padStart(3, '0')}`
+  const handleAddClick = () => {
+    const id = `CONN${String(initialRows.length + 1).padStart(3, '0')}`
     setRows((oldRows) => [
       ...oldRows,
       {
         id,
         name: '',
-        email: '',
-        phone: '',
+        slug: '',
+        plansCount: 0,
         status: 'Active',
-        joinDate: new Date(),
-        address: '',
         isNew: true
       }
     ])
@@ -69,8 +55,8 @@ function EditToolbar(props) {
 
   return (
     <GridToolbarContainer>
-      <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-        Add Customer
+      <Button color="primary" startIcon={<Add />} onClick={handleAddClick}>
+        Add Connection Plan
       </Button>
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
@@ -80,7 +66,7 @@ function EditToolbar(props) {
   )
 }
 
-export default function CustomerManagement() {
+export default function ConnectionPlanManagement() {
   const [rows, setRows] = useState(initialRows)
   const [rowModesModel, setRowModesModel] = useState({})
   const [anchorEl, setAnchorEl] = useState(null)
@@ -137,28 +123,14 @@ export default function CustomerManagement() {
   }
 
   const columns = [
-    { field: 'id', headerName: 'ID', width: 120, editable: false },
-    { field: 'name', headerName: 'Name', width: 180, editable: true, filterable: true },
+    { field: 'id', headerName: 'ID', width: 150, editable: false },
+    { field: 'name', headerName: 'Name', width: 200, editable: true },
     {
-      field: 'email',
-      headerName: 'Email',
-      width: 220,
-      editable: true,
-      filterable: true
-    },
-    {
-      field: 'phone',
-      headerName: 'Phone',
-      width: 150,
-      editable: true,
-      filterable: true
-    },
-    {
-      field: 'address',
-      headerName: 'Address',
-      width: 250,
-      editable: true,
-      filterable: true
+      field: 'plansCount',
+      headerName: 'Plans',
+      width: 100,
+      type: 'number',
+      editable: false
     },
     {
       field: 'status',
@@ -166,16 +138,7 @@ export default function CustomerManagement() {
       width: 120,
       editable: true,
       type: 'singleSelect',
-      valueOptions: ['Active', 'Inactive'],
-      filterable: true
-    },
-    {
-      field: 'joinDate',
-      headerName: 'Join Date',
-      type: 'date',
-      width: 150,
-      editable: true,
-      filterable: true
+      valueOptions: ['Active', 'Inactive']
     },
     {
       field: 'actions',
@@ -190,14 +153,14 @@ export default function CustomerManagement() {
           return [
             <GridActionsCellItem
               key={id}
-              icon={<SaveIcon />}
+              icon={<Save />}
               label="Save"
               sx={{ color: 'primary.main' }}
               onClick={handleSaveClick(id)}
             />,
             <GridActionsCellItem
               key={id}
-              icon={<CancelIcon />}
+              icon={<Close />}
               label="Cancel"
               className="textPrimary"
               onClick={handleCancelClick(id)}
@@ -209,7 +172,7 @@ export default function CustomerManagement() {
         return [
           <GridActionsCellItem
             key={id}
-            icon={<MoreHorizIcon />}
+            icon={<MoreHoriz />}
             label="More"
             className="textPrimary"
             onClick={handleMoreClick(id)}
@@ -221,14 +184,7 @@ export default function CustomerManagement() {
   ]
 
   return (
-    <Box
-      sx={{
-        height: '100vh',
-        width: '100%',
-        '& .actions': { color: 'text.secondary' },
-        '& .textPrimary': { color: 'text.primary' }
-      }}
-    >
+    <Box sx={{ height: '100vh', width: '100%' }}>
       <DataGrid
         rows={rows}
         columns={columns}

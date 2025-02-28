@@ -17,19 +17,24 @@ import Vendor from '~/pages/Admin/Vendor/Vendor'
 import RetailShop from '~/pages/Admin/RetailShop/RetailShop'
 import Customer from '~/pages/Admin/Customer/Customer'
 import NotFound from '~/pages/Admin/NotFound/NotFound'
-
+import LanIcon from '@mui/icons-material/Lan'
+import AssignmentIcon from '@mui/icons-material/Assignment'
+import ReceiptIcon from '@mui/icons-material/Receipt'
+import PaymentIcon from '@mui/icons-material/Payment'
+import FeedbackIcon from '@mui/icons-material/Feedback'
+import ConnectionPlan from '~/pages/Admin/Connections/ConnectionPlan'
 const NAVIGATION = [
   { segment: 'admin/', title: 'Dashboard', icon: <DashboardIcon /> },
   { segment: 'admin/employee', title: 'Employee', icon: <PeopleIcon /> },
   { segment: 'admin/customer', title: 'Customer', icon: <EmojiPeopleIcon /> },
   { segment: 'admin/equipment', title: 'Equipment', icon: <InventoryIcon /> },
   { segment: 'admin/vendor', title: 'Vendor', icon: <BusinessIcon /> },
-  { segment: 'admin/retail-shop', title: 'Retail Shop', icon: <StoreIcon /> }
-  // { segment: 'connection-plans', title: 'Connection Plan', icon: <LanIcon /> },
-  // { segment: 'orders', title: 'Order', icon: <AssignmentIcon /> },
-  // { segment: 'billing', title: 'Billing', icon: <ReceiptIcon /> },
-  // { segment: 'payments', title: 'Payment', icon: <PaymentIcon /> },
-  // { segment: 'feedbacks', title: 'Feedback', icon: <FeedbackIcon /> }
+  { segment: 'admin/retail-shop', title: 'Retail Shop', icon: <StoreIcon /> },
+  { segment: 'admin/connection-plans', title: 'Connection Plan', icon: <LanIcon /> },
+  { segment: 'admin/orders', title: 'Order', icon: <AssignmentIcon /> },
+  { segment: 'admin/billing', title: 'Billing', icon: <ReceiptIcon /> },
+  { segment: 'admin/payments', title: 'Payment', icon: <PaymentIcon /> },
+  { segment: 'admin/feedbacks', title: 'Feedback', icon: <FeedbackIcon /> }
 ]
 
 const demoTheme = createTheme({
@@ -93,6 +98,7 @@ function Layout(props) {
           <Route path="equipment" element={<Equipment />} />
           <Route path="vendor" element={<Vendor />} />
           <Route path="retail-shop" element={<RetailShop />} />
+          <Route path="connection-plans" element={<ConnectionPlan />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </DashboardLayout>
