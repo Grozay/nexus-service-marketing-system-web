@@ -21,21 +21,38 @@ import {
 } from '@mui/x-data-grid'
 import { useState } from 'react'
 import { connectionsPlans } from '~/apis/connections-plans'
+import Chip from '@mui/material/Chip'
 
-// Transform mock data
-const initialRows = connectionsPlans.map(plan => ({
-  id: plan.connectionId,
-  name: plan.connectionName,
-  slug: plan.slug,
-  plansCount: plan.plans.length,
-  status: 'Active' // Default status
-}))
+// Transform data from connections-plans.js to match Plans schema
+const transformPlansData = (connectionsPlans) => {
+  return connectionsPlans.flatMap(connection => 
+    connection.plans.map(plan => ({
+      id: plan.planId,
+      planId: plan.planId,
+      categoryId: connection.connectionId,
+      planName: plan.planName,
+      planDetails: plan.planDetails,
+      planType: plan.planType,
+      planPrice: plan.planPrice,
+      planValidity: plan.planValidity,
+      planLocalCallCharge: plan.planLocalCallCharge,
+      planSTDCallCharge: plan.planSTDCallCharge,
+      planMessagingCharge: plan.planMessagingCharge,
+      planDescription: plan.planDescription,
+      planIsActive: plan.planIsActive,
+      slug: plan.slug
+    }))
+  );
+};
+
+// Usage
+const initialPlans = transformPlansData(connectionsPlans);
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props
 
   const handleAddClick = () => {
-    const id = `CONN${String(initialRows.length + 1).padStart(3, '0')}`
+    const id = `CONN${String(initialPlans.length + 1).padStart(3, '0')}`
     setRows((oldRows) => [
       ...oldRows,
       {
@@ -67,7 +84,7 @@ function EditToolbar(props) {
 }
 
 export default function ConnectionPlanManagement() {
-  const [rows, setRows] = useState(initialRows)
+  const [rows, setRows] = useState(initialPlans)
   const [rowModesModel, setRowModesModel] = useState({})
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedId, setSelectedId] = useState(null)
@@ -123,22 +140,25 @@ export default function ConnectionPlanManagement() {
   }
 
   const columns = [
-    { field: 'id', headerName: 'ID', width: 150, editable: false },
-    { field: 'name', headerName: 'Name', width: 200, editable: true },
+    { field: 'planId', headerName: 'Plan ID', width: 150, editable: false },
+    { field: 'planName', headerName: 'Plan Name', width: 200, editable: true },
+    { field: 'planType', headerName: 'Type', width: 120, editable: true },
+    { field: 'planPrice', headerName: 'Price', width: 100, type: 'number', editable: true },
+    { field: 'planValidity', headerName: 'Validity', width: 120, editable: true },
     {
-      field: 'plansCount',
-      headerName: 'Plans',
-      width: 100,
-      type: 'number',
-      editable: false
-    },
-    {
-      field: 'status',
+      field: 'planIsActive',
       headerName: 'Status',
       width: 120,
       editable: true,
-      type: 'singleSelect',
-      valueOptions: ['Active', 'Inactive']
+      type: 'boolean',
+      renderCell: (params) => (
+        <Chip
+          label={params.value ? 'Active' : 'Inactive'}
+          color={params.value ? 'success' : 'error'}
+          variant="outlined"
+          size="small"
+        />
+      )
     },
     {
       field: 'actions',
@@ -147,7 +167,7 @@ export default function ConnectionPlanManagement() {
       width: 100,
       cellClassName: 'actions',
       getActions: ({ id }) => {
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit
+        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
         if (isInEditMode) {
           return [
@@ -166,19 +186,26 @@ export default function ConnectionPlanManagement() {
               onClick={handleCancelClick(id)}
               color="inherit"
             />
-          ]
+          ];
         }
 
         return [
           <GridActionsCellItem
             key={id}
-            icon={<MoreHoriz />}
-            label="More"
+            icon={<EditIcon />}
+            label="Edit"
             className="textPrimary"
-            onClick={handleMoreClick(id)}
+            onClick={handleEditClick(id)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            key={id}
+            icon={<DeleteIcon />}
+            label="Delete"
+            onClick={handleDeleteClick(id)}
             color="inherit"
           />
-        ]
+        ];
       }
     }
   ]
@@ -188,6 +215,7 @@ export default function ConnectionPlanManagement() {
       <DataGrid
         rows={rows}
         columns={columns}
+        getRowId={(row) => row.planId}
         editMode="row"
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}
