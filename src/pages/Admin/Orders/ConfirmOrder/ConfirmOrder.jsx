@@ -1,5 +1,6 @@
-import React from 'react'
-import { Typography, Button, Box } from '@mui/material'
+import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
 import { useNavigate } from 'react-router-dom'
 
 const ConfirmOrder = ({ accountData, planData, store, onSubmit }) => {

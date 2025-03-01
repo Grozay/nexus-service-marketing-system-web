@@ -53,6 +53,31 @@ export const Employee = [
   }
 ]
 
+export const DepositSubscription = [
+  {
+    'depositId': 1,
+    'subscriptionId': 1,
+    'subscriptionPlan': 'Basic Plan',
+    'status': 'Processing',
+    'createdAt': '2023-01-02T00:00:00Z'
+  },
+  {
+    'depositId': 1,
+    'subscriptionId': 2,
+    'subscriptionPlan': 'Basic Plan',
+    'status': 'Pending',
+    'createdAt': '2023-01-03T00:00:00Z'
+  },
+  {
+    'depositId': 2,
+    'subscriptionId': 3,
+    'subscriptionPlan': 'Basic Plan',
+    'status': 'Processing',
+    'createdAt': '2023-01-04T00:00:00Z'
+  }
+]
+
+
 export const Deposit = [
   {
     'depositId': 1,
@@ -70,39 +95,42 @@ export const Order = [
     'orderName': 'Order 1',
     'orderDescription': 'Monthly subscription',
     'orderAmount': 100.00,
+    'accountId': 'DTB1234567890123', // Đổi từ customerId sang accountId
     'planId': 1,
-    'customerId': 'DTB1234567890123',
     'employeeId': 'EMP001',
     'storeId': 'STORE001',
-    'depositId': 1,
-    'orderCreateAt': '2023-01-03T00:00:00Z',
-    'orderStatus': 'Completed'
+    'orderIsFeasible': true, // Thêm trường mới
+    'orderStatus': 'Processing', // Đổi từ Completed sang Processed
+    'orderCreatedAt': '2023-01-03T00:00:00Z', // Đổi tên trường
+    'orderUpdatedAt': '2023-01-03T00:00:00Z' // Thêm trường mới
   },
   {
     'orderId': 'D1234567891',
     'orderName': 'Order 2',
     'orderDescription': 'Monthly subscription',
     'orderAmount': 100.00,
+    'accountId': 'DTB1234567890123',
     'planId': 1,
-    'customerId': 'DTB1234567890123',
     'employeeId': 'EMP001',
     'storeId': 'STORE001',
-    'depositId': 1,
-    'orderCreateAt': '2023-01-03T00:00:00Z',
-    'orderStatus': 'Pending'
+    'orderIsFeasible': true,
+    'orderStatus': 'Processing',
+    'orderCreatedAt': '2023-01-03T00:00:00Z',
+    'orderUpdatedAt': '2023-01-03T00:00:00Z'
   },
   {
     'orderId': 'D1234567892',
     'orderName': 'Order 3',
     'orderDescription': 'Monthly subscription',
     'orderAmount': 100.00,
+    'accountId': 'DTB1234567890123',
     'planId': 1,
-    'customerId': 'DTB1234567890123',
     'employeeId': 'EMP001',
     'storeId': 'STORE001',
-    'depositId': 1,
-    'orderCreateAt': '2023-01-03T00:00:00Z',
-    'orderStatus': 'Cancelled'
+    'orderIsFeasible': true,
+    'orderStatus': 'Cancelled',
+    'orderCreatedAt': '2023-01-03T00:00:00Z',
+    'orderUpdatedAt': '2023-01-03T00:00:00Z'
   }
 ]
 
@@ -122,15 +150,17 @@ export const Subscription = [
 export const Billing = [
   {
     'billingId': 1,
+    'billingName': 'Billing 1', // Thêm trường billingName
     'subscriptionId': 1,
-    'customerId': 'DTB1234567890123',
+    'depositId': 1, // Thêm trường depositId
     'billingSubTotal': 100.00,
     'billingDiscount': 10.00,
+    'Tax': 0.00, // Thêm trường Tax
     'billingTotal': 90.00,
     'billingDueDate': '2023-02-04T00:00:00Z',
     'billingNote': 'First billing',
-    'billingStatus': 'Paid',
-    'billingCreateAt': '2023-01-05T00:00:00Z'
+    'billingStatus': 'Paid', // Các giá trị có thể là 'Unpaid', 'Paid', 'Overdue', 'Cancelled'
+    'billingCreatedAt': '2023-01-05T00:00:00Z' // Đổi tên trường từ billingCreateAt
   }
 ]
 

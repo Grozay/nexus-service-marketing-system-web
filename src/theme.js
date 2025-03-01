@@ -39,7 +39,7 @@ const theme = createTheme({
             borderRadius: '8px'
           },
           '*::-webkit-scrollbar-thumb:hover': {
-            background: 'white'
+            background: '#b2bec3'
           }
         }
       }

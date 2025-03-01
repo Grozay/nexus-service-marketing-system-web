@@ -25,6 +25,7 @@ import FeedbackIcon from '@mui/icons-material/Feedback'
 import ConnectionPlan from '~/pages/Admin/Connections/ConnectionPlan'
 import CreateOrder from '~/pages/Admin/Orders/CreateOrder/CreateOrder'
 import OrderList from '~/pages/Admin/Orders/Order'
+import Billing from '~/pages/Admin/Billing/Billing'
 const NAVIGATION = [
   { segment: 'admin/', title: 'Dashboard', icon: <DashboardIcon /> },
   { segment: 'admin/employee', title: 'Employee', icon: <PeopleIcon /> },
@@ -114,6 +115,7 @@ function Layout(props) {
             <Route path="create" element={<CreateOrder />} />
             <Route path="list" element={<OrderList />} />
           </Route>
+          <Route path="billing" element={<Billing />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </DashboardLayout>
