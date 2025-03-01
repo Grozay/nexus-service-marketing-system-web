@@ -6,6 +6,9 @@ import { ConfirmProvider } from 'material-ui-confirm'
 import { BrowserRouter } from 'react-router-dom'
 import theme from '~/theme'
 import App from './App.jsx'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
@@ -19,6 +22,7 @@ createRoot(document.getElementById('root')).render(
         }}
         >
           <App />
+          <ToastContainer position="bottom-right" />
         </ConfirmProvider>
       </ThemeProvider>
     </BrowserRouter>

@@ -2,7 +2,7 @@ import React from 'react'
 import { Typography, Button, Box } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 
-const ConfirmOrder = ({ accountData, planData, onSubmit }) => {
+const ConfirmOrder = ({ accountData, planData, store, onSubmit }) => {
   const navigate = useNavigate()
   const handleCompleteOrder = () => {
     // Gọi hàm onSubmit từ props để xử lý logic hoàn tất đơn hàng
@@ -38,6 +38,9 @@ const ConfirmOrder = ({ accountData, planData, onSubmit }) => {
       </Typography>
       <Typography variant="body1" gutterBottom>
         Selected Plan: {planData.planName} - {planData.planPrice} VND
+      </Typography>
+      <Typography variant="body1" gutterBottom>
+        Selected Store: {store.storeName}
       </Typography>
       <Button 
         variant="contained"
