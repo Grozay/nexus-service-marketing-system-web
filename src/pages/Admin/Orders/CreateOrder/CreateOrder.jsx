@@ -3,13 +3,14 @@ import { Stepper, Step, StepLabel, Box, Button, Container, Typography } from '@m
 import CreateAccount from '~/pages/Admin/Orders/CreateAccount/CreateAccount'
 import SelectPlan from '~/pages/Admin/Orders/SelectPlan/SelectPlan'
 import ConfirmOrder from '~/pages/Admin/Orders/ConfirmOrder/ConfirmOrder'
-
+import { toast } from 'react-toastify'
 const steps = ['Create Account', 'Select Plan', 'Confirm Order']
 
 const CreateOrder = () => {
   const [activeStep, setActiveStep] = useState(0)
   const [accountData, setAccountData] = useState(null)
   const [planData, setPlanData] = useState(null)
+  const [storeData, setStoreData] = useState(null)
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
@@ -21,7 +22,8 @@ const CreateOrder = () => {
 
   const handleSubmit = () => {
     // Gọi API để tạo đơn hàng
-    console.log('Order created:', { accountData, planData })
+    console.log('Order created:', { accountData, planData, storeData })
+    toast.success('Order created successfully')
   }
 
   const getStepContent = (step) => {
@@ -29,9 +31,9 @@ const CreateOrder = () => {
     case 0:
       return <CreateAccount onNext={handleNext} setAccountData={setAccountData} />
     case 1:
-      return <SelectPlan onNext={handleNext} setPlanData={setPlanData} />
+      return <SelectPlan onNext={handleNext} setPlanData={setPlanData} setStoreData={setStoreData} />
     case 2:
-      return <ConfirmOrder accountData={accountData} planData={planData} onSubmit={handleSubmit} />
+      return <ConfirmOrder accountData={accountData} planData={planData} store={storeData} onSubmit={handleSubmit} />
     default:
       return 'Unknown step'
     }

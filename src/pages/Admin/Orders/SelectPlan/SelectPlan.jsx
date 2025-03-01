@@ -1,13 +1,18 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Select, MenuItem, Button, Box, Typography, FormControl, InputLabel } from '@mui/material'
 import { connectionsPlans } from '~/apis/connections-plans.js'
-
-const SelectPlan = ({ onNext, setPlanData }) => {
-  const [selectedPlan, setSelectedPlan] = useState('')
+import { Store } from '~/apis/mock-data.js'
+import { toast } from 'react-toastify'
+const SelectPlan = ({ onNext, setPlanData, setStoreData }) => {
+  // Initialize state with null instead of empty string to avoid controlled/uncontrolled switch
+  const [selectedPlan, setSelectedPlan] = useState(null)
+  const [selectedStore, setSelectedStore] = useState(null)
   const [allPlans, setAllPlans] = useState([])
+  const [allStores, setAllStores] = useState([])
 
-  // Lấy tất cả các plan từ connectionsPlans
-  useState(() => {
+  // Fetch plans and stores data
+  useEffect(() => {
+    // Process plans data
     const plans = []
     connectionsPlans.forEach(connection => {
       connection.plans.forEach(plan => {
@@ -15,14 +20,32 @@ const SelectPlan = ({ onNext, setPlanData }) => {
       })
     })
     setAllPlans(plans)
+
+    // Fetch stores data (assuming stores.js exports an array of stores)
+    setAllStores(Store)
   }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Tìm plan được chọn từ allPlans
+
+    // Validate selection
+    if (selectedPlan === null || selectedStore === null) {
+      alert('Please select plan and store')
+      return
+    }
+
+    // Find selected plan and store
     const selectedPlanData = allPlans.find(plan => plan.planId === selectedPlan)
-    setPlanData(selectedPlanData)
-    onNext()
+    const selectedStoreData = allStores.find(store => store.id === selectedStore)
+
+    // Pass data to parent component
+    if (selectedPlanData && selectedStoreData) {
+      setPlanData(selectedPlanData)
+      setStoreData(selectedStoreData)
+      onNext()
+    } else {
+      toast.error('Not found plan or store')
+    }
   }
 
   return (
@@ -30,23 +53,49 @@ const SelectPlan = ({ onNext, setPlanData }) => {
       <Typography variant="h6" gutterBottom>
         Select Plan
       </Typography>
-      <FormControl fullWidth>
-        <InputLabel id="plan-label">Plan</InputLabel>
-        <Select
-          labelId="plan-label"
-          label="Plan"
-          fullWidth
-          margin="normal"
-          value={selectedPlan}
-          onChange={(e) => setSelectedPlan(e.target.value)}
-        >
-          {allPlans.map((plan) => (
-            <MenuItem key={plan.planId} value={plan.planId}>
-              {plan.planName} - {plan.planPrice} VND
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box>
+          <FormControl fullWidth>
+            <InputLabel id="plan-label">Plan</InputLabel>
+            <Select
+              labelId="plan-label"
+              label="Plan"
+              fullWidth
+              margin="normal"
+              value={selectedPlan || ''} // Use empty string as fallback to maintain controlled state
+              onChange={(e) => setSelectedPlan(e.target.value)}
+              required
+            >
+              {allPlans.map((plan) => (
+                <MenuItem key={plan.planId} value={plan.planId}>
+                  {plan.planName} - {plan.planPrice} VND
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+        <Box>
+          <FormControl fullWidth>
+            <InputLabel id="store-label">Store</InputLabel>
+            <Select
+              labelId="store-label"
+              label="Store"
+              fullWidth
+              margin="normal"
+              value={selectedStore || ''} // Use empty string as fallback to maintain controlled state
+              onChange={(e) => setSelectedStore(e.target.value)}
+              required
+            >
+              {allStores.map((store) => (
+                <MenuItem key={store.id} value={store.id}>
+                  {store.storeName} - {store.storeCity}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+      </Box>
+
       <Button type="submit" variant="contained" sx={{ mt: 2 }}>
         Next
       </Button>

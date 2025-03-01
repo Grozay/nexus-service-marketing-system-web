@@ -171,15 +171,26 @@ export const Reply = [
 ]
 export const Store = [
   {
-    'storeId': 'STORE001',
-    'storeName': 'Main Store',
-    'storeAddress': '123 Main St',
-    'storeCity': 'New York',
-    'storeLatitude': '40.7128',
-    'storeLongitude': '-74.0060',
-    'storeOpenHours': '9AM - 9PM',
-    'storePhone': '123-456-7890',
-    'storeStatus': 'Open'
+    id: 1,
+    storeName: 'Main Store',
+    storeAddress: '123 Le Loi Street',
+    storeCity: 'Hanoi',
+    storeLatitude: '21.0278',
+    storeLongitude: '105.8342',
+    storeOpenHours: '8:00 - 22:00',
+    storePhone: '024 3824 5678',
+    storeStatus: 'Active'
+  },
+  {
+    id: 2,
+    storeName: 'District 1 Store',
+    storeAddress: '456 Nguyen Hue Street',
+    storeCity: 'Ho Chi Minh City',
+    storeLatitude: '10.7769',
+    storeLongitude: '106.7009',
+    storeOpenHours: '9:00 - 21:00',
+    storePhone: '028 3822 1234',
+    storeStatus: 'Inactive'
   }
 ]
 export const Vendors = [
