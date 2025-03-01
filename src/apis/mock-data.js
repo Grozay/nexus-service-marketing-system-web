@@ -166,17 +166,36 @@ export const Billing = [
 
 export const Payment = [
   {
-    'paymentId': 1,
-    'billingId': 1,
-    'customerId': 'DTB1234567890123',
-    'paymentMethod': 'Credit Card',
-    'paymentAmount': 90.00,
-    'paymentNote': 'Payment for subscription',
-    'paymentStatus': 'Success',
-    'paymentCreateAt': '2023-01-06T00:00:00Z'
+    'paymentId': 1, // Primary key
+    'billingId': 1, // Foreign key to Billing
+    'orderId': 'D1234567890', // Foreign key to Orders
+    'paymentMethod': 'Credit Card', // Phương thức thanh toán
+    'paymentAmount': 90.00, // Số tiền thanh toán
+    'paymentNote': 'Payment for subscription', // Ghi chú thanh toán
+    'paymentStatus': 'Success', // Trạng thái: 'Success' hoặc 'Failed'
+    'paymentCreatedAt': '2023-01-06T00:00:00Z' // Ngày thanh toán (đổi tên trường)
+  },
+  {
+    'paymentId': 2, // Primary key
+    'billingId': 2, // Foreign key to Billing
+    'orderId': 'D1234567891', // Foreign key to Orders
+    'paymentMethod': 'Credit Card', // Phương thức thanh toán
+    'paymentAmount': 90.00, // Số tiền thanh toán
+    'paymentNote': 'Payment for subscription', // Ghi chú thanh toán
+    'paymentStatus': 'Success', // Trạng thái: 'Success' hoặc 'Failed'
+    'paymentCreatedAt': '2023-01-06T00:00:00Z' // Ngày thanh toán (đổi tên trường)
+  },
+  {
+    'paymentId': 3, // Primary key
+    'billingId': 3, // Foreign key to Billing
+    'orderId': 'D1234567892', // Foreign key to Orders
+    'paymentMethod': 'Credit Card', // Phương thức thanh toán
+    'paymentAmount': 90.00, // Số tiền thanh toán
+    'paymentNote': 'Payment for subscription', // Ghi chú thanh toán
+    'paymentStatus': 'Success', // Trạng thái: 'Success' hoặc 'Failed'
+    'paymentCreatedAt': '2023-01-06T00:00:00Z' // Ngày thanh toán (đổi tên trường)
   }
 ]
-
 
 export const Feedback = [
   {
