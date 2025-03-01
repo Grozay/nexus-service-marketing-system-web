@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { DataGrid, GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridToolbarExport } from '@mui/x-data-grid'
 import { Order } from '~/apis/mock-data'
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 
 const columns = [
   { field: 'orderId', headerName: 'Order ID', width: 150 },
