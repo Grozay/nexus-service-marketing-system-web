@@ -7,7 +7,7 @@ import Save from '@mui/icons-material/Save'
 import Close from '@mui/icons-material/Close'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
-import MoreHoriz from '@mui/icons-material/MoreHoriz'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import {
   GridRowModes,
   DataGrid,
@@ -25,7 +25,7 @@ import Chip from '@mui/material/Chip'
 
 // Transform data from connections-plans.js to match Plans schema
 const transformPlansData = (connectionsPlans) => {
-  return connectionsPlans.flatMap(connection => 
+  return connectionsPlans.flatMap(connection =>
     connection.plans.map(plan => ({
       id: plan.planId,
       planId: plan.planId,
@@ -42,11 +42,11 @@ const transformPlansData = (connectionsPlans) => {
       planIsActive: plan.planIsActive,
       slug: plan.slug
     }))
-  );
-};
+  )
+}
 
 // Usage
-const initialPlans = transformPlansData(connectionsPlans);
+const initialPlans = transformPlansData(connectionsPlans)
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props
@@ -167,7 +167,7 @@ export default function ConnectionPlanManagement() {
       width: 100,
       cellClassName: 'actions',
       getActions: ({ id }) => {
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit
 
         if (isInEditMode) {
           return [
@@ -186,26 +186,19 @@ export default function ConnectionPlanManagement() {
               onClick={handleCancelClick(id)}
               color="inherit"
             />
-          ];
+          ]
         }
 
         return [
           <GridActionsCellItem
             key={id}
-            icon={<EditIcon />}
-            label="Edit"
+            icon={<MoreHorizIcon />}
+            label="More"
             className="textPrimary"
-            onClick={handleEditClick(id)}
-            color="inherit"
-          />,
-          <GridActionsCellItem
-            key={id}
-            icon={<DeleteIcon />}
-            label="Delete"
-            onClick={handleDeleteClick(id)}
+            onClick={handleMoreClick(id)}
             color="inherit"
           />
-        ];
+        ]
       }
     }
   ]

@@ -1,7 +1,7 @@
 import { createTheme } from '@mui/material/styles'
 import { AppProvider } from '@toolpad/core/AppProvider'
 import { DashboardLayout } from '@toolpad/core/DashboardLayout'
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { useState, useMemo } from 'react'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import PeopleIcon from '@mui/icons-material/People'
@@ -23,6 +23,8 @@ import ReceiptIcon from '@mui/icons-material/Receipt'
 import PaymentIcon from '@mui/icons-material/Payment'
 import FeedbackIcon from '@mui/icons-material/Feedback'
 import ConnectionPlan from '~/pages/Admin/Connections/ConnectionPlan'
+import CreateOrder from '~/pages/Admin/Orders/CreateOrder/CreateOrder'
+import OrderList from '~/pages/Admin/Orders/Order'
 const NAVIGATION = [
   { segment: 'admin/', title: 'Dashboard', icon: <DashboardIcon /> },
   { segment: 'admin/employee', title: 'Employee', icon: <PeopleIcon /> },
@@ -31,7 +33,15 @@ const NAVIGATION = [
   { segment: 'admin/vendor', title: 'Vendor', icon: <BusinessIcon /> },
   { segment: 'admin/retail-shop', title: 'Retail Shop', icon: <StoreIcon /> },
   { segment: 'admin/connection-plans', title: 'Connection Plan', icon: <LanIcon /> },
-  { segment: 'admin/orders', title: 'Order', icon: <AssignmentIcon /> },
+  {
+    segment: 'admin/orders',
+    title: 'Order',
+    icon: <AssignmentIcon />,
+    children: [
+      { segment: 'create', title: 'Create Order' },
+      { segment: 'list', title: 'Order List' }
+    ]
+  },
   { segment: 'admin/billing', title: 'Billing', icon: <ReceiptIcon /> },
   { segment: 'admin/payments', title: 'Payment', icon: <PaymentIcon /> },
   { segment: 'admin/feedbacks', title: 'Feedback', icon: <FeedbackIcon /> }
@@ -99,6 +109,11 @@ function Layout(props) {
           <Route path="vendor" element={<Vendor />} />
           <Route path="retail-shop" element={<RetailShop />} />
           <Route path="connection-plans" element={<ConnectionPlan />} />
+          <Route path="orders">
+            <Route index element={<Navigate to="list" replace />} />
+            <Route path="create" element={<CreateOrder />} />
+            <Route path="list" element={<OrderList />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </DashboardLayout>
