@@ -1,20 +1,28 @@
-import React, { useState } from 'react';
-import { Box, Typography, Paper, Avatar, List, ListItem, ListItemText, TextField, Button, Backdrop } from '@mui/material';
-import { Feedback, Reply } from '~/apis/mock-data';
+import React, { useState } from 'react'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Paper from '@mui/material/Paper'
+import Avatar from '@mui/material/Avatar'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import Backdrop from '@mui/material/Backdrop'
+import { Feedback, Reply } from '~/apis/mock-data'
 
 const CustomerFeedbackPage = () => {
-  const [selectedFeedback, setSelectedFeedback] = useState(null);
-  const [replyMessage, setReplyMessage] = useState('');
+  const [selectedFeedback, setSelectedFeedback] = useState(null)
+  const [replyMessage, setReplyMessage] = useState('')
 
   const handleReplySubmit = (feedbackId) => {
     // Handle reply submission logic
-    console.log('Reply submitted:', replyMessage);
-    setReplyMessage('');
-  };
+    console.log('Reply submitted:', replyMessage)
+    setReplyMessage('')
+  }
 
   const getRelatedReplies = (feedbackId) => {
-    return Reply.filter(reply => reply.feedbackId === feedbackId);
-  };
+    return Reply.filter(reply => reply.feedbackId === feedbackId)
+  }
 
   return (
     <Box sx={{ p: 3 }}>
@@ -25,11 +33,11 @@ const CustomerFeedbackPage = () => {
       <Paper sx={{ p: 2 }}>
         <List>
           {Feedback.map((feedback) => {
-            const relatedReplies = getRelatedReplies(feedback.feedbackId);
+            const relatedReplies = getRelatedReplies(feedback.feedbackId)
             return (
               <React.Fragment key={feedback.feedbackId}>
-                <ListItem 
-                  button
+                <ListItem
+                  button = {true}
                   onClick={() => setSelectedFeedback(feedback)}
                   sx={{ mb: 2, border: '1px solid #ddd', borderRadius: 2 }}
                 >
@@ -70,7 +78,7 @@ const CustomerFeedbackPage = () => {
                   </ListItem>
                 ))}
               </React.Fragment>
-            );
+            )
           })}
         </List>
       </Paper>
@@ -79,24 +87,24 @@ const CustomerFeedbackPage = () => {
         <>
           <Backdrop
             open={true}
-            sx={{ 
+            sx={{
               zIndex: 9999,
-              backgroundColor: 'rgba(0, 0, 0, 0.5)' 
+              backgroundColor: 'rgba(0, 0, 0, 0.5)'
             }}
           />
-          <Paper sx={{ 
-            position: 'fixed', 
-            top: '50%', 
-            left: '50%', 
-            transform: 'translate(-50%, -50%)', 
-            width: '80%', 
-            p: 3, 
-            zIndex: 10000 
+          <Paper sx={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '80%',
+            p: 3,
+            zIndex: 10000
           }}>
             <Typography variant="h6" gutterBottom>
               Feedback Details
             </Typography>
-            
+
             <Box sx={{ mb: 3 }}>
               <Typography><strong>Subject:</strong> {selectedFeedback.feedbackSubject}</Typography>
               <Typography><strong>Message:</strong> {selectedFeedback.feedbackMessage}</Typography>
@@ -115,14 +123,14 @@ const CustomerFeedbackPage = () => {
             />
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Button 
-                variant="contained" 
+              <Button
+                variant="contained"
                 onClick={() => handleReplySubmit(selectedFeedback.feedbackId)}
               >
                 Send Reply
               </Button>
-              <Button 
-                variant="outlined" 
+              <Button
+                variant="outlined"
                 onClick={() => setSelectedFeedback(null)}
                 sx={{ ml: 2 }}
               >
@@ -133,7 +141,7 @@ const CustomerFeedbackPage = () => {
         </>
       )}
     </Box>
-  );
-};
+  )
+}
 
-export default CustomerFeedbackPage;
+export default CustomerFeedbackPage
