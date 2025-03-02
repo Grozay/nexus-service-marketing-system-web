@@ -9,7 +9,6 @@ import InventoryIcon from '@mui/icons-material/Inventory'
 import BusinessIcon from '@mui/icons-material/Business'
 import StoreIcon from '@mui/icons-material/Store'
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople'
-
 import Dashboard from '~/pages/Admin/Dashboard/Dashboard'
 import Employee from '~/pages/Admin/Employee/Employee'
 import Equipment from '~/pages/Admin/Equipment/Equipment'
@@ -29,26 +28,85 @@ import Billing from '~/pages/Admin/Billing/Billing'
 import Payments from '~/pages/Admin/Payments/Payments'
 import CustomerFeedbackPage from '~/pages/Admin/Feedback/FeedbackCustomer'
 import EmployeeFeedbackPage from '~/pages/Admin/Feedback/FeedbackEmployee'
-const NAVIGATION = [
-  { segment: 'admin/', title: 'Dashboard', icon: <DashboardIcon /> },
-  { segment: 'admin/employee', title: 'Employee', icon: <PeopleIcon /> },
-  { segment: 'admin/customer', title: 'Customer', icon: <EmojiPeopleIcon /> },
-  { segment: 'admin/equipment', title: 'Equipment', icon: <InventoryIcon /> },
-  { segment: 'admin/vendor', title: 'Vendor', icon: <BusinessIcon /> },
-  { segment: 'admin/retail-shop', title: 'Retail Shop', icon: <StoreIcon /> },
-  { segment: 'admin/connection-plans', title: 'Connection Plan', icon: <LanIcon /> },
-  {
-    segment: 'admin/orders',
-    title: 'Order',
-    icon: <AssignmentIcon />,
-    children: [
-      { segment: 'create', title: 'Create Order' },
-      { segment: 'list', title: 'Order List' }
-    ]
-  },
-  { segment: 'admin/billing', title: 'Billing', icon: <ReceiptIcon /> },
-  { segment: 'admin/payments', title: 'Payment', icon: <PaymentIcon /> },
-  {
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '~/redux/user/userSlice'
+import { useDispatch } from 'react-redux'
+import { logoutEmployeeApi } from '~/redux/user/userSlice'
+import { useConfirm } from 'material-ui-confirm'
+
+const NAVIGATION = (currentUser) => {
+  const baseNav = [
+    { segment: 'admin/', title: 'Dashboard', icon: <DashboardIcon /> }
+  ]
+
+  // Admin has access to all features
+  if (currentUser.userRole === 'admin') {
+    baseNav.push(
+      { segment: 'admin/employee', title: 'Employee', icon: <PeopleIcon /> },
+      { segment: 'admin/customer', title: 'Customer', icon: <EmojiPeopleIcon /> },
+      { segment: 'admin/equipment', title: 'Equipment', icon: <InventoryIcon /> },
+      { segment: 'admin/vendor', title: 'Vendor', icon: <BusinessIcon /> },
+      { segment: 'admin/retail-shop', title: 'Retail Shop', icon: <StoreIcon /> },
+      { segment: 'admin/connection-plans', title: 'Connection Plan', icon: <LanIcon /> },
+      {
+        segment: 'admin/orders',
+        title: 'Order',
+        icon: <AssignmentIcon />,
+        children: [
+          { segment: 'create', title: 'Create Order' },
+          { segment: 'list', title: 'Order List' }
+        ]
+      },
+      { segment: 'admin/billing', title: 'Billing', icon: <ReceiptIcon /> },
+      { segment: 'admin/payments', title: 'Payment', icon: <PaymentIcon /> }
+    )
+  } 
+  // Other roles
+  else {
+    // Retail Staff
+    if (currentUser.userRole === 'retail staff') {
+      baseNav.push(
+        {
+          segment: 'admin/orders',
+          title: 'Order',
+          icon: <AssignmentIcon />,
+          children: [
+            { segment: 'create', title: 'Create Order' },
+            { segment: 'list', title: 'Order List' }
+          ]
+        },
+        { segment: 'admin/billing', title: 'Billing', icon: <ReceiptIcon /> },
+        { segment: 'admin/payments', title: 'Payment', icon: <PaymentIcon /> }
+      )
+    }
+
+    // Technician
+    if (currentUser.userRole === 'technician') {
+      baseNav.push(
+        {
+          segment: 'admin/orders',
+          title: 'Order',
+          icon: <AssignmentIcon />,
+          children: [
+            { segment: 'list', title: 'Order List' }
+          ]
+        },
+        { segment: 'admin/connection-plans', title: 'Connection Plan', icon: <LanIcon /> },
+        { segment: 'admin/equipment', title: 'Equipment', icon: <InventoryIcon /> }
+      )
+    }
+
+    // Accountant
+    if (currentUser.userRole === 'accountant') {
+      baseNav.push(
+        { segment: 'admin/billing', title: 'Billing', icon: <ReceiptIcon /> },
+        { segment: 'admin/payments', title: 'Payment', icon: <PaymentIcon /> }
+      )
+    }
+  }
+
+  // Feedback for all roles
+  baseNav.push({
     segment: 'admin/feedbacks',
     title: 'Feedback',
     icon: <FeedbackIcon />,
@@ -56,8 +114,10 @@ const NAVIGATION = [
       { segment: 'customer', title: 'Customer Feedback' },
       { segment: 'employee', title: 'Employee Feedback' }
     ]
-  }
-]
+  })
+
+  return baseNav
+}
 
 const demoTheme = createTheme({
   cssVariables: { colorSchemeSelector: 'data-toolpad-color-scheme' },
@@ -66,12 +126,24 @@ const demoTheme = createTheme({
 })
 
 function Layout(props) {
+  const dispatch = useDispatch()
+  const currentUser = useSelector(selectCurrentUser)
+  const confirmLogout = useConfirm()
+  const handleLogout = () => {
+    confirmLogout({
+      title: 'Are you sure you want to logout?',
+      cancellationText: 'Cancel',
+      confirmationText: 'Confirm'
+    })
+      .then(() => dispatch(logoutEmployeeApi()))
+      .catch(() => { })
+  }
   const { window } = props
   const [session, setSession] = useState({
     user: {
-      name: 'Bharat Kashyap',
-      email: 'bharatkashyap@outlook.com',
-      image: 'https://avatars.githubusercontent.com/u/19550456'
+      name: currentUser.userName,
+      email: currentUser.userEmail,
+      image: currentUser.employeeImage
     }
   })
   const demoWindow = window !== undefined ? window() : undefined
@@ -90,8 +162,9 @@ function Layout(props) {
           }
         })
       },
-      signOut: () => setSession(null)
+      signOut: handleLogout
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const router = useMemo(() => {
@@ -106,7 +179,7 @@ function Layout(props) {
     <AppProvider
       session={session}
       authentication={authentication}
-      navigation={NAVIGATION}
+      navigation={NAVIGATION(currentUser)}
       theme={demoTheme}
       router={router}
       window={demoWindow}

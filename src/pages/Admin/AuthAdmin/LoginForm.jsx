@@ -8,19 +8,33 @@ import TextField from '@mui/material/TextField'
 import Zoom from '@mui/material/Zoom'
 import { useForm } from 'react-hook-form'
 import {
-  EMAIL_RULE_MESSAGE,
   PASSWORD_RULE_MESSAGE,
   FIELD_REQUIRED_MESSAGE,
-  EMAIL_RULE,
   PASSWORD_RULE
 } from '~/utils/validators'
-
+import { useDispatch } from 'react-redux'
+import { loginEmployeeApi } from '~/redux/user/userSlice'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 function LoginForm() {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { register, handleSubmit, formState: { errors } } = useForm()
 
   const submitLogIn = (data) => {
-    console.log(data)
+    const { userId, userPassword } = data
+    toast.promise(
+      dispatch(loginEmployeeApi({ userId, userPassword })), {
+        pending: 'Logging in...'
+      }
+    ).then(res => {
+      // console.log(res)
+      //Đoạn này phải kiểm tra không có lỗi mới redirect về route /
+      if (!res.error) {
+        navigate('/admin/')
+      }
+    })
   }
 
   return (
@@ -41,12 +55,12 @@ function LoginForm() {
                 // autoComplete="nope"
                 autoFocus
                 fullWidth
-                label="Enter Email..."
+                label="Enter Id..."
                 type="text"
                 variant="outlined"
-                {...register('email', { required: FIELD_REQUIRED_MESSAGE, pattern: EMAIL_RULE })}
-                error={!!errors.email}
-                helperText={errors.email?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.email?.type === 'pattern' ? EMAIL_RULE_MESSAGE : ''}
+                {...register('userId', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.userId}
+                helperText={errors.userId?.type === 'required' ? FIELD_REQUIRED_MESSAGE : ''}
               />
             </Box>
             <Box sx={{ marginTop: '1em' }}>
@@ -55,9 +69,9 @@ function LoginForm() {
                 label="Enter Password..."
                 type="password"
                 variant="outlined"
-                {...register('password', { required: FIELD_REQUIRED_MESSAGE, pattern: PASSWORD_RULE })}
-                error={!!errors.password}
-                helperText={errors.password?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.password?.type === 'pattern' ? PASSWORD_RULE_MESSAGE : ''}
+                {...register('userPassword', { required: FIELD_REQUIRED_MESSAGE, pattern: PASSWORD_RULE })}
+                error={!!errors.userPassword}
+                helperText={errors.userPassword?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.userPassword?.type === 'pattern' ? PASSWORD_RULE_MESSAGE : ''}
               />
             </Box>
           </Box>
@@ -79,9 +93,9 @@ function LoginForm() {
             </Link>
           </Box> */}
           <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
-            <Typography>Forgot Password?</Typography>
+            <Typography>You forgot your password?</Typography>
             <Link to="/forgot-password" style={{ textDecoration: 'none' }}>
-              <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Reset Password</Typography>
+              <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Forgot Password</Typography>
             </Link>
           </Box>
         </MuiCard>

@@ -8,23 +8,35 @@ import theme from '~/theme'
 import App from './App.jsx'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import store from './redux/store'
+import { Provider } from 'react-redux'
+import { injectStore } from '~/utils/authorizeAxios.js'
+import { persistStore } from 'redux-persist'
+import { PersistGate } from 'redux-persist/integration/react'
+const persistor = persistStore(store)
 
+//Kỹ thuật inject Store: là kỹ thuật khi cần sửa dụng biến redux ở các file ngoài phạm vi component
+injectStore(store)
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
-      <ThemeProvider theme={theme} noSsr disableTransitionOnChange defaultMode='light'>
-        <CssBaseline />
-        <ConfirmProvider defaultOptions={{
-          allowClose: false,
-          dialogProps: { maxWidth: 'xs' },
-          confirmationButtonProps: { color: 'secondary', variant: 'outlined' },
-          cancellationButtonProps: { color: 'inherit' }
-        }}
-        >
-          <App />
-          <ToastContainer position="bottom-right" />
-        </ConfirmProvider>
-      </ThemeProvider>
-    </BrowserRouter>
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        <BrowserRouter>
+          <ThemeProvider theme={theme} noSsr disableTransitionOnChange defaultMode='light'>
+            <CssBaseline />
+            <ConfirmProvider defaultOptions={{
+              allowClose: false,
+              dialogProps: { maxWidth: 'xs' },
+              confirmationButtonProps: { color: 'secondary', variant: 'outlined' },
+              cancellationButtonProps: { color: 'inherit' }
+            }}
+            >
+              <App />
+              <ToastContainer position="bottom-right" />
+            </ConfirmProvider>
+          </ThemeProvider>
+        </BrowserRouter>
+      </PersistGate>
+    </Provider>
   </StrictMode>
 )

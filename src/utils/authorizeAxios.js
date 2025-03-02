@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { interceptorLoadingElements } from '~/utils/formatter'
-import { refreshTokenAPI } from '~/apis'
-import { logoutUserApi } from '~/redux/user/userSlice.js'
+import { refreshTokenAccountAPI } from '~/apis'
+import { logoutEmployeeApi } from '~/redux/user/userSlice.js'
 
 //Không thể import {store } from '~/redux/store.js' theo cách thông thường
 //giải pháp: Inject store : là kỹ thuật khi cần sửa dụng biến redux store ở các file ngoài phạm vi component như file này
@@ -53,7 +53,7 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
   //Quang trọng: Xử lý việc refresh token tự động
   //Trường hợp 1: Nếu như nhận mã 401 thừ BE, thì gọi api đăng xuất luôn
   if (error?.response?.status === 401) {
-    axiosReduxStore.dispatch(logoutUserApi(false))
+    axiosReduxStore.dispatch(logoutEmployeeApi(false))
   }
   //Trường hợp 2: Nếu như nhận mã 401 thừ BE, thì gọi api refresh_token để lấy token mới
   //Đầu tiên lấy được cái request api đang bị lỗi thong qua error.config
@@ -63,14 +63,14 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
     originalRequests._retry = true
     //Kiểm tra xem nếu chưa có refreshTokenPromise thì thức hiện việc gán api refresh_token đồng thời vào cho cái refreshTokenPromise
     if (!refreshTokenPromise) {
-      refreshTokenPromise = refreshTokenAPI()
+      refreshTokenPromise = refreshTokenAccountAPI()
         .then((data) => {
           //Đôngf thời accessToken đã nằm trong httpOnly cookie(xử lý từ BE)
           return data?.accessToken
         })
         .catch((_error) => {
           //Nếu nhận bất kì lỗi nào từ api refresh token thì cứ logout luôn
-          axiosReduxStore.dispatch(logoutUserApi(false))
+          axiosReduxStore.dispatch(logoutEmployeeApi(false))
           return Promise.reject(_error)
         })
         .finally(() => {

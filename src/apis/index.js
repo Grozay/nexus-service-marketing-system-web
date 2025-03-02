@@ -34,12 +34,7 @@ export const activateDeactivateEmployeeAPI = async (data) => {
 }
 
 export const logoutEmployeeAPI = async () => {
-  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/Auth/Logout`)
-  return response.data
-}
-
-export const refreshTokenEmployeeAPI = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/Auth/RefreshToken`)
+  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Auth/Logout`)
   return response.data
 }
 
@@ -76,5 +71,15 @@ export const loginAccountAPI = async (data) => {
 
 export const logoutAccountAPI = async () => {
   const response = await authorizedAxiosInstance.delete(`${API_ROOT}/Account/Logout`)
+  return response.data
+}
+
+export const refreshTokenAccountAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/Account/RefreshToken`)
+  return response.data
+}
+
+export const refreshTokenEmployeeAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/Auth/RefreshToken`)
   return response.data
 }

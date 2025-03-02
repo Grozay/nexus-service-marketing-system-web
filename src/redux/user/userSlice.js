@@ -9,10 +9,11 @@ const initialState = {
 
 //Các hành động gọi api (bất đồng bộ) và cập nhập dữ liệu vào redux, dùng middleware CreateAsyncThunk đi kèm với extraReducers
 
+//Employee
 export const loginEmployeeApi = createAsyncThunk(
   'user/loginEmployeeApi',
   async (data) => {
-    const response = await authorizedAxiosInstance.post(`${API_ROOT}/Employee/Login`, data)
+    const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Employee/Login`, data)
     return response.data
   }
 )
@@ -20,7 +21,7 @@ export const loginEmployeeApi = createAsyncThunk(
 export const logoutEmployeeApi = createAsyncThunk(
   'user/logoutEmployeeApi',
   async (showSuccessMessage = true) => {
-    const response = await authorizedAxiosInstance.delete(`${API_ROOT}/Auth/Logout`)
+    const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Employee/Logout`)
     if (showSuccessMessage) {
       toast.success('Logout successfully')
     }
@@ -28,6 +29,7 @@ export const logoutEmployeeApi = createAsyncThunk(
   }
 )
 
+//Account
 export const loginAccountApi = createAsyncThunk(
   'user/loginAccountApi',
   async (data) => {
