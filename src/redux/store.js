@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { activeBoardReducer } from './acticeBoard/activeBoardSlice.js'
+// import { activeBoardReducer } from './acticeBoard/activeBoardSlice.js'
 import { userReducer } from './user/userSlice.js'
 
 //config redux-persist
@@ -17,7 +17,6 @@ const rootPersistConfig = {
 
 //combine các reducer trong dự án của chúng ta ở đây
 const rootReducer = combineReducers({
-  activeBoard: activeBoardReducer,
   user: userReducer
 })
 

@@ -1,17 +1,19 @@
 import { useLocation } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import LoginForm from './LoginForm'
-import RegisterForm from './RegisterForm'
-import AppBar from '~/components/AppBar/AppBar'
-
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '~/redux/user/userSlice'
+import { Navigate } from 'react-router-dom'
 function Auth() {
   const location = useLocation()
-  const isLogin = location.pathname === '/login'
-  const isRegister = location.pathname === '/register'
-
+  const isLogin = location.pathname === '/admin/login'
+  // const isRegister = location.pathname === '/register'
+  const currentUser = useSelector(selectCurrentUser)
+  if (currentUser) {
+    return <Navigate to='/admin/' replace={true} />
+  }
   return (
     <Box>
-      <AppBar />
       <Box sx={{
         overflow: 'hidden',
         display: 'flex',
@@ -25,7 +27,7 @@ function Auth() {
         boxShadow: 'inset 0 0 0 2000px rgba(0, 0, 0, 0.2)'
       }}>
         {isLogin && <LoginForm />}
-        {isRegister && <RegisterForm />}
+        {/* {isRegister && <RegisterForm />} */}
       </Box>
     </Box>
   )
