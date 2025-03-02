@@ -44,40 +44,46 @@ const theme = createTheme({
         }
       }
     },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          borderWidth: '0.3px',
-          '&:hover': {
-            borderWidth: '1.5px'
-          }
-        }
-      }
-    },
-    MuiOutlinedInput: {
-      styleOverrides: {
-        root: {
-          fontSize: '0.875rem',
-          '& fieldset': { borderWidth: '0.3px !important' },
-          '&:hover fieldset': { borderWidth: '1.5px !important' },
-          '&.Mui-focused fieldset': { borderWidth: '1.5px !important' }
-        }
-      }
-    },
-    MuiInputLabel: {
-      styleOverrides: {
-        root: { fontSize: '0.875rem' }
-      }
-    },
     MuiTypography: {
-      styleOverrides: {
-        root: {
-          '&.MuiTypography-body1': { fontSize: '0.875rem' }
+      defaultProps: {
+        component: 'div'
+      }
+    }
+  },
+  MuiButton: {
+    styleOverrides: {
+      root: {
+        textTransform: 'none',
+        borderWidth: '0.3px',
+        '&:hover': {
+          borderWidth: '1.5px'
         }
       }
     }
+  },
+  MuiOutlinedInput: {
+    styleOverrides: {
+      root: {
+        fontSize: '0.875rem',
+        '& fieldset': { borderWidth: '0.3px !important' },
+        '&:hover fieldset': { borderWidth: '1.5px !important' },
+        '&.Mui-focused fieldset': { borderWidth: '1.5px !important' }
+      }
+    }
+  },
+  MuiInputLabel: {
+    styleOverrides: {
+      root: { fontSize: '0.875rem' }
+    }
+  },
+  MuiTypography: {
+    styleOverrides: {
+      root: {
+        '&.MuiTypography-body1': { fontSize: '0.875rem' }
+      }
+    }
   }
-})
+}
+)
 
 export default theme

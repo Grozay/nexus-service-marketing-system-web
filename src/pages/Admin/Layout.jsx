@@ -27,6 +27,8 @@ import CreateOrder from '~/pages/Admin/Orders/CreateOrder/CreateOrder'
 import OrderList from '~/pages/Admin/Orders/Order'
 import Billing from '~/pages/Admin/Billing/Billing'
 import Payments from '~/pages/Admin/Payments/Payments'
+import CustomerFeedbackPage from '~/pages/Admin/Feedback/FeedbackCustomer'
+import EmployeeFeedbackPage from '~/pages/Admin/Feedback/FeedbackEmployee'
 const NAVIGATION = [
   { segment: 'admin/', title: 'Dashboard', icon: <DashboardIcon /> },
   { segment: 'admin/employee', title: 'Employee', icon: <PeopleIcon /> },
@@ -46,7 +48,15 @@ const NAVIGATION = [
   },
   { segment: 'admin/billing', title: 'Billing', icon: <ReceiptIcon /> },
   { segment: 'admin/payments', title: 'Payment', icon: <PaymentIcon /> },
-  { segment: 'admin/feedbacks', title: 'Feedback', icon: <FeedbackIcon /> }
+  {
+    segment: 'admin/feedbacks',
+    title: 'Feedback',
+    icon: <FeedbackIcon />,
+    children: [
+      { segment: 'customer', title: 'Customer Feedback' },
+      { segment: 'employee', title: 'Employee Feedback' }
+    ]
+  }
 ]
 
 const demoTheme = createTheme({
@@ -115,6 +125,11 @@ function Layout(props) {
             <Route index element={<Navigate to="list" replace />} />
             <Route path="create" element={<CreateOrder />} />
             <Route path="list" element={<OrderList />} />
+          </Route>
+          <Route path="feedbacks">
+            <Route index element={<Navigate to="customer" replace />} />
+            <Route path="customer" element={<CustomerFeedbackPage />} />
+            <Route path="employee" element={<EmployeeFeedbackPage />} />
           </Route>
           <Route path="billing" element={<Billing />} />
           <Route path="payments" element={<Payments />} />

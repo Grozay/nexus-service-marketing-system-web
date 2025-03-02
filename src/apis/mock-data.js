@@ -196,26 +196,43 @@ export const Payment = [
     'paymentCreatedAt': '2023-01-06T00:00:00Z' // Ngày thanh toán (đổi tên trường)
   }
 ]
-
 export const Feedback = [
   {
-    'feedbackId': 1,
-    'customerId': 'DTB1234567890123',
-    'orderId': 'D1234567890',
-    'feedbackSubject': 'Great service',
-    'feedbackMessage': 'Very satisfied with the service.',
-    'feedbackRating': 10,
-    'feedbackStatus': 'Reviewed',
-    'feedbackCreateAt': '2023-01-07T00:00:00Z'
+    'feedbackId': 1, // Primary key
+    'accountId': 'DTB1234567890123', // Foreign key to tbCustomer
+    'orderId': 'D1234567890', // Foreign key to tbOrder
+    'feedbackSubject': 'Great service', // Subject of feedback
+    'feedbackMessage': 'Very satisfied with the service.', // Feedback content
+    'feedbackRating': 10, // Rating from 1 to 10
+    'feedbackStatus': 'Reviewed', // Status: Pending, Reviewed, Resolved
+    'feedbackCreatedAt': '2023-01-07T00:00:00Z' // Timestamp when feedback was created
+  },
+  {
+    'feedbackId': 2, // Primary key
+    'accountId': 'DTB1234567890123', // Foreign key to tbCustomer
+    'orderId': 'D1234567891', // Foreign key to tbOrder
+    'feedbackSubject': 'Great service', // Subject of feedback
+    'feedbackMessage': 'Very satisfied with the service.', // Feedback content
+    'feedbackRating': 10, // Rating from 1 to 10
+    'feedbackStatus': 'Resolved', // Status: Pending, Reviewed, Resolved
+    'feedbackCreatedAt': '2023-01-07T00:00:00Z' // Timestamp when feedback was created
   }
 ]
+
 export const Reply = [
   {
-    'replyId': 1,
-    'feedbackId': 1,
-    'employeeId': 'EMP001',
-    'replyMessage': 'Thank you for your feedback!',
-    'replyCreateAt': '2023-01-08T00:00:00Z'
+    'replyId': 1, // Primary key
+    'feedbackId': 1, // Foreign key to tbFeedback
+    'employeeId': 'EMP001', // Foreign key to tbEmployee
+    'replyMessage': 'Thank you for your feedback!', // Reply content
+    'replyCreatedAt': '2023-01-08T00:00:00Z' // Timestamp when reply was created
+  },
+  {
+    'replyId': 2, // Primary key
+    'feedbackId': 2, // Foreign key to tbFeedback
+    'employeeId': 'EMP001', // Foreign key to tbEmployee
+    'replyMessage': 'Thank you for your feedback!', // Reply content
+    'replyCreatedAt': '2023-01-08T00:00:00Z' // Timestamp when reply was created
   }
 ]
 export const Store = [

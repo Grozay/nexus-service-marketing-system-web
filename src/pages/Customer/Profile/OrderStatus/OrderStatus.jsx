@@ -147,19 +147,19 @@ const OrderStatus = () => {
                 <Typography variant="h6" component="h2" gutterBottom>
                   Order Details
                 </Typography>
-                <Typography variant="body1" gutterBottom component={'div'}>
+                <Typography variant="body1" gutterBottom component="div">
                   <strong>Order ID:</strong> {selectedOrder.orderId}
                 </Typography>
-                <Typography variant="body1" gutterBottom component={'div'}>
+                <Typography variant="body1" gutterBottom component="div">
                   <strong>Order Name:</strong> {selectedOrder.orderName}
                 </Typography>
-                <Typography variant="body1" gutterBottom component={'div'}>
+                <Typography variant="body1" gutterBottom component="div">
                   <strong>Description:</strong> {selectedOrder.orderDescription}
                 </Typography>
-                <Typography variant="body1" gutterBottom component={'div'}>
+                <Typography variant="body1" gutterBottom component="div">
                   <strong>Amount:</strong> ${selectedOrder.orderAmount}
                 </Typography>
-                <Typography variant="body1" gutterBottom component={'div'}>
+                <Typography variant="body1" gutterBottom component="div">
                   <strong>Status:</strong>
                   <Chip
                     label={selectedOrder.orderStatus}
