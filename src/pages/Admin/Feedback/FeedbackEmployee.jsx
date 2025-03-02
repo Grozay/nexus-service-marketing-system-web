@@ -1,5 +1,13 @@
 import React, { useState } from 'react'
-import { Box, Typography, Paper, Avatar, List, ListItem, ListItemText, TextField, Button, Backdrop } from '@mui/material'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Paper from '@mui/material/Paper'
+import Avatar from '@mui/material/Avatar'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import Backdrop from '@mui/material/Backdrop'
 import { Feedback, Reply } from '~/apis/mock-data'
 
 const EmployeeFeedbackPage = () => {
@@ -29,7 +37,7 @@ const EmployeeFeedbackPage = () => {
             return (
               <React.Fragment key={feedback.feedbackId}>
                 <ListItem
-                  button
+                  button="true"  // Đã sửa từ boolean thành string
                   onClick={() => setSelectedFeedback(feedback)}
                   sx={{ mb: 2, border: '1px solid #ddd', borderRadius: 2 }}
                 >
