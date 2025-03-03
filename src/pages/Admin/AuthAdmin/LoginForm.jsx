@@ -29,8 +29,6 @@ function LoginForm() {
         pending: 'Logging in...'
       }
     ).then(res => {
-      // console.log(res)
-      //Đoạn này phải kiểm tra không có lỗi mới redirect về route /
       if (!res.error) {
         navigate('/admin/')
       }

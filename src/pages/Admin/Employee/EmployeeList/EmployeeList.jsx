@@ -62,7 +62,7 @@ function EditToolbar() {
   )
 }
 
-export default function EmployeeManagement() {
+export default function EmployeeList() {
   const [rows, setRows] = useState([])
   const [rowModesModel, setRowModesModel] = useState({})
   const [anchorEl, setAnchorEl] = useState(null)
