@@ -60,7 +60,7 @@ const NAVIGATION = (currentUser) => {
       { segment: 'admin/billing', title: 'Billing', icon: <ReceiptIcon /> },
       { segment: 'admin/payments', title: 'Payment', icon: <PaymentIcon /> }
     )
-  } 
+  }
   // Other roles
   else {
     // Retail Staff

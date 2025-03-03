@@ -15,7 +15,6 @@ import { persistStore } from 'redux-persist'
 import { PersistGate } from 'redux-persist/integration/react'
 const persistor = persistStore(store)
 
-//Kỹ thuật inject Store: là kỹ thuật khi cần sửa dụng biến redux ở các file ngoài phạm vi component
 injectStore(store)
 createRoot(document.getElementById('root')).render(
   <StrictMode>

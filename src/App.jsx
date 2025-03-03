@@ -40,6 +40,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<Auth />} />
+          <Route path='/reset-password' element={<Auth />} />
           <Route path='/admin/login' element={<AuthAdmin />} />
           {/* <Route path='/register' element={<Auth />} /> */}
           <Route path='/service/:slug' element={<Service />} />

@@ -6,17 +6,14 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
-import CreateAccount from '~/pages/Admin/Orders/CreateAccount/CreateAccount'
-import SelectPlan from '~/pages/Admin/Orders/SelectPlan/SelectPlan'
-import ConfirmOrder from '~/pages/Admin/Orders/ConfirmOrder/ConfirmOrder'
 import { toast } from 'react-toastify'
-const steps = ['Create Account', 'Select Plan', 'Confirm Order']
+import ResetPwForm from './ResetPwForm'
+import OtpForm from './OtpForm'
+import AccountForm from './AccountForm'
+const steps = ['Account', 'OTP', 'New Password']
 
-const CreateOrder = () => {
+const ResetPw = () => {
   const [activeStep, setActiveStep] = useState(0)
-  const [accountData, setAccountData] = useState(null)
-  const [planData, setPlanData] = useState(null)
-  const [storeData, setStoreData] = useState(null)
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
@@ -28,28 +25,34 @@ const CreateOrder = () => {
 
   const handleSubmit = () => {
     // Gọi API để tạo đơn hàng
-    toast.success('Order created successfully')
+    toast.success('Reset password successfully')
   }
 
   const getStepContent = (step) => {
     switch (step) {
     case 0:
-      return <CreateAccount onNext={handleNext} setAccountData={setAccountData} />
+      return <AccountForm onNext={handleNext}/>
     case 1:
-      return <SelectPlan onNext={handleNext} setPlanData={setPlanData} setStoreData={setStoreData} />
+      return <OtpForm onNext={handleNext} />
     case 2:
-      return <ConfirmOrder accountData={accountData} planData={planData} store={storeData} onSubmit={handleSubmit} />
+      return <ResetPwForm onSubmit={handleSubmit} />
     default:
       return 'Unknown step'
     }
   }
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 2
+    }}>
       <Typography variant="h4" gutterBottom>
-        Create Order
+        Reset Password
       </Typography>
-      <Box sx={{ width: '100%' }}>
+      <Box>
         <Stepper activeStep={activeStep}>
           {steps.map((label) => (
             <Step key={label}>
@@ -65,6 +68,11 @@ const CreateOrder = () => {
               Back
               </Button>
             )}
+            {activeStep !== steps.length - 1 && (
+              <Button onClick={handleNext} sx={{ mr: 1 }}>
+              Next
+              </Button>
+            )}
           </Box>
         </Box>
       </Box>
@@ -72,4 +80,4 @@ const CreateOrder = () => {
   )
 }
 
-export default CreateOrder
+export default ResetPw

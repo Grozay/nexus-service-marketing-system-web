@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
-import Icon from '@mui/material/Icon'
 import Box from '@mui/material/Box'
 import WifiIcon from '@mui/icons-material/Wifi'
 import DialpadIcon from '@mui/icons-material/Dialpad'
@@ -72,7 +71,8 @@ const cardActionsStyle = {
 
 const viewDetailsButtonStyle = {
   size: 'small',
-  variant: 'contained'
+  variant: 'contained',
+  textWrap: 'nowrap'
 }
 
 const registerButtonStyle = {
@@ -133,7 +133,7 @@ const Service = () => {
   return (
     <Box>
       <AppBar />
-      <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+      <Container maxWidth="md" sx={{ mt: 6, mb: 6 }}>
         <Typography variant="h4" component="h2" gutterBottom textAlign="center">
           Services of Nexus
         </Typography>
@@ -146,7 +146,7 @@ const Service = () => {
           {filteredServicePlans.map((plan) => (
             <Box key={plan.id} sx={{
               width: { xs: '100%', sm: 'calc(50% - 12px)', md: 'calc(33.33% - 16px)' },
-              maxWidth: 400
+              maxWidth: 600
             }}>
               <Card sx={cardStyle}>
                 <CardContent sx={cardContentStyle}>
@@ -169,19 +169,25 @@ const Service = () => {
                       /{plan.billingCycle}
                     </Typography>
                   </Box>
-                  <Button
-                    sx={viewDetailsButtonStyle}
-                    component={RouterLink}
-                    to={`/service/${plan.slug}/detail`}
-                  >
-                    View Details
-                  </Button>
-                  <Button sx={registerButtonStyle}
-                    component={RouterLink}
-                    to={`/subscribe/${plan.slug}`}
-                  >
-                    Subscribe
-                  </Button>
+                  <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2
+                  }}>
+                    <Button
+                      sx={viewDetailsButtonStyle}
+                      component={RouterLink}
+                      to={`/service/${plan.slug}/detail`}
+                    >
+                      View Details
+                    </Button>
+                    <Button sx={registerButtonStyle}
+                      component={RouterLink}
+                      to={`/subscribe/${plan.slug}`}
+                    >
+                      Register
+                    </Button>
+                  </Box>
                 </CardActions>
               </Card>
             </Box>
