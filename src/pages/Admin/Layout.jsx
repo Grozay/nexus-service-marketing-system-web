@@ -10,7 +10,6 @@ import BusinessIcon from '@mui/icons-material/Business'
 import StoreIcon from '@mui/icons-material/Store'
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople'
 import Dashboard from '~/pages/Admin/Dashboard/Dashboard'
-import Employee from '~/pages/Admin/Employee/Employee'
 import Equipment from '~/pages/Admin/Equipment/Equipment'
 import Vendor from '~/pages/Admin/Vendor/Vendor'
 import RetailShop from '~/pages/Admin/RetailShop/RetailShop'
@@ -33,6 +32,8 @@ import { selectCurrentUser } from '~/redux/user/userSlice'
 import { useDispatch } from 'react-redux'
 import { logoutEmployeeApi } from '~/redux/user/userSlice'
 import { useConfirm } from 'material-ui-confirm'
+import EmployeeList from '~/pages/Admin/Employee/EmployeeList/EmployeeList'
+import CreateEmployee from '~/pages/Admin/Employee/CreateEmployee/CreateEmployee'
 
 const NAVIGATION = (currentUser) => {
   const baseNav = []
@@ -41,7 +42,15 @@ const NAVIGATION = (currentUser) => {
   if (currentUser.userRole === 'admin') {
     baseNav.push(
       { segment: 'admin/', title: 'Dashboard', icon: <DashboardIcon /> },
-      { segment: 'admin/employee', title: 'Employee', icon: <PeopleIcon /> },
+      {
+        segment: 'admin/employee',
+        title: 'Employee',
+        icon: <PeopleIcon />,
+        children: [
+          { segment: 'list', title: 'Employee List' },
+          { segment: 'create', title: 'Create Employee' }
+        ]
+      },
       { segment: 'admin/customer', title: 'Customer', icon: <EmojiPeopleIcon /> },
       { segment: 'admin/equipment', title: 'Equipment', icon: <InventoryIcon /> },
       { segment: 'admin/vendor', title: 'Vendor', icon: <BusinessIcon /> },
@@ -186,7 +195,11 @@ function Layout(props) {
       <DashboardLayout>
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="employee" element={<Employee />} />
+          <Route path="employee">
+            <Route index element={<Navigate to="list" replace />} />
+            <Route path="list" element={<EmployeeList />} />
+            <Route path="create" element={<CreateEmployee />} />
+          </Route>
           <Route path="customer" element={<Customer />} />
           <Route path="equipment" element={<Equipment />} />
           <Route path="vendor" element={<Vendor />} />
