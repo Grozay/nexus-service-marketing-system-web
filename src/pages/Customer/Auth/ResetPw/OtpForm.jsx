@@ -8,18 +8,16 @@ import TextField from '@mui/material/TextField'
 import Zoom from '@mui/material/Zoom'
 import { useForm } from 'react-hook-form'
 import {
-  PASSWORD_RULE_MESSAGE,
   FIELD_REQUIRED_MESSAGE,
-  PASSWORD_RULE,
-  ACCOUNT_ID_RULE,
-  ACCOUNT_ID_RULE_MESSAGE
+  OTP_RULE,
+  OTP_RULE_MESSAGE
 } from '~/utils/validators'
 import { useDispatch } from 'react-redux'
 import { loginAccountApi } from '~/redux/user/userSlice'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
-function LoginForm() {
+function ResetPwForm() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { register, handleSubmit, formState: { errors } } = useForm()
@@ -42,14 +40,14 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit(submitLogIn)} >
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
-        <MuiCard sx={{ minWidth: 380, maxWidth: 380, marginTop: '1em' }}>
+        <MuiCard sx={{ minWidth: 480, maxWidth: 480, marginTop: '1em' }}>
           <Box sx={{
             margin: '1em',
             display: 'flex',
             justifyContent: 'center',
             gap: 1
           }}>
-            <Typography variant="h4" align="center">Login</Typography>
+            <Typography variant="h4" align="center">VERIFY OTP</Typography>
           </Box>
           <Box sx={{ padding: '0 1em 1em 1em' }}>
             <Box sx={{ marginTop: '1em' }}>
@@ -57,23 +55,12 @@ function LoginForm() {
                 // autoComplete="nope"
                 autoFocus
                 fullWidth
-                label="Enter Account Id..."
+                label="Please enter your OTP..."
                 type="text"
                 variant="outlined"
-                {...register('accountId', { required: FIELD_REQUIRED_MESSAGE, pattern: ACCOUNT_ID_RULE })}
-                error={!!errors.accountId}
-                helperText={errors.accountId?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.accountId?.type === 'pattern' ? ACCOUNT_ID_RULE_MESSAGE : ''}
-              />
-            </Box>
-            <Box sx={{ marginTop: '1em' }}>
-              <TextField
-                fullWidth
-                label="Enter Password..."
-                type="password"
-                variant="outlined"
-                {...register('password', { required: FIELD_REQUIRED_MESSAGE, pattern: PASSWORD_RULE })}
-                error={!!errors.password}
-                helperText={errors.password?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.password?.type === 'pattern' ? PASSWORD_RULE_MESSAGE : ''}
+                {...register('otp', { required: FIELD_REQUIRED_MESSAGE, pattern: OTP_RULE })}
+                error={!!errors.otp}
+                helperText={errors.otp?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.otp?.type === 'pattern' ? OTP_RULE_MESSAGE : ''}
               />
             </Box>
           </Box>
@@ -85,7 +72,7 @@ function LoginForm() {
               size="large"
               fullWidth
             >
-              Login
+              Proceed
             </Button>
           </CardActions>
           {/* <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
@@ -95,9 +82,8 @@ function LoginForm() {
             </Link>
           </Box> */}
           <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
-            <Typography>Forgot Password?</Typography>
-            <Link to="/reset-password" style={{ textDecoration: 'none' }}>
-              <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}> Reset Password</Typography>
+            <Link to="/login" style={{ textDecoration: 'none' }}>
+              <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}> Back to Login</Typography>
             </Link>
           </Box>
         </MuiCard>
@@ -106,4 +92,4 @@ function LoginForm() {
   )
 }
 
-export default LoginForm
+export default ResetPwForm

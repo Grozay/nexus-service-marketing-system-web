@@ -1,4 +1,3 @@
-import React from 'react'
 import { Container } from '@mui/material'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -85,7 +84,7 @@ const ServiceDetailPage = () => {
           </Typography>
           <Link to={`/subscribe/${serviceDetail.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
             <Button variant="contained" color="primary" sx={{ mt: 4, display: 'block', margin: '0 auto' }}>
-              Subscribe Now
+              Register Now
             </Button>
           </Link>
         </Card>

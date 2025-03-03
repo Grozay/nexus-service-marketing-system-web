@@ -77,7 +77,7 @@ const NAVIGATION = (currentUser) => {
         ]
       }
     )
-  } 
+  }
   // Other roles
   else {
     // Retail Staff
