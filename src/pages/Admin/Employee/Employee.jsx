@@ -6,7 +6,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Close'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   GridRowModes,
   DataGrid,
@@ -18,26 +18,45 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons
 } from '@mui/x-data-grid'
-
-import { Employee } from '~/apis/mock-data'
+import { getAllEmployeesAPI } from '~/apis'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 
-const initialRows = Employee.map((emp) => ({
-  id: emp.employeeId,
-  name: emp.employeeName,
-  email: emp.employeeEmail,
-  phone: emp.employeePhone,
-  role: emp.employeeRole,
-  status: emp.employeeIsActive ? 'Active' : 'Inactive',
-  joinDate: new Date(emp.accountCreateAt)
-}))
+// Function to transform employee data from API
+const transformEmployeeData = (employees) => {
+  if (!Array.isArray(employees)) return []
+  return employees.map(employee => ({
+    id: employee.employeeId,
+    name: employee.employeeName,
+    email: employee.employeeEmail,
+    phone: employee.employeePhone,
+    role: employee.employeeRole,
+    status: employee.employeeIsActive ? 'Active' : 'Inactive',
+    joinDate: new Date(employee.employeeCreatedAt),
+    gender: employee.employeeGender,
+    address: employee.employeeAddress,
+    dob: new Date(employee.employeeDOB)
+  }))
+}
+
+// Fetch all employees from API
+const getAllEmployees = async () => {
+  try {
+    const response = await getAllEmployeesAPI()
+    if (!Array.isArray(response)) {
+      return []
+    }
+    return transformEmployeeData(response)
+  } catch (error) {
+    throw new Error('Error fetching employees:', error)
+  }
+}
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props
 
   const handleClick = () => {
-    const id = `EMP${String(initialRows.length + 1).padStart(3, '0')}`
+    const id = `EMP${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`
     setRows((oldRows) => [
       ...oldRows,
       {
@@ -71,10 +90,19 @@ function EditToolbar(props) {
 }
 
 export default function EmployeeManagement() {
-  const [rows, setRows] = useState(initialRows)
+  const [rows, setRows] = useState([])
   const [rowModesModel, setRowModesModel] = useState({})
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedId, setSelectedId] = useState(null)
+
+  // Fetch employees on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      const employees = await getAllEmployees()
+      setRows(employees)
+    }
+    fetchData()
+  }, [])
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
