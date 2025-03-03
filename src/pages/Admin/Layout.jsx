@@ -35,13 +35,12 @@ import { logoutEmployeeApi } from '~/redux/user/userSlice'
 import { useConfirm } from 'material-ui-confirm'
 
 const NAVIGATION = (currentUser) => {
-  const baseNav = [
-    { segment: 'admin/', title: 'Dashboard', icon: <DashboardIcon /> }
-  ]
+  const baseNav = []
 
   // Admin has access to all features
   if (currentUser.userRole === 'admin') {
     baseNav.push(
+      { segment: 'admin/', title: 'Dashboard', icon: <DashboardIcon /> },
       { segment: 'admin/employee', title: 'Employee', icon: <PeopleIcon /> },
       { segment: 'admin/customer', title: 'Customer', icon: <EmojiPeopleIcon /> },
       { segment: 'admin/equipment', title: 'Equipment', icon: <InventoryIcon /> },
@@ -58,7 +57,16 @@ const NAVIGATION = (currentUser) => {
         ]
       },
       { segment: 'admin/billing', title: 'Billing', icon: <ReceiptIcon /> },
-      { segment: 'admin/payments', title: 'Payment', icon: <PaymentIcon /> }
+      { segment: 'admin/payments', title: 'Payment', icon: <PaymentIcon /> },
+      {
+        segment: 'admin/feedbacks',
+        title: 'Feedback',
+        icon: <FeedbackIcon />,
+        children: [
+          { segment: 'customer', title: 'Customer Feedback' },
+          { segment: 'employee', title: 'Employee Feedback' }
+        ]
+      }
     )
   } 
   // Other roles
@@ -105,16 +113,6 @@ const NAVIGATION = (currentUser) => {
     }
   }
 
-  // Feedback for all roles
-  baseNav.push({
-    segment: 'admin/feedbacks',
-    title: 'Feedback',
-    icon: <FeedbackIcon />,
-    children: [
-      { segment: 'customer', title: 'Customer Feedback' },
-      { segment: 'employee', title: 'Employee Feedback' }
-    ]
-  })
 
   return baseNav
 }

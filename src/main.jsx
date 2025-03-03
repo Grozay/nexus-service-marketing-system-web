@@ -18,25 +18,25 @@ const persistor = persistStore(store)
 //Kỹ thuật inject Store: là kỹ thuật khi cần sửa dụng biến redux ở các file ngoài phạm vi component
 injectStore(store)
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
-        <BrowserRouter>
-          <ThemeProvider theme={theme} noSsr disableTransitionOnChange defaultMode='light'>
-            <CssBaseline />
-            <ConfirmProvider defaultOptions={{
-              allowClose: false,
-              dialogProps: { maxWidth: 'xs' },
-              confirmationButtonProps: { color: 'secondary', variant: 'outlined' },
-              cancellationButtonProps: { color: 'inherit' }
-            }}
-            >
-              <App />
-              <ToastContainer position="bottom-right" />
-            </ConfirmProvider>
-          </ThemeProvider>
-        </BrowserRouter>
-      </PersistGate>
-    </Provider>
-  </StrictMode>
+  // <StrictMode>
+  <Provider store={store}>
+    <PersistGate persistor={persistor}>
+      <BrowserRouter>
+        <ThemeProvider theme={theme} noSsr disableTransitionOnChange defaultMode='light'>
+          <CssBaseline />
+          <ConfirmProvider defaultOptions={{
+            allowClose: false,
+            dialogProps: { maxWidth: 'xs' },
+            confirmationButtonProps: { color: 'secondary', variant: 'outlined' },
+            cancellationButtonProps: { color: 'inherit' }
+          }}
+          >
+            <App />
+            <ToastContainer position="bottom-right" />
+          </ConfirmProvider>
+        </ThemeProvider>
+      </BrowserRouter>
+    </PersistGate>
+  </Provider>
+  // </StrictMode>
 )

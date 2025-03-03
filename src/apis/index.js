@@ -4,7 +4,7 @@ import { API_ROOT } from '~/utils/constants'
 
 // Employees
 export const getAllEmployeesAPI = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/Employee`)
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Employee`)
   return response.data
 }
 
