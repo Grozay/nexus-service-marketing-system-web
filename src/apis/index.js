@@ -85,32 +85,18 @@ export const refreshTokenEmployeeAPI = async () => {
   return response.data
 }
 
-// Customers
-// export const getAllCustomersAPI = async () => {
-//   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Customer`)
-//   return response.data
-// }
+//equipment
+export const getAllEquipmentsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Equipment`)
+  return response.data
+}
 
-// export const createCustomerAPI = async (data) => {
-//   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Customer/CreateNew`, data)
-//   return response.data
-// }
+export const createEquipmentAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Equipment/Create`, data)
+  return response.data
+}
 
-// export const getCustomerByIdAPI = async (id) => {
-//   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Customer/${id}`)
-//   return response.data
-// }
-
-// export const updateCustomerAPI = async (data) => {
-//   const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Customer/Update`, data, {
-//     headers: {
-//       'Content-Type': 'application/json'
-//     }
-//   })
-//   return response.data
-// }
-
-// export const deleteCustomerAPI = async (id) => {
-//   const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Customer/${id}`)
-//   return response.data
-// }
+export const updateEquipmentAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Equipment/Update`, data)
+  return response.data
+}
