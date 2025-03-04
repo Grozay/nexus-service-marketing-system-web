@@ -95,8 +95,8 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
   // console.log error ra là sẽ thâý cấu trúc data dẫn tới message lỗi như dưới đây
   // console.log(error)
   let errorMessage = error?.message
-  if (error?.response?.data?.message) {
-    errorMessage = error?.response?.data?.message
+  if (error?.response?.data) {
+    errorMessage = error?.response?.data
   }
 
   // Dùng toastify để hiển thị bất kể mọi mã lỗi lên màn hình -- ngoại trừ 410 -- GONE phục vụ việc tự động refresh token

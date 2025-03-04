@@ -136,14 +136,17 @@ function Layout(props) {
   const dispatch = useDispatch()
   const currentUser = useSelector(selectCurrentUser)
   const confirmLogout = useConfirm()
-  const handleLogout = () => {
-    confirmLogout({
+  const handleLogout = async () => {
+    const { confirmed } = await confirmLogout({
       title: 'Are you sure you want to logout?',
+      description: 'This action is permanent!',
       cancellationText: 'Cancel',
       confirmationText: 'Confirm'
     })
-      .then(() => dispatch(logoutEmployeeApi()))
-      .catch(() => { })
+
+    if (confirmed) {
+      dispatch(logoutEmployeeApi())
+    }
   }
   const { window } = props
   const [session, setSession] = useState({

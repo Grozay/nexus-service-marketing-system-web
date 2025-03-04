@@ -14,12 +14,24 @@ import {
   DOB_RULE_MESSAGE,
   DOB_RULE
 } from '~/utils/validators'
-
+import { createEmployeeAPI } from '~/apis'
+import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 const CreateEmployee = () => {
   const { register, handleSubmit, formState: { errors } } = useForm()
+  const navigate = useNavigate()
+  const onCreateEmployee = (data) => {
+    const { employeeId, employeeName, employeeEmail, employeePassword, employeePhone, employeeDOB, employeeGender, employeeAddress, employeeRole } = data
+    toast.promise(
+      createEmployeeAPI({ employeeId, employeeName, employeeEmail, employeePassword, employeePhone, employeeDOB, employeeGender, employeeAddress, employeeRole }), {
+        pending: 'Creating employee...'
+      }
+    ).then(res => {
+      if (!res.error) {
+        navigate('/admin/employee')
+      }
+    })
 
-  const onSubmit = (data) => {
-    console.log(data)
   }
 
   return (
@@ -28,8 +40,18 @@ const CreateEmployee = () => {
         Create New Employee
       </Typography>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onCreateEmployee)}>
         <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <TextField
+              label="User ID"
+              fullWidth
+              {...register('employeeId', { required: FIELD_REQUIRED_MESSAGE })}
+              error={!!errors.employeeId}
+              helperText={errors.employeeId?.message}
+            />
+          </Grid>
+
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Full Name"
@@ -45,7 +67,7 @@ const CreateEmployee = () => {
               label="Email"
               type="email"
               fullWidth
-              {...register('employeeEmail', { 
+              {...register('employeeEmail', {
                 required: FIELD_REQUIRED_MESSAGE,
                 pattern: {
                   value: EMAIL_RULE,
@@ -62,7 +84,7 @@ const CreateEmployee = () => {
               label="Password"
               type="password"
               fullWidth
-              {...register('employeePassword', { 
+              {...register('employeePassword', {
                 required: FIELD_REQUIRED_MESSAGE,
                 pattern: {
                   value: PASSWORD_RULE,
@@ -91,9 +113,8 @@ const CreateEmployee = () => {
               fullWidth
               {...register('employeeDOB', {
                 required: FIELD_REQUIRED_MESSAGE,
-                pattern: {
-                  value: DOB_RULE,
-                  message: DOB_RULE_MESSAGE
+                validate: {
+                  validDate: (value) => DOB_RULE(value) || DOB_RULE_MESSAGE
                 }
               })}
               error={!!errors.employeeDOB}

@@ -9,7 +9,7 @@ export const getAllEmployeesAPI = async () => {
 }
 
 export const createEmployeeAPI = async (data) => {
-  const response = await authorizedAxiosInstance.post(`${API_ROOT}/Employee/CreateNew`, data)
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Employee/CreateNew`, data)
   return response.data
 }
 
@@ -19,7 +19,11 @@ export const getEmployeeByIdAPI = async (id) => {
 }
 
 export const updateEmployeeAPI = async (data) => {
-  const response = await authorizedAxiosInstance.put(`${API_ROOT}/Employee/Update`, data)
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Employee/Update`, data, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
   return response.data
 }
 
