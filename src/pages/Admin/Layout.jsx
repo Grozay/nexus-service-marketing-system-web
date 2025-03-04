@@ -34,6 +34,8 @@ import { logoutEmployeeApi } from '~/redux/user/userSlice'
 import { useConfirm } from 'material-ui-confirm'
 import EmployeeList from '~/pages/Admin/Employee/EmployeeList/EmployeeList'
 import CreateEmployee from '~/pages/Admin/Employee/CreateEmployee/CreateEmployee'
+import CustomerList from '~/pages/Admin/Customer/CustomerList/CustomerList'
+import CreateCustomer from '~/pages/Admin/Customer/CreateCustomer/CreateCustomer'
 
 const NAVIGATION = (currentUser) => {
   const baseNav = []
@@ -51,7 +53,12 @@ const NAVIGATION = (currentUser) => {
           { segment: 'create', title: 'Create Employee' }
         ]
       },
-      { segment: 'admin/customer', title: 'Customer', icon: <EmojiPeopleIcon /> },
+      { segment: 'admin/customer', title: 'Customer', icon: <EmojiPeopleIcon />,
+        children: [
+          { segment: 'list', title: 'Customer List' },
+          { segment: 'create', title: 'Create Customer' }
+        ]
+      },
       { segment: 'admin/equipment', title: 'Equipment', icon: <InventoryIcon /> },
       { segment: 'admin/vendor', title: 'Vendor', icon: <BusinessIcon /> },
       { segment: 'admin/retail-shop', title: 'Retail Shop', icon: <StoreIcon /> },
@@ -203,7 +210,11 @@ function Layout(props) {
             <Route path="list" element={<EmployeeList />} />
             <Route path="create" element={<CreateEmployee />} />
           </Route>
-          <Route path="customer" element={<Customer />} />
+          <Route path="customer">
+            <Route index element={<Navigate to="list" replace />} />
+            <Route path="list" element={<CustomerList />} />
+            <Route path="create" element={<CreateCustomer />} />
+          </Route>
           <Route path="equipment" element={<Equipment />} />
           <Route path="vendor" element={<Vendor />} />
           <Route path="retail-shop" element={<RetailShop />} />
