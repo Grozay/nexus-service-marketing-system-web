@@ -15,7 +15,7 @@ import {
   ACCOUNT_ID_RULE_MESSAGE
 } from '~/utils/validators'
 import { useDispatch } from 'react-redux'
-import { loginAccountApi } from '~/redux/user/userSlice'
+import { loginAccountApi } from '~/redux/user/accountSlice'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
@@ -25,15 +25,17 @@ function LoginForm() {
   const { register, handleSubmit, formState: { errors } } = useForm()
 
   const submitLogIn = (data) => {
-    const { accountId, password } = data
+    const { userId, userPassword } = data
     toast.promise(
-      dispatch(loginAccountApi({ accountId, password })), {
-        pending: 'Logging in...'
+      dispatch(loginAccountApi({ userId, userPassword })), {
+        pending: 'Logging in...',
+        error: 'Login failed'
       }
     ).then(res => {
-      // console.log(res)
       //Đoạn này phải kiểm tra không có lỗi mới redirect về route /
-      if (!res.error) {
+      if (res.error) {
+        toast.error('Login failed, Please check your account id and password')
+      } else {
         navigate('/')
       }
     })
@@ -60,9 +62,9 @@ function LoginForm() {
                 label="Enter Account Id..."
                 type="text"
                 variant="outlined"
-                {...register('accountId', { required: FIELD_REQUIRED_MESSAGE, pattern: ACCOUNT_ID_RULE })}
-                error={!!errors.accountId}
-                helperText={errors.accountId?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.accountId?.type === 'pattern' ? ACCOUNT_ID_RULE_MESSAGE : ''}
+                {...register('userId', { required: FIELD_REQUIRED_MESSAGE, pattern: ACCOUNT_ID_RULE })}
+                error={!!errors.userId}
+                helperText={errors.userId?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.userId?.type === 'pattern' ? ACCOUNT_ID_RULE_MESSAGE : ''}
               />
             </Box>
             <Box sx={{ marginTop: '1em' }}>
@@ -71,9 +73,9 @@ function LoginForm() {
                 label="Enter Password..."
                 type="password"
                 variant="outlined"
-                {...register('password', { required: FIELD_REQUIRED_MESSAGE, pattern: PASSWORD_RULE })}
-                error={!!errors.password}
-                helperText={errors.password?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.password?.type === 'pattern' ? PASSWORD_RULE_MESSAGE : ''}
+                {...register('userPassword', { required: FIELD_REQUIRED_MESSAGE, pattern: PASSWORD_RULE })}
+                error={!!errors.userPassword}
+                helperText={errors.userPassword?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.userPassword?.type === 'pattern' ? PASSWORD_RULE_MESSAGE : ''}
               />
             </Box>
           </Box>
@@ -96,7 +98,7 @@ function LoginForm() {
           </Box> */}
           <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
             <Typography>Forgot Password?</Typography>
-            <Link to="/reset-password" style={{ textDecoration: 'none' }}>
+            <Link to="/account/reset-password" style={{ textDecoration: 'none' }}>
               <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}> Reset Password</Typography>
             </Link>
           </Box>

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -12,27 +12,26 @@ import {
   ACCOUNT_ID_RULE,
   ACCOUNT_ID_RULE_MESSAGE
 } from '~/utils/validators'
-import { useDispatch } from 'react-redux'
-import { loginAccountApi } from '~/redux/user/userSlice'
-import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { sendOtpCodeAPI } from '~/apis'
 
-function AccountForm() {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+function AccountForm({ onNext }) {
   const { register, handleSubmit, formState: { errors } } = useForm()
 
   const submitLogIn = (data) => {
-    const { accountId, password } = data
+    const { userId } = data
     toast.promise(
-      dispatch(loginAccountApi({ accountId, password })), {
-        pending: 'Logging in...'
+      sendOtpCodeAPI({ userId }), {
+        pending: 'Sending OTP code...',
+        success: 'OTP code sent successfully!',
+        error: 'Failed to send OTP code.'
       }
     ).then(res => {
       // console.log(res)
       //Đoạn này phải kiểm tra không có lỗi mới redirect về route /
       if (!res.error) {
-        navigate('/')
+        // navigate('/account/reset-password/otp', { state: { userId } })
+        onNext(userId)
       }
     })
   }
@@ -56,12 +55,12 @@ function AccountForm() {
                 // autoComplete="nope"
                 autoFocus
                 fullWidth
-                label="Please enter your Account id..."
+                label="Please enter your Account ID..."
                 type="text"
                 variant="outlined"
-                {...register('accountId', { required: FIELD_REQUIRED_MESSAGE, pattern: ACCOUNT_ID_RULE })}
-                error={!!errors.accountId}
-                helperText={errors.accountId?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.accountId?.type === 'pattern' ? ACCOUNT_ID_RULE_MESSAGE : ''}
+                {...register('userId', { required: FIELD_REQUIRED_MESSAGE, pattern: ACCOUNT_ID_RULE })}
+                error={!!errors.userId}
+                helperText={errors.userId?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.userId?.type === 'pattern' ? ACCOUNT_ID_RULE_MESSAGE : ''}
               />
             </Box>
           </Box>
@@ -83,7 +82,7 @@ function AccountForm() {
             </Link>
           </Box> */}
           <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
-            <Link to="/login" style={{ textDecoration: 'none' }}>
+            <Link to="/account/login" style={{ textDecoration: 'none' }}>
               <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}> Back to Login</Typography>
             </Link>
           </Box>

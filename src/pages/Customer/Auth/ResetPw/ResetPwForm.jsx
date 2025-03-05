@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -13,27 +13,27 @@ import {
   PASSWORD_RULE,
   PASSWORD_CONFIRMATION_MESSAGE
 } from '~/utils/validators'
-import { useDispatch } from 'react-redux'
-import { loginAccountApi } from '~/redux/user/userSlice'
-import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { resetPasswordAPI } from '~/apis'
 
-function ResetPwForm() {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+function ResetPwForm({ onSubmit, userId }) {
   const { register, handleSubmit, formState: { errors }, getValues } = useForm()
+  // const userId = location.state?.userId
 
   const submitLogIn = (data) => {
-    const { accountId, password } = data
+    const { userPassword } = data
     toast.promise(
-      dispatch(loginAccountApi({ accountId, password })), {
-        pending: 'Logging in...'
+      resetPasswordAPI({ userId, userPassword }), {
+        pending: 'Updating password...',
+        success: 'Password updated successfully!',
+        error: 'Failed to update password.'
       }
     ).then(res => {
       // console.log(res)
       //Đoạn này phải kiểm tra không có lỗi mới redirect về route /
       if (!res.error) {
-        navigate('/')
+        // navigate('/account/login')
+        onSubmit()
       }
     })
   }
@@ -60,9 +60,9 @@ function ResetPwForm() {
                 label="Enter your new password..."
                 type="text"
                 variant="outlined"
-                {...register('password', { required: FIELD_REQUIRED_MESSAGE, pattern: PASSWORD_RULE })}
-                error={!!errors.password}
-                helperText={errors.password?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.password?.type === 'pattern' ? PASSWORD_RULE_MESSAGE : ''}
+                {...register('userPassword', { required: FIELD_REQUIRED_MESSAGE, pattern: PASSWORD_RULE })}
+                error={!!errors.userPassword}
+                helperText={errors.userPassword?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.userPassword?.type === 'pattern' ? PASSWORD_RULE_MESSAGE : ''}
               />
             </Box>
             <Box sx={{ marginTop: '1em' }}>
@@ -73,7 +73,7 @@ function ResetPwForm() {
                 label="Enter confirm password..."
                 type="text"
                 variant="outlined"
-                {...register('confirmPassword', { required: FIELD_REQUIRED_MESSAGE, pattern: PASSWORD_RULE, validate: (value) => value === getValues('password') })}
+                {...register('confirmPassword', { required: FIELD_REQUIRED_MESSAGE, pattern: PASSWORD_RULE, validate: (value) => value == getValues('userPassword') })}
                 error={!!errors.confirmPassword}
                 helperText={errors.confirmPassword?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.confirmPassword?.type === 'pattern' ? PASSWORD_CONFIRMATION_MESSAGE : ''}
               />
@@ -98,7 +98,7 @@ function ResetPwForm() {
             </Link>
           </Box> */}
           <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
-            <Link to="/login" style={{ textDecoration: 'none' }}>
+            <Link to="/account/login" style={{ textDecoration: 'none' }}>
               <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}> Back to Login</Typography>
             </Link>
           </Box>
