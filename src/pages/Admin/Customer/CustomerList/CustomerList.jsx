@@ -16,7 +16,7 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons
 } from '@mui/x-data-grid'
-import { getAllAccountsAPI, getAccountByIdAPI } from '~/apis'
+import { getAllAccountsAPI, getAccountByIdAPI, activateAccountAPI } from '~/apis'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { updateAccountAPI } from '~/apis'
@@ -27,6 +27,8 @@ import { useConfirm } from 'material-ui-confirm'
 import Typography from '@mui/material/Typography'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
 import Modal from '@mui/material/Modal'
+import DoneAllIcon from '@mui/icons-material/DoneAll'
+import BlockIcon from '@mui/icons-material/Block'
 
 // Function to transform customer data from API
 const transformCustomerData = (customers) => {
@@ -128,6 +130,18 @@ export default function CustomerList() {
     }
   }
 
+  const handleActivateClick = (id) => async () => {
+    await activateAccountAPI({ accountId: id, accountIsActive: true })
+    toast.success('Customer activated successfully')
+    setRows(rows.map((row) => (row.id === id ? { ...row, status: true } : row)))
+  }
+
+  const handleDeactivateClick = (id) => async () => {
+    await activateAccountAPI({ accountId: id, accountIsActive: false })
+    toast.success('Customer deactivated successfully')
+    setRows(rows.map((row) => (row.id === id ? { ...row, status: false } : row)))
+  }
+
   const handleViewDetail = (id) => async () => {
     try {
       const customer = await getAccountByIdAPI(id)
@@ -163,7 +177,7 @@ export default function CustomerList() {
       const updatedRow = { ...newRow, isNew: false }
       setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)))
 
-      const { id, name, address, dob, phone, email, status } = updatedRow
+      const { id, name, address, dob, phone, email } = updatedRow
 
       // Format date properly
       const formattedDOB = formatDate(dob)
@@ -174,8 +188,7 @@ export default function CustomerList() {
         accountAddress: address,
         accountDOB: formattedDOB,
         accountPhone: phone,
-        accountEmail: email,
-        accountIsActive: Boolean(status)
+        accountEmail: email
       }
 
       const { confirmed } = await confirmUpdate({
@@ -227,7 +240,7 @@ export default function CustomerList() {
       field: 'status',
       headerName: 'Status',
       width: 120,
-      editable: true,
+      editable: false,
       type: 'boolean',
       renderCell: (params) => (
         <Chip
@@ -406,6 +419,25 @@ export default function CustomerList() {
           <EditIcon fontSize="small" sx={{ mr: 1 }} />
           Edit
         </MenuItem>
+        {
+          rows.find((row) => row.id === selectedId)?.status === false ? (
+            <MenuItem onClick={() => {
+              handleActivateClick(selectedId)()
+              handleCloseMenu()
+            }}>
+              <DoneAllIcon fontSize="small" sx={{ mr: 1 }} />
+              Activate
+            </MenuItem>
+          ) : (
+            <MenuItem onClick={() => {
+              handleDeactivateClick(selectedId)()
+              handleCloseMenu()
+            }}>
+              <BlockIcon fontSize="small" sx={{ mr: 1 }} />
+              Deactivate
+            </MenuItem>
+          )
+        }
         <MenuItem onClick={() => {
           handleDeleteClick(selectedId)()
           handleCloseMenu()

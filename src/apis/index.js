@@ -1,6 +1,17 @@
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
 import { API_ROOT } from '~/utils/constants'
 
+// City code
+export const getCityCodeAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Store/CityCodes`)
+  return response.data
+}
+//get categoryPlan
+export const getCategoryPlanAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Plan/CategoriesPlans`)
+  return response.data
+}
+
 
 // Employees
 export const getAllEmployeesAPI = async () => {
@@ -23,11 +34,6 @@ export const updateEmployeeAPI = async (data) => {
   return response.data
 }
 
-export const logoutEmployeeAPI = async () => {
-  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Employee/Logout`)
-  return response.data
-}
-
 export const activateEmployeeAPI = async (data) => {
   const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Employee/Activate`, data)
   return response.data
@@ -41,11 +47,6 @@ export const refreshTokenEmployeeAPI = async () => {
 // khúc này chưa xong
 export const updateEmployeePasswordAPI = async (data) => {
   const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Employee/UpdatePassword`, data)
-  return response.data
-}
-
-export const activateDeactivateEmployeeAPI = async (data) => {
-  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Employee/Activation`, data)
   return response.data
 }
 
@@ -67,6 +68,11 @@ export const createAccountAPI = async (data) => {
 
 export const updateAccountAPI = async (data) => {
   const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Account/Update`, data)
+  return response.data
+}
+
+export const activateAccountAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Account/Activate`, data)
   return response.data
 }
 
@@ -137,22 +143,22 @@ export const getVendorByIdAPI = async (id) => {
 
 //retail shop
 export const getAllRetailShopsAPI = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/RetailShop`)
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Store`)
   return response.data
 }
 
 export const getRetailShopByIdAPI = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/RetailShop/${id}`)
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Store/${id}`)
   return response.data
 }
 
 export const createRetailShopAPI = async (data) => {
-  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/RetailShop/Create`, data)
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Store/Create`, data)
   return response.data
 }
 
 export const updateRetailShopAPI = async (data) => {
-  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/RetailShop/Update`, data)
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Store/Update`, data)
   return response.data
 }
 

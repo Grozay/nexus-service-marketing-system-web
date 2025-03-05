@@ -1,6 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
-// import { activeBoardReducer } from './acticeBoard/activeBoardSlice.js'
-import { userReducer } from './user/userSlice.js'
+import { userReducer } from './user/employeeSlice.js'
 import { accountReducer } from './user/accountSlice.js'
 import { planReducer } from './plans/planSlice.js'
 //config redux-persist
@@ -11,10 +10,9 @@ import storage from 'redux-persist/lib/storage'
 
 //config persist
 const rootPersistConfig = {
-  key: 'root', //key của cái persist do chúng ta chỉ định, chứ để mặc định là root
-  storage: storage, //biến storage ở trên - lưu vào localstorage
-  whitelist: ['user', 'account', 'plan'] //định nghĩa các slice dữ liệu được phép duy trì qua mỗi lần f5 trình duyệt
-  // blacklist: ['user'] //định nghĩa các slice dữ liệu không được phép duy trì qua mỗi lần f5 trình duyệt
+  key: 'root',
+  storage: storage,
+  whitelist: ['user', 'account', 'plan']
 }
 
 //combine các reducer trong dự án của chúng ta ở đây

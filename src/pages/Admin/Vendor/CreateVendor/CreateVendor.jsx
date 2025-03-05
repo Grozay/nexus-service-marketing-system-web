@@ -39,7 +39,7 @@ const CreateVendor = () => {
       }
     ).then(res => {
       if (!res.error) {
-        navigate('/admin/vendor')
+        navigate('/management/vendor')
       }
     })
   }

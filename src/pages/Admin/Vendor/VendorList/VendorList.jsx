@@ -28,6 +28,8 @@ import Typography from '@mui/material/Typography'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
 import Modal from '@mui/material/Modal'
 import { getVendorByIdAPI } from '~/apis'
+import DoneAllIcon from '@mui/icons-material/DoneAll'
+import BlockIcon from '@mui/icons-material/Block'
 
 // Function to transform vendor data from API
 const transformVendorData = (vendors) => {
@@ -152,7 +154,7 @@ export default function VendorList() {
       const updatedRow = { ...newRow, isNew: false }
       setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)))
 
-      const { id, name, address, description, phone, email, startDate, endDate, status } = updatedRow
+      const { id, name, address, description, phone, email, startDate, endDate } = updatedRow
 
       const payload = {
         vendorId: id,
@@ -163,7 +165,6 @@ export default function VendorList() {
         vendorEmail: email,
         vendorStartFrom: formatDate(startDate),
         vendorEndTo: formatDate(endDate),
-        vendorStatus: status
       }
 
       const { confirmed } = await confirmUpdate({
@@ -189,6 +190,18 @@ export default function VendorList() {
       }
       throw error
     }
+  }
+
+  const handleActivateClick = (id) => async () => {
+    await updateVendorAPI({ vendorId: id, vendorStatus: 'Active' })
+    toast.success('Employee activated successfully')
+    setRows(rows.map((row) => (row.id === id ? { ...row, status: true } : row)))
+  }
+
+  const handleDeactivateClick = (id) => async () => {
+    await updateVendorAPI({ vendorId: id, vendorStatus: 'Inactive' })
+    toast.success('Employee deactivated successfully')
+    setRows(rows.map((row) => (row.id === id ? { ...row, status: false } : row)))
   }
 
   const handleRowModesModelChange = (newRowModesModel) => {
@@ -291,12 +304,12 @@ export default function VendorList() {
       field: 'status',
       headerName: 'Vendor Status',
       width: 120,
-      editable: true,
-      type: 'boolean',
+      editable: false,
+      type: 'string',
       renderCell: (params) => (
         <Chip
-          label={params.value ? 'Active' : 'Inactive'}
-          color={params.value ? 'success' : 'error'}
+          label={params.value === 'Active' ? 'Active' : 'Inactive'}
+          color={params.value === 'Active' ? 'success' : 'error'}
           variant="outlined"
           size="small"
         />
@@ -407,6 +420,25 @@ export default function VendorList() {
           <EditIcon fontSize="small" sx={{ mr: 1 }} />
           Edit
         </MenuItem>
+        {
+          rows.find((row) => row.id === selectedId)?.status === false ? (
+            <MenuItem onClick={() => {
+              handleActivateClick(selectedId)()
+              handleCloseMenu()
+            }}>
+              <DoneAllIcon fontSize="small" sx={{ mr: 1 }} />
+              Activate
+            </MenuItem>
+          ) : (
+            <MenuItem onClick={() => {
+              handleDeactivateClick(selectedId)()
+              handleCloseMenu()
+            }}>
+              <BlockIcon fontSize="small" sx={{ mr: 1 }} />
+              Deactivate
+            </MenuItem>
+          )
+        }
         <MenuItem onClick={() => {
           handleDeleteClick(selectedId)()
           handleCloseMenu()
