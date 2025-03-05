@@ -28,7 +28,9 @@ import { useConfirm } from 'material-ui-confirm'
 import Typography from '@mui/material/Typography'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
 import Modal from '@mui/material/Modal'
-import { getEmployeeByIdAPI } from '~/apis'
+import { getEmployeeByIdAPI, activateEmployeeAPI } from '~/apis'
+import DoneAllIcon from '@mui/icons-material/DoneAll'
+import BlockIcon from '@mui/icons-material/Block'
 
 // Function to transform employee data from API
 const transformEmployeeData = (employees) => {
@@ -131,6 +133,18 @@ export default function EmployeeList() {
     }
   }
 
+  const handleActivateClick = (id) => async () => {
+    await activateEmployeeAPI({ employeeId: id, employeeIsActive: true })
+    toast.success('Employee activated successfully')
+    setRows(rows.map((row) => (row.id === id ? { ...row, status: true } : row)))
+  }
+
+  const handleDeactivateClick = (id) => async () => {
+    await activateEmployeeAPI({ employeeId: id, employeeIsActive: false })
+    toast.success('Employee deactivated successfully')
+    setRows(rows.map((row) => (row.id === id ? { ...row, status: false } : row)))
+  }
+
   const handleCancelClick = (id) => () => {
     setRowModesModel({
       ...rowModesModel,
@@ -156,7 +170,7 @@ export default function EmployeeList() {
       const updatedRow = { ...newRow, isNew: false }
       setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)))
 
-      const { id, name, role, dob, gender, address, phone, email, status } = updatedRow
+      const { id, name, role, dob, gender, address, phone, email } = updatedRow
 
       // Format date properly
       const formattedDOB = formatDate(dob)
@@ -169,8 +183,7 @@ export default function EmployeeList() {
         employeeGender: gender,
         employeeAddress: address,
         employeePhone: phone,
-        employeeEmail: email,
-        employeeIsActive: status
+        employeeEmail: email
       }
 
       const { confirmed } = await confirmUpdate({
@@ -218,7 +231,7 @@ export default function EmployeeList() {
       setSelectedEmployee(employee)
       setIsDetailModalOpen(true)
     } catch (error) {
-      toast.error('Failed to fetch employee details')
+      toast.error(error.message || 'Failed to fetch employee details')
     }
   }
 
@@ -309,7 +322,7 @@ export default function EmployeeList() {
       field: 'status',
       headerName: 'Status',
       width: 120,
-      editable: true,
+      editable: false,
       type: 'boolean',
       renderCell: (params) => (
         <Chip
@@ -432,6 +445,25 @@ export default function EmployeeList() {
           <EditIcon fontSize="small" sx={{ mr: 1 }} />
           Edit
         </MenuItem>
+        {
+          rows.find((row) => row.id === selectedId)?.status === false ? (
+            <MenuItem onClick={() => {
+              handleActivateClick(selectedId)()
+              handleCloseMenu()
+            }}>
+              <DoneAllIcon fontSize="small" sx={{ mr: 1 }} />
+              Activate
+            </MenuItem>
+          ) : (
+            <MenuItem onClick={() => {
+              handleDeactivateClick(selectedId)()
+              handleCloseMenu()
+            }}>
+              <BlockIcon fontSize="small" sx={{ mr: 1 }} />
+              Deactivate
+            </MenuItem>
+          )
+        }
         <MenuItem onClick={() => {
           handleDeleteClick(selectedId)()
           handleCloseMenu()

@@ -19,16 +19,22 @@ export const getEmployeeByIdAPI = async (id) => {
 }
 
 export const updateEmployeeAPI = async (data) => {
-  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Employee/Update`, data, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Employee/Update`, data)
   return response.data
 }
 
 export const logoutEmployeeAPI = async () => {
-  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Auth/Logout`)
+  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Employee/Logout`)
+  return response.data
+}
+
+export const activateEmployeeAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Employee/Activate`, data)
+  return response.data
+}
+
+export const refreshTokenEmployeeAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Employee/RefreshToken`)
   return response.data
 }
 
@@ -79,10 +85,7 @@ export const refreshTokenAccountAPI = async () => {
   return response.data
 }
 
-export const refreshTokenEmployeeAPI = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Auth/RefreshToken`)
-  return response.data
-}
+
 
 export const sendOtpCodeAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/OtpRecord/Create`, data)
@@ -109,5 +112,48 @@ export const getPlanListAPI = async () => {
 // PRE-ORDER
 export const createPreOrderAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/PreOrder/Create`, data)
+  return response.data
+}
+
+//vendor
+export const getAllVendorsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Vendor`)
+  return response.data
+}
+
+export const createVendorAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Vendor/Create`, data)
+  return response.data
+}
+
+export const updateVendorAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Vendor/Update`, data)
+  return response.data
+}
+
+export const getVendorByIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Vendor/${id}`)
+  return response.data
+}
+
+
+//retail shop
+export const getAllRetailShopsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/RetailShop`)
+  return response.data
+}
+
+export const getRetailShopByIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/RetailShop/${id}`)
+  return response.data
+}
+
+export const createRetailShopAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/RetailShop/Create`, data)
+  return response.data
+}
+
+export const updateRetailShopAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/RetailShop/Update`, data)
   return response.data
 }
