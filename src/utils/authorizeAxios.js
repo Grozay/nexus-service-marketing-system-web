@@ -59,6 +59,7 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
   //Trường hợp 2: Nếu như nhận mã 401 thừ BE, thì gọi api refresh_token để lấy token mới
   //Đầu tiên lấy được cái request api đang bị lỗi thong qua error.config
   const originalRequests = error.config
+  console.log('🚀 ~ authorizedAxiosInstance.interceptors.response.use ~ originalRequests:', originalRequests)
   // Kiểm tra xem error.response có tồn tại không trước khi truy cập thuộc tính status
   if (error?.response?.status === 410 && !originalRequests._retry) {
     // Gán thêm một thuộc tính _retry vào originalRequests để biết được rằng đây là request đã được retry

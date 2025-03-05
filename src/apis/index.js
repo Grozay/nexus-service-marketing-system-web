@@ -85,8 +85,6 @@ export const refreshTokenAccountAPI = async () => {
   return response.data
 }
 
-
-
 export const sendOtpCodeAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/OtpRecord/Create`, data)
   return response.data
@@ -155,5 +153,26 @@ export const createRetailShopAPI = async (data) => {
 
 export const updateRetailShopAPI = async (data) => {
   const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/RetailShop/Update`, data)
+  return response.data
+}
+
+//equipment
+export const getAllEquipmentsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Equipment`)
+  return response.data
+}
+
+export const createEquipmentAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Equipment/Create`, data)
+  return response.data
+}
+
+export const updateEquipmentAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Equipment/Update`, data)
+  return response.data
+}
+
+export const getEquipmentByIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Equipment/${id}`)
   return response.data
 }
