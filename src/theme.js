@@ -1,7 +1,7 @@
 import { deepOrange, orange, teal, deepPurple } from '@mui/material/colors'
 import { createTheme } from '@mui/material/styles'
 
-const APP_BAR_HEIGHT = '64px'
+const APP_BAR_HEIGHT = '10vh'
 // const FOOTER_HEIGHT = '350px'
 const CONTENT_HEIGHT = `calc(100vh - ${APP_BAR_HEIGHT})`
 

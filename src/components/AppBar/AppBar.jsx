@@ -12,20 +12,29 @@ import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
 import LogoutIcon from '@mui/icons-material/Logout'
-import CableIcon from '@mui/icons-material/Cable'
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck'
 import ModeSelect from '../ModeSelect/ModeSelect'
 import DrawerAppBar from './DrawerAppBar/DrawerAppBar'
 import LocalShippingIcon from '@mui/icons-material/LocalShipping'
+import { useDispatch, useSelector } from 'react-redux'
+import { logoutAccountApi, selectCurrentAccount } from '~/redux/user/accountSlice'
+import { toast } from 'react-toastify'
+import { useConfirm } from 'material-ui-confirm'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+
 
 const NavBar = () => {
   const [anchorElNav, setAnchorElNav] = useState(null)
   const [anchorElUser, setAnchorElUser] = useState(null)
   const [anchorElNavPlans, setAnchorElNavPlans] = useState(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const currentAccount = useSelector(selectCurrentAccount)
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget)
@@ -57,11 +66,37 @@ const NavBar = () => {
     setDrawerOpen(open)
   }
 
+  //Confirm logout
+  const confirmLogout = useConfirm()
+  const handleLogout = async () => {
+    const { confirmed } = await confirmLogout({
+      title: 'Are you sure you want to logout?',
+      cancellationText: 'Cancel',
+      confirmationText: 'Confirm'
+    })
+
+    if (confirmed) {
+      toast.promise(
+        dispatch(logoutAccountApi()), {
+          pending: 'Logging out...'
+        }
+      ).then((res) => {
+        if (!res.error) {
+          navigate('/account/login')
+        }
+      })
+    }
+  }
+
   return (
     <Box sx={{ height: (theme) => theme.nexus.appBarHeight }}>
       <AppBar
         sx={{
-          backgroundColor: (theme) => theme.palette.primary.main
+          height: (theme) => theme.nexus.appBarHeight,
+          backgroundColor: (theme) => theme.palette.primary.main,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
         }}
       >
         <Container maxWidth="xl">
@@ -71,9 +106,6 @@ const NavBar = () => {
             </Link>
             <Typography
               variant="h6"
-              noWrap
-              component="a"
-              href="#app-bar-with-responsive-menu"
               sx={{
                 mr: 2,
                 display: { xs: 'none', md: 'flex' },
@@ -84,7 +116,9 @@ const NavBar = () => {
                 textDecoration: 'none'
               }}
             >
-              NEXUS
+              <Link to={'/'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                NEXUS SERVICE
+              </Link>
             </Typography>
 
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -121,17 +155,9 @@ const NavBar = () => {
                 textDecoration: 'none'
               }}
             >
-              LOGO
+              NEXUS SERVICE
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex', justifyContent: 'center' } }}>
-              <Link to={'/'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <Button
-                  onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
-                >
-                  Home
-                </Button>
-              </Link>
               <Button
                 id="basic-button"
                 aria-controls={Boolean(anchorElNavPlans) ? 'basic-menu' : undefined}
@@ -140,7 +166,10 @@ const NavBar = () => {
                 onClick={handleOpenNavMenuPlans}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                Plans Services
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <span>Services</span>
+                  <ExpandMoreIcon fontSize="medium" />
+                </Box>
               </Button>
               <Menu
                 id="basic-menu"
@@ -152,13 +181,13 @@ const NavBar = () => {
                 }}
               >
                 <MenuItem component={Link} to='/service/dial-up-connection' onClick={handleCloseNavMenuPlans}>
-                  <Typography textAlign="center">Dial-up</Typography>
+                  <Typography textAlign="center">Dial-up Connection</Typography>
                 </MenuItem>
-                <MenuItem component={Link} to='/service/broadband-connection' onClick={handleCloseNavMenuPlans}>
-                  <Typography textAlign="center">Broadband</Typography>
+                <MenuItem component={Link} to='/service/broad-band-connection' onClick={handleCloseNavMenuPlans}>
+                  <Typography textAlign="center">Broadband Connection</Typography>
                 </MenuItem>
                 <MenuItem component={Link} to='/service/landline-connection' onClick={handleCloseNavMenuPlans}>
-                  <Typography textAlign="center">Landline</Typography>
+                  <Typography textAlign="center">Landline Connection</Typography>
                 </MenuItem>
               </Menu>
               <Link to={'/about-us'} style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -182,18 +211,36 @@ const NavBar = () => {
                   onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: 'white', display: 'block' }}
                 >
-                News
+                  News & Events
                 </Button>
               </Link>
             </Box>
             <Box sx={{ flexGrow: 0 }}>
               <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
-                <ModeSelect />
-                <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                  </IconButton>
-                </Tooltip>
+                <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                  <ModeSelect />
+                </Box>
+                {currentAccount && (
+                  <Tooltip title="Open settings">
+                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                      <Avatar alt="Remy Sharp" src="#" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {!currentAccount && (
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    component={Link}
+                    to={'/account/login'}
+                    sx={{
+                      backgroundColor: 'white',
+                      color: 'primary.main'
+                    }}
+                  >
+                    Login
+                  </Button>
+                )}
               </Box>
               <Menu
                 sx={{ mt: '45px' }}
@@ -235,14 +282,14 @@ const NavBar = () => {
                     </Typography>
                   </MenuItem>
                 </Link>
-                <Link to={'/login'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Typography onClick={handleLogout} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <MenuItem onClick={handleCloseUserMenu}>
                     <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
                       <LogoutIcon fontSize="small" />
-                    Logout
+                      Logout
                     </Typography>
                   </MenuItem>
-                </Link>
+                </Typography>
               </Menu>
             </Box>
           </Toolbar>

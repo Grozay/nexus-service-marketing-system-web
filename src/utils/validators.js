@@ -5,9 +5,8 @@ export const ACCOUNT_ID_RULE = /^[a-zA-Z0-9]+$/
 export const ACCOUNT_ID_RULE_MESSAGE = 'Account ID is invalid. (only accept letters and numbers)'
 export const OTP_RULE = /^\d{6}$/
 export const OTP_RULE_MESSAGE = 'OTP is invalid. (only accept 6 numbers)'
-// export const PASSWORD_RULE = /^(?=.*[a-zA-Z])(?=.*\d)[A-Za-z\d\W]{8,256}$/
-export const PASSWORD_RULE = /^\d{6}$/
-export const PASSWORD_RULE_MESSAGE = 'Password must include at least 1 letter, a number, and at least 8 characters.'
+export const PASSWORD_RULE = /^[a-zA-Z0-9]{6,256}$/
+export const PASSWORD_RULE_MESSAGE = 'Password must be at least 6 characters.'
 export const PASSWORD_CONFIRMATION_MESSAGE = 'Password Confirmation does not match!'
 export const SALARY_RULE_MESSAGE = 'Salary must be greater than 0'
 export const GENDER_RULE_MESSAGE = 'Gender is required.'

@@ -34,15 +34,14 @@ export const logoutEmployeeAPI = async () => {
 
 // khúc này chưa xong
 export const updateEmployeePasswordAPI = async (data) => {
-  const response = await authorizedAxiosInstance.put(`${API_ROOT}/Employee/UpdatePassword`, data)
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Employee/UpdatePassword`, data)
   return response.data
 }
 
 export const activateDeactivateEmployeeAPI = async (data) => {
-  const response = await authorizedAxiosInstance.put(`${API_ROOT}/Employee/Activation`, data)
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Employee/Activation`, data)
   return response.data
 }
-
 
 // Accounts
 export const getAllAccountsAPI = async () => {
@@ -85,18 +84,30 @@ export const refreshTokenEmployeeAPI = async () => {
   return response.data
 }
 
-//equipment
-export const getAllEquipmentsAPI = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Equipment`)
+export const sendOtpCodeAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/OtpRecord/Create`, data)
   return response.data
 }
 
-export const createEquipmentAPI = async (data) => {
-  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Equipment/Create`, data)
+export const verifyOtpCodeAPI = async (userId, otpCode) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/OtpRecord/Verify?userId=${userId}&otpCode=${otpCode}`)
   return response.data
 }
 
-export const updateEquipmentAPI = async (data) => {
-  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Equipment/Update`, data)
+// RESET PASSWORD
+export const resetPasswordAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Account/ResetPassword`, data)
+  return response.data
+}
+
+// PLANS LIST
+export const getPlanListAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Plan/Plans`)
+  return response.data
+}
+
+// PRE-ORDER
+export const createPreOrderAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/PreOrder/Create`, data)
   return response.data
 }

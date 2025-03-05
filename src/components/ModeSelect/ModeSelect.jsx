@@ -1,4 +1,4 @@
-import { useColorScheme } from '@mui/material'
+import { Typography, useColorScheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
@@ -13,13 +13,21 @@ function ModeSelect() {
 
   return (
     <Box>
-      <Tooltip title={`${mode === 'light' ? 'dark' : 'light'}`}>
-        <IconButton 
+      <Tooltip title={`${mode === 'light' ? 'Change to Dark Mode' : 'Change to Light Mode'}`}>
+        <IconButton
           onClick={toggleMode}
-          sx={{ color: 'white' }}
           aria-label="toggle dark/light mode"
         >
-          {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
+          {mode === 'light' ?
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <DarkModeIcon sx={{ color: 'white' }} />
+              <Typography sx={{ color: 'white' }}>Dark</Typography>
+            </Box>
+            :
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <LightModeIcon sx={{ color: 'white' }} />
+              <Typography sx={{ color: 'white' }}>Light</Typography>
+            </Box>}
         </IconButton>
       </Tooltip>
     </Box>

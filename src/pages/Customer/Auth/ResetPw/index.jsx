@@ -6,36 +6,40 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
-import { toast } from 'react-toastify'
 import ResetPwForm from './ResetPwForm'
 import OtpForm from './OtpForm'
 import AccountForm from './AccountForm'
-const steps = ['Account', 'OTP', 'New Password']
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+const steps = ['Account Verify', 'OTP Verify', 'New Password']
 
 const ResetPw = () => {
   const [activeStep, setActiveStep] = useState(0)
+  const [userId, setUserId] = useState(null)
+  const navigate = useNavigate()
 
-  const handleNext = () => {
+  const handleNext = (userId) => {
+    setUserId(userId)
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
   }
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1)
-  }
+  // const handleBack = () => {
+  //   setActiveStep((prevActiveStep) => prevActiveStep - 1)
+  // }
 
   const handleSubmit = () => {
-    // Gọi API để tạo đơn hàng
-    toast.success('Reset password successfully')
+    toast.success('Please login to continue')
+    navigate('/account/login')
   }
 
   const getStepContent = (step) => {
     switch (step) {
     case 0:
-      return <AccountForm onNext={handleNext}/>
+      return <AccountForm onNext={handleNext} />
     case 1:
-      return <OtpForm onNext={handleNext} />
+      return <OtpForm onNext={handleNext} userId={userId} />
     case 2:
-      return <ResetPwForm onSubmit={handleSubmit} />
+      return <ResetPwForm onSubmit={handleSubmit} userId={userId} />
     default:
       return 'Unknown step'
     }
@@ -49,31 +53,38 @@ const ResetPw = () => {
       justifyContent: 'center',
       gap: 2
     }}>
-      <Typography variant="h4" gutterBottom>
+      <Typography
+        sx={{
+          color: 'white',
+          textAlign: 'center',
+          marginBottom: '2rem',
+          padding: '1rem',
+          borderRadius: '1rem'
+        }}
+        variant="h2"
+        gutterBottom
+      >
         Reset Password
       </Typography>
-      <Box>
+      <Box sx={{ fontSize: '1.5rem', width: '70%' }}>
         <Stepper activeStep={activeStep}>
           {steps.map((label) => (
             <Step key={label}>
-              <StepLabel>{label}</StepLabel>
+              <StepLabel>
+                <Box sx={{
+                  border: '1px solid',
+                  backgroundColor: 'primary.light',
+                  padding: '0.5rem',
+                  borderRadius: '0.5rem'
+                }}>
+                  {label}
+                </Box>
+              </StepLabel>
             </Step>
           ))}
         </Stepper>
-        <Box sx={{ mt: 3 }}>
+        <Box sx={{ mt: 6, display: 'flex', justifyContent: 'center' }}>
           {getStepContent(activeStep)}
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-            {activeStep !== 0 && (
-              <Button onClick={handleBack} sx={{ mr: 1 }}>
-              Back
-              </Button>
-            )}
-            {activeStep !== steps.length - 1 && (
-              <Button onClick={handleNext} sx={{ mr: 1 }}>
-              Next
-              </Button>
-            )}
-          </Box>
         </Box>
       </Box>
     </Container>

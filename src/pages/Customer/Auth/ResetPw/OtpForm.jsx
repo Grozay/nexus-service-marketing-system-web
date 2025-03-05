@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -12,27 +12,27 @@ import {
   OTP_RULE,
   OTP_RULE_MESSAGE
 } from '~/utils/validators'
-import { useDispatch } from 'react-redux'
-import { loginAccountApi } from '~/redux/user/userSlice'
-import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { verifyOtpCodeAPI } from '~/apis'
 
-function ResetPwForm() {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+function OtpForm({ onNext, userId }) {
   const { register, handleSubmit, formState: { errors } } = useForm()
+  // const userId = location.state?.userId
 
   const submitLogIn = (data) => {
-    const { accountId, password } = data
+    const { otpCode } = data
     toast.promise(
-      dispatch(loginAccountApi({ accountId, password })), {
-        pending: 'Logging in...'
+      verifyOtpCodeAPI(userId, otpCode), {
+        pending: 'Verifying OTP...',
+        success: 'OTP verified successfully!',
+        error: 'Failed to verify OTP.'
       }
     ).then(res => {
       // console.log(res)
       //Đoạn này phải kiểm tra không có lỗi mới redirect về route /
       if (!res.error) {
-        navigate('/')
+        // navigate('/account/reset-password/new-password', { state: { userId } })
+        onNext(userId)
       }
     })
   }
@@ -58,9 +58,9 @@ function ResetPwForm() {
                 label="Please enter your OTP..."
                 type="text"
                 variant="outlined"
-                {...register('otp', { required: FIELD_REQUIRED_MESSAGE, pattern: OTP_RULE })}
-                error={!!errors.otp}
-                helperText={errors.otp?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.otp?.type === 'pattern' ? OTP_RULE_MESSAGE : ''}
+                {...register('otpCode', { required: FIELD_REQUIRED_MESSAGE, pattern: OTP_RULE })}
+                error={!!errors.otpCode}
+                helperText={errors.otpCode?.type === 'required' ? FIELD_REQUIRED_MESSAGE : errors.otpCode?.type === 'pattern' ? OTP_RULE_MESSAGE : ''}
               />
             </Box>
           </Box>
@@ -82,7 +82,7 @@ function ResetPwForm() {
             </Link>
           </Box> */}
           <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
-            <Link to="/login" style={{ textDecoration: 'none' }}>
+            <Link to="/account/login" style={{ textDecoration: 'none' }}>
               <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}> Back to Login</Typography>
             </Link>
           </Box>
@@ -92,4 +92,4 @@ function ResetPwForm() {
   )
 }
 
-export default ResetPwForm
+export default OtpForm

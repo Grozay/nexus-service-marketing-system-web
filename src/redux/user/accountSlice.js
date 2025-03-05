@@ -4,24 +4,23 @@ import { API_ROOT } from '~/utils/constants'
 import { toast } from 'react-toastify'
 //khởi tạo gía trị state của 1 cái slice trong redux
 const initialState = {
-  currentUser: null
+  currentAccount: null
 }
 
 //Các hành động gọi api (bất đồng bộ) và cập nhập dữ liệu vào redux, dùng middleware CreateAsyncThunk đi kèm với extraReducers
 
-//Employee
-export const loginEmployeeApi = createAsyncThunk(
-  'user/loginEmployeeApi',
+export const loginAccountApi = createAsyncThunk(
+  'account/loginAccountApi',
   async (data) => {
-    const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Employee/Login`, data)
+    const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Account/Login`, data)
     return response.data
   }
 )
 
-export const logoutEmployeeApi = createAsyncThunk(
-  'user/logoutEmployeeApi',
+export const logoutAccountApi = createAsyncThunk(
+  'account/logoutAccountApi',
   async (showSuccessMessage = true) => {
-    const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Employee/Logout`)
+    const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Account/Logout`)
     if (showSuccessMessage) {
       toast.success('Logout successfully')
     }
@@ -30,17 +29,20 @@ export const logoutEmployeeApi = createAsyncThunk(
 )
 
 //tạo ra 1 slice trong redux store
-export const userSlice = createSlice({
-  name: 'user',
+export const accountSlice = createSlice({
+  name: 'account',
   initialState,
   //extraReducers: nơi xử lí dữ liệu bất đồng bộ
   extraReducers: (builder) => {
-    builder.addCase(loginEmployeeApi.fulfilled, (state, action) => {
+    builder.addCase(loginAccountApi.fulfilled, (state, action) => {
       //action.payload là dữ liệu trả về từ axios call api
-      const user = action.payload
+      const account = action.payload
 
       //update lại dữ liệu của currentUser
-      state.currentUser = user
+      state.currentAccount = account
+    })
+    builder.addCase(logoutAccountApi.fulfilled, (state) => {
+      state.currentAccount = null
     })
   }
 })
@@ -48,8 +50,8 @@ export const userSlice = createSlice({
 // export const { } = userSlice.actions
 
 //selector: là nơi cho các component lấy dữ liệu từ redux store
-export const selectCurrentUser = (state) => {
-  return state.user.currentUser
+export const selectCurrentAccount = (state) => {
+  return state.account.currentAccount
 }
 
-export const userReducer = userSlice.reducer
+export const accountReducer = accountSlice.reducer
