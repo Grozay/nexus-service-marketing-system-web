@@ -13,7 +13,6 @@ import Dashboard from '~/pages/Admin/Dashboard/Dashboard'
 import Equipment from '~/pages/Admin/Equipment/Equipment'
 import Vendor from '~/pages/Admin/Vendor/Vendor'
 import RetailShop from '~/pages/Admin/RetailShop/RetailShop'
-import Customer from '~/pages/Admin/Customer/Customer'
 import NotFound from '~/pages/Admin/NotFound/NotFound'
 import LanIcon from '@mui/icons-material/Lan'
 import AssignmentIcon from '@mui/icons-material/Assignment'
@@ -36,6 +35,8 @@ import EmployeeList from '~/pages/Admin/Employee/EmployeeList/EmployeeList'
 import CreateEmployee from '~/pages/Admin/Employee/CreateEmployee/CreateEmployee'
 import CustomerList from '~/pages/Admin/Customer/CustomerList/CustomerList'
 import CreateCustomer from '~/pages/Admin/Customer/CreateCustomer/CreateCustomer'
+import EquipmentList from '~/pages/Admin/Equipment/EquipmentList/EquipmentList'
+import CreateEquipment from '~/pages/Admin/Equipment/CreateEquipment/CreateEquipment'
 
 const NAVIGATION = (currentUser) => {
   const baseNav = []
@@ -59,7 +60,12 @@ const NAVIGATION = (currentUser) => {
           { segment: 'create', title: 'Create Customer' }
         ]
       },
-      { segment: 'admin/equipment', title: 'Equipment', icon: <InventoryIcon /> },
+      { segment: 'admin/equipment', title: 'Equipment', icon: <InventoryIcon />,
+        children: [
+          { segment: 'list', title: 'Equipment List' },
+          { segment: 'create', title: 'Create Equipment' }
+        ]
+      },
       { segment: 'admin/vendor', title: 'Vendor', icon: <BusinessIcon /> },
       { segment: 'admin/retail-shop', title: 'Retail Shop', icon: <StoreIcon /> },
       { segment: 'admin/connection-plans', title: 'Connection Plan', icon: <LanIcon /> },
@@ -215,7 +221,11 @@ function Layout(props) {
             <Route path="list" element={<CustomerList />} />
             <Route path="create" element={<CreateCustomer />} />
           </Route>
-          <Route path="equipment" element={<Equipment />} />
+          <Route path="equipment">
+            <Route index element={<Navigate to="list" replace />} />
+            <Route path="list" element={<EquipmentList />} />
+            <Route path="create" element={<CreateEquipment />} />
+          </Route>
           <Route path="vendor" element={<Vendor />} />
           <Route path="retail-shop" element={<RetailShop />} />
           <Route path="connection-plans" element={<ConnectionPlan />} />

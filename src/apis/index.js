@@ -43,7 +43,6 @@ export const activateDeactivateEmployeeAPI = async (data) => {
   return response.data
 }
 
-
 // Accounts
 export const getAllAccountsAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Account`)
@@ -84,36 +83,6 @@ export const refreshTokenEmployeeAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Auth/RefreshToken`)
   return response.data
 }
-
-// Customers
-// export const getAllCustomersAPI = async () => {
-//   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Customer`)
-//   return response.data
-// }
-
-// export const createCustomerAPI = async (data) => {
-//   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Customer/CreateNew`, data)
-//   return response.data
-// }
-
-// export const getCustomerByIdAPI = async (id) => {
-//   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Customer/${id}`)
-//   return response.data
-// }
-
-// export const updateCustomerAPI = async (data) => {
-//   const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Customer/Update`, data, {
-//     headers: {
-//       'Content-Type': 'application/json'
-//     }
-//   })
-//   return response.data
-// }
-
-// export const deleteCustomerAPI = async (id) => {
-//   const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Customer/${id}`)
-//   return response.data
-// }
 
 export const sendOtpCodeAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/OtpRecord/Create`, data)
