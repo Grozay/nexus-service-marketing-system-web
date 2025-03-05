@@ -16,10 +16,10 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons
 } from '@mui/x-data-grid'
-import { getAllAccountsAPI, getAccountByIdAPI } from '~/apis'
+import { getAllVendorsAPI } from '~/apis'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import { updateAccountAPI } from '~/apis'
+import { updateVendorAPI } from '~/apis'
 import { formatDate } from '~/utils/formatter'
 import Chip from '@mui/material/Chip'
 import { toast } from 'react-toastify'
@@ -27,34 +27,36 @@ import { useConfirm } from 'material-ui-confirm'
 import Typography from '@mui/material/Typography'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
 import Modal from '@mui/material/Modal'
+import { getVendorByIdAPI } from '~/apis'
 
-// Function to transform customer data from API
-const transformCustomerData = (customers) => {
-  if (!Array.isArray(customers)) return []
-  return customers
-    .filter(customer => !customer.isDeleted)
-    .map(customer => ({
-      id: customer.accountId,
-      name: customer.accountName,
-      email: customer.accountEmail,
-      phone: customer.accountPhone,
-      address: customer.accountAddress,
-      status: customer.accountIsActive,
-      joinDate: new Date(customer.accountCreatedAt),
-      dob: new Date(customer.accountDOB)
+// Function to transform vendor data from API
+const transformVendorData = (vendors) => {
+  if (!Array.isArray(vendors)) return []
+  return vendors
+    .filter(vendor => !vendor.isDeleted)
+    .map(vendor => ({
+      id: vendor.vendorId,
+      name: vendor.vendorName,
+      address: vendor.vendorAddress,
+      description: vendor.vendorDescription,
+      phone: vendor.vendorPhone,
+      email: vendor.vendorEmail,
+      startDate: new Date(vendor.vendorStartFrom),
+      endDate: new Date(vendor.vendorEndTo),
+      status: vendor.vendorStatus
     }))
 }
 
-// Fetch all customers from API
-const getAllCustomers = async () => {
+// Fetch all vendors from API
+const getAllVendors = async () => {
   try {
-    const response = await getAllAccountsAPI()
+    const response = await getAllVendorsAPI()
     if (!Array.isArray(response)) {
       return []
     }
-    return transformCustomerData(response)
+    return transformVendorData(response)
   } catch (error) {
-    throw new Error('Error fetching customers:', error)
+    throw new Error('Error fetching vendors:', error)
   }
 }
 
@@ -69,21 +71,21 @@ function EditToolbar() {
   )
 }
 
-export default function CustomerList() {
+export default function VendorList() {
   const [rows, setRows] = useState([])
   const [rowModesModel, setRowModesModel] = useState({})
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedId, setSelectedId] = useState(null)
   const [previousRow, setPreviousRow] = useState(null)
   const confirmUpdate = useConfirm()
-  const [selectedCustomer, setSelectedCustomer] = useState(null)
+  const [selectedVendor, setSelectedVendor] = useState(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
 
-  // Fetch customers on component mount
+  // Fetch vendors on component mount
   useEffect(() => {
     const fetchData = async () => {
-      const customers = await getAllCustomers()
-      setRows(customers)
+      const vendors = await getAllVendors()
+      setRows(vendors)
     }
     fetchData()
   }, [])
@@ -108,33 +110,21 @@ export default function CustomerList() {
     try {
       const { confirmed } = await confirmUpdate({
         title: 'Confirm Delete',
-        description: 'Are you sure you want to delete this customer?',
+        description: 'Are you sure you want to delete this vendor?',
         confirmationText: 'Delete',
         cancellationText: 'Cancel'
       })
 
       if (confirmed) {
-        // Call API to soft delete
-        await updateAccountAPI({
-          accountId: id,
+        await updateVendorAPI({
+          vendorId: id,
           isDeleted: true
         })
-        // Update local state
         setRows(rows.filter((row) => row.id !== id))
-        toast.success('Customer deleted successfully')
+        toast.success('Vendor deleted successfully')
       }
     } catch (error) {
-      toast.error(error.message || 'Failed to delete customer')
-    }
-  }
-
-  const handleViewDetail = (id) => async () => {
-    try {
-      const customer = await getAccountByIdAPI(id)
-      setSelectedCustomer(customer)
-      setIsDetailModalOpen(true)
-    } catch (error) {
-      toast.error(error.message || 'Failed to fetch customer details')
+      toast.error(error.message || 'Failed to delete vendor')
     }
   }
 
@@ -155,7 +145,6 @@ export default function CustomerList() {
 
   const processRowUpdate = async (newRow) => {
     try {
-      // Validate required fields
       if (!newRow.name || !newRow.email || !newRow.phone) {
         throw new Error('Please fill in all required fields')
       }
@@ -163,31 +152,30 @@ export default function CustomerList() {
       const updatedRow = { ...newRow, isNew: false }
       setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)))
 
-      const { id, name, address, dob, phone, email, status } = updatedRow
-
-      // Format date properly
-      const formattedDOB = formatDate(dob)
+      const { id, name, address, description, phone, email, startDate, endDate, status } = updatedRow
 
       const payload = {
-        accountId: id,
-        accountName: name,
-        accountAddress: address,
-        accountDOB: formattedDOB,
-        accountPhone: phone,
-        accountEmail: email,
-        accountIsActive: Boolean(status)
+        vendorId: id,
+        vendorName: name,
+        vendorAddress: address,
+        vendorDescription: description,
+        vendorPhone: phone,
+        vendorEmail: email,
+        vendorStartFrom: formatDate(startDate),
+        vendorEndTo: formatDate(endDate),
+        vendorStatus: status
       }
 
       const { confirmed } = await confirmUpdate({
         title: 'Confirm Update',
-        description: 'Are you sure you want to update this customer?',
+        description: 'Are you sure you want to update this vendor?',
         confirmationText: 'Update',
         cancellationText: 'Cancel'
       })
 
       if (confirmed) {
-        await updateAccountAPI(payload)
-        toast.success('Update customer successfully')
+        await updateVendorAPI(payload)
+        toast.success('Update vendor successfully')
       } else {
         throw new Error('Update cancelled by user')
       }
@@ -195,9 +183,9 @@ export default function CustomerList() {
     } catch (error) {
       if (error?.errors) {
         const errorMessages = Object.values(error.errors).flat()
-        toast.error(errorMessages.join(', ') || 'Update customer failed')
+        toast.error(errorMessages.join(', ') || 'Update vendor failed')
       } else {
-        toast.error(error.message || 'Update customer failed')
+        toast.error(error.message || 'Update vendor failed')
       }
       throw error
     }
@@ -217,15 +205,91 @@ export default function CustomerList() {
     setSelectedId(null)
   }
 
+  const handleViewDetail = (id) => async () => {
+    try {
+      const vendor = await getVendorByIdAPI(id)
+      setSelectedVendor(vendor)
+      setIsDetailModalOpen(true)
+    } catch (error) {
+      toast.error(error.message || 'Failed to fetch vendor details')
+    }
+  }
+
+  const renderDetailModal = () => (
+    <Modal
+      open={isDetailModalOpen}
+      onClose={() => setIsDetailModalOpen(false)}
+      aria-labelledby="vendor-detail-modal"
+      aria-describedby="vendor-detail-modal-description"
+    >
+      <Box sx={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 600,
+        bgcolor: 'background.paper',
+        boxShadow: 24,
+        p: 4,
+        borderRadius: 2
+      }}>
+        {selectedVendor && (
+          <>
+            <Typography variant="h6" component="h2" gutterBottom>
+              Vendor Details
+            </Typography>
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
+              <DetailItem label="Vendor ID" value={selectedVendor.vendorId} />
+              <DetailItem label="Name" value={selectedVendor.vendorName} />
+              <DetailItem label="Address" value={selectedVendor.vendorAddress} />
+              <DetailItem label="Description" value={selectedVendor.vendorDescription} />
+              <DetailItem label="Phone" value={selectedVendor.vendorPhone} />
+              <DetailItem label="Email" value={selectedVendor.vendorEmail} />
+              <DetailItem label="Start Date" value={formatDate(selectedVendor.vendorStartFrom)} />
+              <DetailItem label="End Date" value={formatDate(selectedVendor.vendorEndTo)} />
+              <DetailItem label="Status" value={selectedVendor.vendorStatus} />
+            </Box>
+          </>
+        )}
+      </Box>
+    </Modal>
+  )
+
+  const DetailItem = ({ label, value }) => (
+    <Box>
+      <Typography variant="subtitle2" color="text.secondary">
+        {label}
+      </Typography>
+      <Typography variant="body1">
+        {value || 'N/A'}
+      </Typography>
+    </Box>
+  )
+
   const columns = [
-    { field: 'id', headerName: 'Customer ID', width: 150, editable: false },
-    { field: 'name', headerName: 'Name', width: 150, editable: true },
-    { field: 'email', headerName: 'Email', width: 200, editable: true },
-    { field: 'phone', headerName: 'Phone', width: 150, editable: true },
-    { field: 'address', headerName: 'Address', width: 200, editable: true },
+    { field: 'id', headerName: 'Vendor ID', width: 150, editable: false },
+    { field: 'name', headerName: 'Vendor Name', width: 200, editable: true, type: 'string' },
+    { field: 'address', headerName: 'Vendor Address', width: 250, editable: true, type: 'string' },
+    { field: 'description', headerName: 'Vendor Description', width: 300, editable: true, type: 'string' },
+    { field: 'phone', headerName: 'Vendor Phone', width: 150, editable: true, type: 'string' },
+    { field: 'email', headerName: 'Vendor Email', width: 200, editable: true, type: 'string' },
+    {
+      field: 'startDate',
+      headerName: 'Start Date',
+      width: 150,
+      editable: true,
+      type: 'date'
+    },
+    {
+      field: 'endDate',
+      headerName: 'End Date',
+      width: 150,
+      editable: true,
+      type: 'date'
+    },
     {
       field: 'status',
-      headerName: 'Status',
+      headerName: 'Vendor Status',
       width: 120,
       editable: true,
       type: 'boolean',
@@ -237,13 +301,6 @@ export default function CustomerList() {
           size="small"
         />
       )
-    },
-    {
-      field: 'joinDate',
-      headerName: 'Join Date',
-      width: 150,
-      editable: false,
-      type: 'date'
     },
     {
       field: 'actions',
@@ -294,61 +351,6 @@ export default function CustomerList() {
     }
   ]
 
-  const renderDetailModal = () => (
-    <Modal
-      open={isDetailModalOpen}
-      onClose={() => setIsDetailModalOpen(false)}
-      aria-labelledby="customer-detail-modal"
-      aria-describedby="customer-detail-modal-description"
-    >
-      <Box sx={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 600,
-        bgcolor: 'background.paper',
-        boxShadow: 24,
-        p: 4,
-        borderRadius: 2
-      }}>
-        {selectedCustomer && (
-          <>
-            <Typography variant="h6" component="h2" gutterBottom>
-              Customer Details
-            </Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
-              <DetailItem label="ID" value={selectedCustomer?.accountId} />
-              <DetailItem label="Name" value={selectedCustomer?.accountName} />
-              <DetailItem label="Email" value={selectedCustomer?.accountEmail} />
-              <DetailItem label="Phone" value={selectedCustomer?.accountPhone} />
-              <DetailItem label="Address" value={selectedCustomer?.accountAddress} />
-              <DetailItem label="City" value={selectedCustomer?.cityCodeDetails?.cityName} />
-              <DetailItem label="Category" value={selectedCustomer?.categoryDetails?.categoryName} />
-              <DetailItem label="Identity" value={selectedCustomer?.accountIdentity} />
-              <DetailItem label="DOB" value={formatDate(selectedCustomer?.accountDOB)} />
-              <DetailItem label="Gender" value={selectedCustomer?.accountGender} />
-              <DetailItem label="Deposit" value={selectedCustomer?.categoryDetails?.categoryDeposit + '$'} />
-              <DetailItem label="Status" value={selectedCustomer?.accountIsActive ? 'Active' : 'Inactive'} />
-              <DetailItem label="Joined Date" value={formatDate(selectedCustomer?.accountCreatedAt)} />
-            </Box>
-          </>
-        )}
-      </Box>
-    </Modal>
-  )
-
-  const DetailItem = ({ label, value }) => (
-    <Box>
-      <Typography variant="subtitle2" color="text.secondary">
-        {label}
-      </Typography>
-      <Typography variant="body1">
-        {value || 'N/A'}
-      </Typography>
-    </Box>
-  )
-
   return (
     <Box
       sx={{
@@ -371,12 +373,11 @@ export default function CustomerList() {
           fontWeight: 'bold'
         }}
       >
-        Customer Management
+        Employee Management
       </Typography>
       <DataGrid
         rows={rows}
         columns={columns}
-        getRowId={(row) => row?.id || Math.random().toString(36).slice(2, 11)}
         editMode="row"
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}

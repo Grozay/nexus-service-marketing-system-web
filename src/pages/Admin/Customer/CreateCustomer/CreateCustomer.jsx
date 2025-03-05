@@ -22,9 +22,9 @@ const CreateCustomer = () => {
   const navigate = useNavigate()
 
   const onSubmit = async (data) => {
-    const { customerId, customerName, customerEmail, customerPhone, customerAddress, cityCodeId, customerDOB, customerGender } = data
+    const { customerName, customerEmail, customerPhone, customerAddress, cityCodeId, customerDOB, customerGender } = data
     toast.promise(
-      createAccountAPI({ customerId, customerName, customerEmail, customerPhone, customerAddress, cityCodeId, customerDOB, customerGender }), {
+      createAccountAPI({ customerName, customerEmail, customerPhone, customerAddress, cityCodeId, customerDOB, customerGender }), {
         pending: 'Creating customer...'
       }
     ).then(res => {
@@ -41,15 +41,6 @@ const CreateCustomer = () => {
       </Typography>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              label="Customer ID"
-              fullWidth
-              {...register('customerId', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.customerId}
-              helperText={errors.customerId?.message}
-            />
-          </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField
@@ -87,7 +78,21 @@ const CreateCustomer = () => {
               helperText={errors.customerPhone?.message}
             />
           </Grid>
-
+          <Grid size={{ xs: 12, md: 6 }}>
+            <TextField
+              label=""
+              type="date"
+              fullWidth
+              {...register('employeeDOB', {
+                required: FIELD_REQUIRED_MESSAGE,
+                validate: {
+                  validDate: (value) => DOB_RULE(value) || DOB_RULE_MESSAGE
+                }
+              })}
+              error={!!errors.employeeDOB}
+              helperText={errors.employeeDOB?.message}
+            />
+          </Grid>
           <Grid size={{ xs: 12 }}>
             <TextField
               label="Address"
@@ -129,21 +134,7 @@ const CreateCustomer = () => {
             </TextField>
           </Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              label=""
-              type="date"
-              fullWidth
-              {...register('employeeDOB', {
-                required: FIELD_REQUIRED_MESSAGE,
-                validate: {
-                  validDate: (value) => DOB_RULE(value) || DOB_RULE_MESSAGE
-                }
-              })}
-              error={!!errors.employeeDOB}
-              helperText={errors.employeeDOB?.message}
-            />
-          </Grid>
+
 
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField
