@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   Container,
   Box,
@@ -10,42 +9,54 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Link, // Import Link from Material UI
+  Link
 } from '@mui/material'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore' // Icon for Accordion
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import EmailIcon from '@mui/icons-material/Email'
 import PhoneIcon from '@mui/icons-material/Phone'
-import FacebookIcon from '@mui/icons-material/Facebook' // Icon for Facebook (example)
-import LocationOnIcon from '@mui/icons-material/LocationOn' // Icon for Office Address
+import FacebookIcon from '@mui/icons-material/Facebook'
+import TwitterIcon from '@mui/icons-material/Twitter'
+import InstagramIcon from '@mui/icons-material/Instagram'
+import LocationOnIcon from '@mui/icons-material/LocationOn'
 import AppBar from '~/components/AppBar/AppBar'
+import Footer from '~/components/Footer/Footer'
 
 const Support = () => {
-  // Sample FAQ data (replace with real data from backend or CMS)
   const faqData = [
     {
       id: 1,
-      question: 'I forgot my account password, how do I recover it?',
-      answer: 'You can click on the "Forgot Password" link on the login page and follow the instructions to reset your password. We will send instructions to your registered email address.'
+      question: 'How do I reset my password for the Nexus Service account?',
+      answer: 'Click "Forgot Password" on the login page and follow the instructions. We’ll send a reset link to your registered email within minutes.'
     },
     {
       id: 2,
-      question: 'How to check NEXUS service coverage?',
-      answer: 'You can visit the "Coverage Check" page on our website and enter your address to check if the service is available in your area.'
+      question: 'Is Broadband Connection available in my area?',
+      answer: 'Visit our "Coverage Check" page, enter your address, and we’ll confirm if Broadband Connection is available at your location.'
     },
     {
       id: 3,
-      question: 'I want to upgrade my Internet service package, what do I need to do?',
-      answer: 'To upgrade your service package, please contact our customer support department via the phone number or email provided below. Support staff will advise and assist you in upgrading to a suitable service package.'
+      question: 'Can I upgrade my Dial-Up Connection to Broadband?',
+      answer: 'Yes! Contact our support team at 1900 1234 or email support@nexusservice.vn to discuss upgrade options tailored to your needs.'
+    },
+    {
+      id: 4,
+      question: 'What should I do if my Landline Connection has no dial tone?',
+      answer: 'Check your phone cable connections first. If the issue persists, call our 24/7 hotline at 1900 1234 for immediate assistance.'
+    },
+    {
+      id: 5,
+      question: 'How can I pay my Nexus Service bill online?',
+      answer: 'Log in to your account, go to "Billing," and follow the steps to pay securely with your credit card or mobile payment apps.'
     }
-    // Add more questions here
   ]
 
-  // Sample Help Guides data (example)
-  const helpGuidesData = [
-    { id: 1, title: 'Internet modem installation guide', link: '#' },
-    { id: 2, title: 'How to pay service charges online', link: '#' },
-    { id: 3, title: 'Troubleshooting common issues with Television service', link: '#' }
-    // Add more guides here
+  const contactData = [
+    { id: 1, title: 'Support Email', detail: 'support@nexusservice.vn', icon: <EmailIcon color="primary" />, link: 'mailto:support@nexusservice.vn' },
+    { id: 2, title: 'Support Phone Number', detail: '1900 1234', icon: <PhoneIcon color="primary" /> },
+    { id: 3, title: 'Facebook', detail: 'Nexus Service Official', icon: <FacebookIcon color="primary" />, link: 'https://www.facebook.com/nexusservice.vn' },
+    { id: 4, title: 'Twitter', detail: '@NexusServiceVN', icon: <TwitterIcon color="primary" />, link: 'https://twitter.com/NexusServiceVN' },
+    { id: 5, title: 'Instagram', detail: '@nexus.service', icon: <InstagramIcon color="primary" />, link: 'https://www.instagram.com/nexus.service' },
+    { id: 6, title: 'Office Address', detail: '123 Le Loi Street, District 1, Ho Chi Minh City', icon: <LocationOnIcon color="primary" /> }
   ]
 
   return (
@@ -55,16 +66,16 @@ const Support = () => {
         {/* Support Page Header */}
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Typography variant="h4" component="h1" gutterBottom>
-            We are always ready to support you!
+            We Are Always Ready to Support You!
           </Typography>
           <Typography variant="subtitle1" color="text.secondary">
-            Welcome to NEXUS support page. We are here to help you answer any questions and support you in the best way during your use of our services.
+            Welcome to the Nexus Service support page. Whether you’re using Dial-Up, Broadband, or Landline, we’re here to answer your questions and provide the best assistance.
           </Typography>
         </Box>
 
         {/* Frequently Asked Questions (FAQ) */}
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h6" component="h2" gutterBottom>
+          <Typography variant="h5" gutterBottom>
             Frequently Asked Questions (FAQ)
           </Typography>
           {faqData.map((faqItem) => (
@@ -87,63 +98,54 @@ const Support = () => {
             Contact Support
           </Typography>
           <List dense>
-            <ListItem>
-              <ListItemIcon>
-                <EmailIcon color="primary" />
-              </ListItemIcon>
-              <ListItemText primary="Support Email" secondary={<Link href="mailto:support@nexus.vn">support@nexus.vn</Link>} />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <PhoneIcon color="primary" />
-              </ListItemIcon>
-              <ListItemText primary="Support Phone Number" secondary="1900 XXXX (Free)" />
-            </ListItem>
-            {/* <ListItem button component="a" href="#">
-            <ListItemIcon>
-              <ChatBubbleIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText primary="Live Chat (Online Support)" />
-          </ListItem> */}
-            <ListItem button component="a" href="https://www.facebook.com/nexus.vn">
-              <ListItemIcon>
-                <FacebookIcon color="primary" />
-              </ListItemIcon>
-              <ListItemText primary="Facebook Fanpage" secondary="NEXUS Telecom Fanpage" />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <LocationOnIcon color="primary" />
-              </ListItemIcon>
-              <ListItemText primary="Office Address" secondary="District 1, Ho Chi Minh City" /> {/* Replace with actual office address */}
-            </ListItem>
+            {contactData.map((contact) => (
+              <ListItem
+                key={contact.id}
+                button='true'
+                component= 'li'
+                href={contact.link}
+              >
+                <ListItemIcon>
+                  {contact.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={contact.title}
+                  secondary={
+                    contact.link ? (
+                      <Link href={contact.link} sx={{ color: '#1976d2', textDecoration: 'none' }}>
+                        {contact.detail}
+                      </Link>
+                    ) : (
+                      contact.detail
+                    )
+                  }
+                />
+              </ListItem>
+            ))}
           </List>
         </Box>
 
-        {/* Help Guides (optional) */}
-        {/* <Box>
-        <Typography variant="h6" component="h2" gutterBottom>
-                    Help Guides & Documents
-        </Typography>
-        <List dense>
-          {helpGuidesData.map((guide) => (
-            <ListItem button component="a" href={guide.link} key={guide.id}>
-              <ListItemIcon>
-                <BookIcon color="primary" />
-              </ListItemIcon>
-              <ListItemText primary={guide.title} />
-            </ListItem>
-          ))}
-        </List>
-      </Box> */}
-
-
-        {/* <Box mt={4} textAlign="center">
+        {/* View Store Locations */}
+        <Box mt={4} textAlign="center">
           <Typography variant="body2" color="text.secondary">
-            Still need help? <Link href="/contact">Contact us</Link>
+            Need to visit us in person?{' '}
+            <Link href="/stores" sx={{ color: '#1976d2', textDecoration: 'none' }}>
+              View Store Locations
+            </Link>
           </Typography>
-        </Box> */}
+        </Box>
+
+        {/* Additional Contact Prompt */}
+        <Box mt={2} textAlign="center">
+          <Typography variant="body2" color="text.secondary">
+            Still need help?{' '}
+            <Link href="/contact-us" sx={{ color: '#1976d2', textDecoration: 'none' }}>
+              Contact us
+            </Link>
+          </Typography>
+        </Box>
       </Container>
+      <Footer />
     </Box>
   )
 }

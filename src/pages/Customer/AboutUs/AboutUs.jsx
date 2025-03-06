@@ -1,7 +1,6 @@
-import { Container } from '@mui/material'
+import { Container, Link } from '@mui/material'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import Grid from '@mui/material/Grid2'
 import Avatar from '@mui/material/Avatar'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -10,7 +9,6 @@ import ListItemText from '@mui/material/ListItemText'
 import Icon from '@mui/material/Icon'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import Link from '@mui/material/Link'
 import BusinessRoundedIcon from '@mui/icons-material/BusinessRounded'
 import LightbulbRoundedIcon from '@mui/icons-material/LightbulbRounded'
 import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded'
@@ -21,24 +19,23 @@ import teamMember2 from '~/assets/team-member-2.png'
 import teamMember3 from '~/assets/team-member-3.png'
 import AppBar from '~/components/AppBar/AppBar'
 import ScrollAnimation from 'react-animate-on-scroll'
-
+import Footer from '~/components/Footer/Footer'
 
 const AboutUsPage = () => {
   const teamData = [
-    { id: 1, name: 'John Smith', title: 'CEO & Founder', description: 'Visionary leader with strategic thinking...', avatarUrl: teamMember1 },
-    { id: 2, name: 'Alice Johnson', title: 'Head of Engineering', description: 'Technology expert with years of experience...', avatarUrl: teamMember2 },
-    { id: 3, name: 'Bob Williams', title: 'Customer Support Manager', description: 'Dedicated to customers and problem-solving...', avatarUrl: teamMember3 },
-    { id: 4, name: 'Alice Johnson', title: 'Head of Engineering', description: 'Technology expert with years of experience...', avatarUrl: teamMember2 },
-    { id: 5, name: 'Bob Williams', title: 'Customer Support Manager', description: 'Dedicated to customers and problem-solving...', avatarUrl: teamMember3 }
+    { id: 1, name: 'Le Anh Kiet', title: 'CEO & Founder', description: 'Visionary leader driving NEXUS to new heights with innovative strategies.', avatarUrl: teamMember1 },
+    { id: 2, name: 'Nguyen Chi Quyen', title: 'CTO & Founder', description: 'Tech genius shaping the future of connectivity with cutting-edge solutions.', avatarUrl: teamMember2 },
+    { id: 3, name: 'Tran Minh Hoa', title: 'Marketing Director', description: 'Creative mind expanding NEXUS’s reach through impactful campaigns.', avatarUrl: teamMember3 },
+    { id: 4, name: 'Pham Thi Lan', title: 'Customer Support Lead', description: 'Passionate about ensuring every customer has the best experience.', avatarUrl: teamMember2 },
+    { id: 5, name: 'Hoang Van Nam', title: 'Network Engineer', description: 'Expert in building and maintaining our robust network infrastructure.', avatarUrl: teamMember1 }
   ]
 
   const whyChooseUsData = [
-    { id: 1, reason: 'Superior service quality', icon: <CheckCircleRoundedIcon color="primary" /> },
-    { id: 2, reason: 'Competitive prices, flexible packages', icon: <CheckCircleRoundedIcon color="primary" /> },
-    { id: 3, reason: '24/7 customer support, dedicated and thoughtful', icon: <CheckCircleRoundedIcon color="primary" /> },
-    { id: 4, reason: 'Modern network infrastructure, wide coverage', icon: <CheckCircleRoundedIcon color="primary" /> }
+    { id: 1, reason: 'Superior service quality', description: 'Delivering top-notch connectivity solutions tailored to your needs.' },
+    { id: 2, reason: 'Competitive prices', description: 'Affordable plans with flexible options for every budget.' },
+    { id: 3, reason: '24/7 customer support', description: 'Dedicated team ready to assist you anytime, anywhere.' },
+    { id: 4, reason: 'Wide coverage', description: 'Modern network reaching every corner for seamless access.' }
   ]
-
 
   return (
     <Box>
@@ -62,28 +59,23 @@ const AboutUsPage = () => {
           />
           <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
             <Typography variant="h2" component="h1" gutterBottom>
-                        About Us
+              About Us
             </Typography>
             <Typography variant="subtitle1">
-                        NEXUS Telecom - Connecting people, building the digital future.
+              NEXUS Telecom - Connecting people, building the digital future.
             </Typography>
           </Box>
         </Box>
 
         <Box sx={{ mb: 4 }}>
           <Typography variant="h4" component="h2" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-            <Icon
-              sx={{
-                mr: 1
-              }}
-            >
-              <BusinessRoundedIcon color="primary" fontSize="medium"/>
+            <Icon sx={{ mr: 1 }}>
+              <BusinessRoundedIcon color="primary" fontSize="medium" />
             </Icon>
             Our Story
           </Typography>
           <Typography variant="body1" color="text.secondary">
-                      [**Insert &quot;NEXUS Story&quot; content here.** Example: Introduction to the founding time, reasons for establishment, initial difficulties, development process, important milestones, achievements, vision for the future,...]
-                      Tell an engaging, authentic, and inspiring story about NEXUS&apos;s journey. Emphasize the initial mission and how NEXUS overcame challenges to achieve its current position.
+            Founded in 2015, NEXUS Telecom emerged from a vision to bridge the digital divide in Vietnam. Starting as a small team passionate about connectivity, we faced challenges like limited resources and fierce competition. Through perseverance and innovation, we launched our first high-speed broadband service in 2018, marking a turning point. Today, with a network spanning over 50 provinces and serving 1 million+ customers, NEXUS continues to grow, aiming to empower communities with cutting-edge telecom solutions for a brighter digital future.
           </Typography>
         </Box>
         <Divider sx={{ mb: 4 }} />
@@ -91,23 +83,19 @@ const AboutUsPage = () => {
         <ScrollAnimation animateIn="fadeInUp" animateOnce={true}>
           <Box sx={{ mb: 4 }}>
             <Typography variant="h4" component="h2" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-              <Icon
-                sx={{
-                  mr: 1
-                }}
-              >
-                <LightbulbRoundedIcon color="primary" fontSize="medium"/>
+              <Icon sx={{ mr: 1 }}>
+                <LightbulbRoundedIcon color="primary" fontSize="medium" />
               </Icon>
-                      Our Mission and Core Values
+              Our Mission and Core Values
             </Typography>
             <Typography variant="body1" color="text.secondary" component="div">
-              At NEXUS, we don&apos;t just provide telecommunications services, we build connections. Our mission is to become a solid bridge, bringing superior quality internet and telecommunications solutions, contributing to improving the quality of life of each individual and promoting the sustainable development of the community.
+              At NEXUS, we do not just provide telecommunications services, we build connections. Our mission is to become a solid bridge, bringing superior quality internet and telecommunications solutions, contributing to improving the quality of life of each individual and promoting the sustainable development of the community.
 
-              <br/><br/>
+              <br /><br />
 
               To fulfill this noble mission, NEXUS always adheres to the following core values:
 
-              <br/><br/>
+              <br /><br />
 
               <Typography variant="subtitle1" component="h3" fontWeight="bold">
                 * We are committed to providing customers with services and products that meet the <strong>highest quality standards</strong>.
@@ -116,8 +104,7 @@ const AboutUsPage = () => {
                 From stable internet speeds, reliable transmission lines, to clear call quality, NEXUS always strives to excel in meeting and exceeding customer expectations.
               </Typography>
 
-
-              <br/>
+              <br />
               <Typography variant="subtitle1" component="h3" fontWeight="bold">
                 * <strong>Continuous innovation:</strong>
               </Typography>
@@ -125,8 +112,7 @@ const AboutUsPage = () => {
                 In a constantly changing technology world, <strong>innovation is the key</strong> for NEXUS to always lead. We constantly innovate, research and apply the most advanced technologies to bring pioneering, effective and suitable telecommunications solutions to the increasingly diverse needs of the market.
               </Typography>
 
-
-              <br/>
+              <br />
               <Typography variant="subtitle1" component="h3" fontWeight="bold">
                 * <strong>Dedication from the heart:</strong>
               </Typography>
@@ -134,8 +120,7 @@ const AboutUsPage = () => {
                 Customers are always the <strong>center</strong> of all NEXUS&apos;s activities. We build sustainable relationships with customers based on dedication, thoughtfulness and listening. NEXUS&apos;s professional and enthusiastic staff is always ready to support and solve all customer problems quickly and effectively.
               </Typography>
 
-
-              <br/>
+              <br />
               <Typography variant="subtitle1" component="h3" fontWeight="bold">
                 * <strong>Prestige and reliability:</strong>
               </Typography>
@@ -150,14 +135,10 @@ const AboutUsPage = () => {
         <ScrollAnimation animateIn="fadeInUp" animateOnce={true}>
           <Box sx={{ mb: 4 }}>
             <Typography variant="h4" component="h2" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-              <Icon
-                sx={{
-                  mr: 1
-                }}
-              >
-                <PeopleRoundedIcon color="primary" fontSize="medium"/>
+              <Icon sx={{ mr: 1 }}>
+                <PeopleRoundedIcon color="primary" fontSize="medium" />
               </Icon>
-                      Our Team
+              Our Team
             </Typography>
             <Box sx={{
               mt: 2,
@@ -199,20 +180,19 @@ const AboutUsPage = () => {
         <ScrollAnimation animateIn="fadeInUp" animateOnce={true}>
           <Box sx={{ mb: 4 }}>
             <Typography variant="h4" component="h2" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-              {/* <Icon><CheckCircleRoundedIcon sx={{ mr: 1 }} color="primary" /> </Icon> */}
-                      Why Choose NEXUS?
+              Why Choose NEXUS?
             </Typography>
             <List>
               {whyChooseUsData.map((reasonItem) => (
                 <ListItem key={reasonItem.id} disableGutters>
                   <ListItemIcon>
-                    {reasonItem.icon}
+                    <CheckCircleRoundedIcon color="primary" />
                   </ListItemIcon>
                   <ListItemText
                     primary={reasonItem.reason}
                     secondary={
                       <Typography variant="body2" color="text.secondary">
-                        {reasonItem.reason}
+                        {reasonItem.description}
                       </Typography>
                     }
                   />
@@ -225,23 +205,26 @@ const AboutUsPage = () => {
         <ScrollAnimation animateIn="fadeInUp" animateOnce={true}>
           <Box sx={{ textAlign: 'center', mt: 5 }}>
             <Typography variant="h5" component="p" gutterBottom>
-                      Ready to experience superior connectivity from NEXUS?
+              Ready to experience superior connectivity from NEXUS?
             </Typography>
-            <Button variant="contained" color="primary" size="large">
-                      Explore Services Now
+            <Button component='a' href="/services" variant="contained" color="primary" size="large">
+              Explore Services Now
             </Button>
           </Box>
         </ScrollAnimation>
 
-
         <ScrollAnimation animateIn="fadeInUp" animateOnce={true}>
-          <Box mt={6} textAlign="center">
+          <Box mt={6} mb={4} textAlign="center">
             <Typography variant="body2" color="text.secondary">
-                      Want to learn more about NEXUS? <Link href="/contact">Contact us</Link>
+              Want to learn more about NEXUS?{' '}
             </Typography>
+            <Link href="/contact-us" variant="contained" color="primary" size="large">
+              Contact Us
+            </Link>
           </Box>
         </ScrollAnimation>
       </Container>
+      <Footer />
     </Box>
   )
 }

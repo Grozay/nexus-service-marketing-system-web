@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import Loading from '~/components/Loading/Loading'
 import Layout from '~/pages/Admin/Layout'
+import PageFly from './pages/Customer/PageFly/PageFly'
 
 const Auth = lazy(() => import('~/pages/Customer/Auth/Auth'))
 const Home = lazy(() => import('~/pages/Customer/Home/Home'))
@@ -17,7 +18,8 @@ const RegisteredPlans = lazy(() => import('~/pages/Customer/Profile/RegisteredPl
 const RegisterPlansDetail = lazy(() => import('~/pages/Customer/Profile/RegisteredPlans/RegisteredPlansDetail/RegisterPlansDetail'))
 const ChangePassword = lazy(() => import('~/pages/Customer/Profile/ChangePassword/ChangePassword'))
 const UpdateProfile = lazy(() => import('~/pages/Customer/Profile/UpdateProfile/UpdateProfile'))
-const Feedback = lazy(() => import('~/pages/Customer/Feedback/feedback'))
+const ContactUs = lazy(() => import('~/pages/Customer/ContactUs/ContactUs'))
+const Stores = lazy(() => import('~/pages/Customer/Stores/Stores'))
 const OrderStatus = lazy(() => import('~/pages/Customer/Profile/OrderStatus/OrderStatus'))
 const News = lazy(() => import('~/pages/Customer/News/News'))
 const NewsDetail = lazy(() => import('~/pages/Customer/News/NewsDetail/NewsDetail'))
@@ -43,11 +45,12 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/services' element={<ServiceCatogory />} />
           <Route path='/service/:slug' element={<ServicePage />} />
-          <Route path='/service/:slug/detail' element={<ServiceDetail />} />
+          <Route path='/service/:slug/details' element={<ServiceDetail />} />
           <Route path='/support' element={<Support />} />
           <Route path='/about-us' element={<AboutUs />} />
+          <Route path='/contact-us' element={<ContactUs />} />
+          <Route path='/stores' element={<Stores />} />
           <Route path='/register/:slug' element={<Register />} />
-          <Route path='/feedback' element={<Feedback />} />
           <Route path='/news' element={<News />} />
           <Route path='/news/:slug' element={<NewsDetail />} />
 
@@ -95,6 +98,7 @@ function App() {
           </Route>
         </Routes>
       </Suspense>
+      <PageFly />
     </>
   )
 }
