@@ -2,15 +2,15 @@ import { useLocation } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import LoginForm from './LoginForm'
 import { useSelector } from 'react-redux'
-import { selectCurrentUser } from '~/redux/user/userSlice'
+import { selectCurrentUser } from '~/redux/user/employeeSlice'
 import { Navigate } from 'react-router-dom'
 function Auth() {
   const location = useLocation()
-  const isLogin = location.pathname === '/admin/login'
+  const isLogin = location.pathname === '/management/login'
   // const isRegister = location.pathname === '/register'
-  const currentUser = useSelector(selectCurrentUser)
-  if (currentUser) {
-    return <Navigate to='/admin/' replace={true} />
+  const currentEmployee = useSelector(selectCurrentUser)
+  if (currentEmployee) {
+    return <Navigate to='/management/' replace={true} />
   }
   return (
     <Box>

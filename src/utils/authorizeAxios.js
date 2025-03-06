@@ -2,7 +2,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import { interceptorLoadingElements } from '~/utils/formatter'
 import { refreshTokenEmployeeAPI } from '~/apis'
-import { logoutEmployeeApi } from '~/redux/user/userSlice.js'
+import { logoutEmployeeApi } from '~/redux/user/employeeSlice.js'
 
 //Không thể import {store } from '~/redux/store.js' theo cách thông thường
 //giải pháp: Inject store : là kỹ thuật khi cần sửa dụng biến redux store ở các file ngoài phạm vi component như file này
@@ -59,7 +59,6 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
   //Trường hợp 2: Nếu như nhận mã 401 thừ BE, thì gọi api refresh_token để lấy token mới
   //Đầu tiên lấy được cái request api đang bị lỗi thong qua error.config
   const originalRequests = error.config
-  console.log('🚀 ~ authorizedAxiosInstance.interceptors.response.use ~ originalRequests:', originalRequests)
   // Kiểm tra xem error.response có tồn tại không trước khi truy cập thuộc tính status
   if (error?.response?.status === 410 && !originalRequests._retry) {
     // Gán thêm một thuộc tính _retry vào originalRequests để biết được rằng đây là request đã được retry
@@ -68,12 +67,10 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
     if (!refreshTokenPromise) {
       refreshTokenPromise = refreshTokenEmployeeAPI()
         .then((data) => {
-          console.log('🚀 ~ .then ~ data:', data)
           // AccessToken đã nằm trong httpOnly cookie (xử lý từ BE)
           return data?.accessToken
         })
         .catch((_error) => {
-          console.log('🚀 ~ authorizedAxiosInstance.interceptors.response.use ~ _error:', _error)
           // Nếu nhận bất kì lỗi nào từ api refresh token thì cứ logout luôn
           axiosReduxStore.dispatch(logoutEmployeeApi())
           return Promise.reject(_error)
@@ -84,6 +81,7 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
         })
     }
     // Khi refreshTokenPromise được gán xong, thì sẽ retry lại cái request api bị lỗi
+    // eslint-disable-next-line no-unused-vars
     return refreshTokenPromise.then((accessToken) => {
       // Return lại axios instance của chúng ta kết hợp các originalRequests để gọi lại những api ban đầu bị lỗi
       return authorizedAxiosInstance(originalRequests)

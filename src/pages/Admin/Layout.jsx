@@ -10,9 +10,6 @@ import BusinessIcon from '@mui/icons-material/Business'
 import StoreIcon from '@mui/icons-material/Store'
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople'
 import Dashboard from '~/pages/Admin/Dashboard/Dashboard'
-import Equipment from '~/pages/Admin/Equipment/Equipment'
-import Vendor from '~/pages/Admin/Vendor/Vendor'
-import RetailShop from '~/pages/Admin/RetailShop/RetailShop'
 import NotFound from '~/pages/Admin/NotFound/NotFound'
 import LanIcon from '@mui/icons-material/Lan'
 import AssignmentIcon from '@mui/icons-material/Assignment'
@@ -20,16 +17,16 @@ import ReceiptIcon from '@mui/icons-material/Receipt'
 import PaymentIcon from '@mui/icons-material/Payment'
 import FeedbackIcon from '@mui/icons-material/Feedback'
 import ConnectionPlan from '~/pages/Admin/Connections/ConnectionPlan'
-import CreateOrder from '~/pages/Admin/Orders/CreateOrder/CreateOrder'
-import OrderList from '~/pages/Admin/Orders/Order'
+import CreateOrder from '~/pages/Admin/Orders/CreateOrders/CreateOrder/CreateOrder'
+import OrderList from '~/pages/Admin/Orders/OrderList/OrderList'
 import Billing from '~/pages/Admin/Billing/Billing'
 import Payments from '~/pages/Admin/Payments/Payments'
 import CustomerFeedbackPage from '~/pages/Admin/Feedback/FeedbackCustomer'
 import EmployeeFeedbackPage from '~/pages/Admin/Feedback/FeedbackEmployee'
 import { useSelector } from 'react-redux'
-import { selectCurrentUser } from '~/redux/user/userSlice'
+import { selectCurrentUser } from '~/redux/user/employeeSlice'
 import { useDispatch } from 'react-redux'
-import { logoutEmployeeApi } from '~/redux/user/userSlice'
+import { logoutEmployeeApi } from '~/redux/user/employeeSlice'
 import { useConfirm } from 'material-ui-confirm'
 import EmployeeList from '~/pages/Admin/Employee/EmployeeList/EmployeeList'
 import CreateEmployee from '~/pages/Admin/Employee/CreateEmployee/CreateEmployee'
@@ -47,9 +44,9 @@ const NAVIGATION = (currentUser) => {
   // Admin has access to all features
   if (currentUser.userRole === 'admin') {
     baseNav.push(
-      { segment: 'admin/', title: 'Dashboard', icon: <DashboardIcon /> },
+      { segment: 'management/', title: 'Dashboard', icon: <DashboardIcon /> },
       {
-        segment: 'admin/employee',
+        segment: 'management/employee',
         title: 'Employee',
         icon: <PeopleIcon />,
         children: [
@@ -57,33 +54,33 @@ const NAVIGATION = (currentUser) => {
           { segment: 'create', title: 'Create Employee' }
         ]
       },
-      { segment: 'admin/customer', title: 'Customer', icon: <EmojiPeopleIcon />,
+      { segment: 'management/customer', title: 'Customer', icon: <EmojiPeopleIcon />,
         children: [
           { segment: 'list', title: 'Customer List' },
           { segment: 'create', title: 'Create Customer' }
         ]
       },
-      { segment: 'admin/equipment', title: 'Equipment', icon: <InventoryIcon />,
+      { segment: 'management/equipment', title: 'Equipment', icon: <InventoryIcon />,
         children: [
           { segment: 'list', title: 'Equipment List' },
           { segment: 'create', title: 'Create Equipment' }
         ]
       },
-      { segment: 'admin/vendor', title: 'Vendor', icon: <BusinessIcon />,
+      { segment: 'management/vendor', title: 'Vendor', icon: <BusinessIcon />,
         children: [
           { segment: 'list', title: 'Vendor List' },
           { segment: 'create', title: 'Create Vendor' }
         ]
       },
-      { segment: 'admin/retail-shop', title: 'Retail Shop', icon: <StoreIcon />,
+      { segment: 'management/retail-shop', title: 'Retail Shop', icon: <StoreIcon />,
         children: [
           { segment: 'list', title: 'Retail Shop List' },
           { segment: 'create', title: 'Create Retail Shop' }
         ]
       },
-      { segment: 'admin/connection-plans', title: 'Connection Plan', icon: <LanIcon /> },
+      { segment: 'management/connection-plans', title: 'Connection Plan', icon: <LanIcon /> },
       {
-        segment: 'admin/orders',
+        segment: 'management/orders',
         title: 'Order',
         icon: <AssignmentIcon />,
         children: [
@@ -91,10 +88,10 @@ const NAVIGATION = (currentUser) => {
           { segment: 'list', title: 'Order List' }
         ]
       },
-      { segment: 'admin/billing', title: 'Billing', icon: <ReceiptIcon /> },
-      { segment: 'admin/payments', title: 'Payment', icon: <PaymentIcon /> },
+      { segment: 'management/billing', title: 'Billing', icon: <ReceiptIcon /> },
+      { segment: 'management/payments', title: 'Payment', icon: <PaymentIcon /> },
       {
-        segment: 'admin/feedbacks',
+        segment: 'management/feedbacks',
         title: 'Feedback',
         icon: <FeedbackIcon />,
         children: [
@@ -110,7 +107,7 @@ const NAVIGATION = (currentUser) => {
     if (currentUser.userRole === 'retail staff') {
       baseNav.push(
         {
-          segment: 'admin/orders',
+          segment: 'management/orders',
           title: 'Order',
           icon: <AssignmentIcon />,
           children: [
@@ -118,8 +115,8 @@ const NAVIGATION = (currentUser) => {
             { segment: 'list', title: 'Order List' }
           ]
         },
-        { segment: 'admin/billing', title: 'Billing', icon: <ReceiptIcon /> },
-        { segment: 'admin/payments', title: 'Payment', icon: <PaymentIcon /> }
+        { segment: 'management/billing', title: 'Billing', icon: <ReceiptIcon /> },
+        { segment: 'management/payments', title: 'Payment', icon: <PaymentIcon /> }
       )
     }
 
@@ -127,23 +124,23 @@ const NAVIGATION = (currentUser) => {
     if (currentUser.userRole === 'technician') {
       baseNav.push(
         {
-          segment: 'admin/orders',
+          segment: 'management/orders',
           title: 'Order',
           icon: <AssignmentIcon />,
           children: [
             { segment: 'list', title: 'Order List' }
           ]
         },
-        { segment: 'admin/connection-plans', title: 'Connection Plan', icon: <LanIcon /> },
-        { segment: 'admin/equipment', title: 'Equipment', icon: <InventoryIcon /> }
+        { segment: 'management/connection-plans', title: 'Connection Plan', icon: <LanIcon /> },
+        { segment: 'management/equipment', title: 'Equipment', icon: <InventoryIcon /> }
       )
     }
 
     // Accountant
     if (currentUser.userRole === 'accountant') {
       baseNav.push(
-        { segment: 'admin/billing', title: 'Billing', icon: <ReceiptIcon /> },
-        { segment: 'admin/payments', title: 'Payment', icon: <PaymentIcon /> }
+        { segment: 'management/billing', title: 'Billing', icon: <ReceiptIcon /> },
+        { segment: 'management/payments', title: 'Payment', icon: <PaymentIcon /> }
       )
     }
   }
@@ -162,6 +159,8 @@ function Layout(props) {
   const dispatch = useDispatch()
   const currentUser = useSelector(selectCurrentUser)
   const confirmLogout = useConfirm()
+  const navigate = useNavigate()
+  const location = useLocation()
   const handleLogout = async () => {
     const { confirmed } = await confirmLogout({
       title: 'Are you sure you want to logout?',
@@ -179,22 +178,20 @@ function Layout(props) {
     user: {
       name: currentUser.userName,
       email: currentUser.userEmail,
-      image: currentUser.employeeImage
+      image: currentUser.userImage
     }
   })
   const demoWindow = window !== undefined ? window() : undefined
 
-  const navigate = useNavigate()
-  const location = useLocation()
 
   const authentication = useMemo(() => {
     return {
       signIn: () => {
         setSession({
           user: {
-            name: 'Bharat Kashyap',
-            email: 'bharatkashyap@outlook.com',
-            image: 'https://avatars.githubusercontent.com/u/19550456'
+            name: currentUser.userName,
+            email: currentUser.userEmail,
+            image: currentUser.userImage
           }
         })
       },
@@ -219,7 +216,7 @@ function Layout(props) {
       theme={demoTheme}
       router={router}
       window={demoWindow}
-      branding={{ title: 'Nexus Admin' }}
+      branding={{ title: 'Nexus management' }}
     >
       <DashboardLayout>
         <Routes>

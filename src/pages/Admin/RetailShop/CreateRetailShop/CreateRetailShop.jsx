@@ -16,11 +16,10 @@ const CreateRetailShop = () => {
 
   const onCreateStore = (data) => {
     const { storeName, storeAddress, storeCity, storePhone, storeLatitude, storeLongitude, storeOpenAt, storeCloseAt, storeStatus } = data
-    
     toast.promise(
-        createRetailShopAPI({
+      createRetailShopAPI({
         storeName,
-        storeAddress, 
+        storeAddress,
         storeCity,
         storePhone,
         storeLatitude,
@@ -33,7 +32,7 @@ const CreateRetailShop = () => {
       }
     ).then(res => {
       if (!res.error) {
-        navigate('/admin/retail-shop')
+        navigate('/management/retail-shop')
       }
     })
   }

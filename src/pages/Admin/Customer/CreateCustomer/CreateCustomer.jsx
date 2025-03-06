@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { createAccountAPI } from '~/apis'
+import { createAccountAPI, getCityCodeAPI, getCategoryPlanAPI } from '~/apis'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid2'
 import MenuItem from '@mui/material/MenuItem'
+import Paper from '@mui/material/Paper'
 import {
   FIELD_REQUIRED_MESSAGE,
   EMAIL_RULE,
@@ -20,151 +21,232 @@ import {
 const CreateCustomer = () => {
   const { register, handleSubmit, formState: { errors } } = useForm()
   const navigate = useNavigate()
+  const [cityCodes, setCityCodes] = useState([])
+  const [planList, setPlanList] = useState([])
+  // Fetch city codes
+  useEffect(() => {
+    const fetchCityCodes = async () => {
+      try {
+        const response = await getCityCodeAPI()
+        setCityCodes(response)
+      } catch {
+        toast.error('Failed to load city list')
+      }
+    }
+    fetchCityCodes()
+  }, [])
+
+  // Fetch service plans
+  useEffect(() => {
+    const fetchPlanList = async () => {
+      try {
+        const response = await getCategoryPlanAPI()
+        setPlanList(response)
+      } catch {
+        toast.error('Failed to load service plans')
+      }
+    }
+    fetchPlanList()
+  }, [])
 
   const onSubmit = async (data) => {
-    const { customerName, customerEmail, customerPhone, customerAddress, cityCodeId, customerDOB, customerGender } = data
+    const { customerName, customerEmail, customerPhone, customerAddress, cityCodeId, customerDOB, customerGender, categoryId } = data
+    // Validate data before submitting
+    if (!customerName || !customerEmail || !customerPhone || !customerAddress || !cityCodeId || !customerDOB || !customerGender || !categoryId) {
+      toast.error('Please fill in all required fields')
+      return
+    }
+
+    const accountData = {
+      accountName: customerName.trim(),
+      accountEmail: customerEmail.trim(),
+      accountPhone: customerPhone.trim(),
+      accountAddress: customerAddress.trim(),
+      cityCodeId: cityCodeId.trim(),
+      accountDOB: customerDOB,
+      accountGender: customerGender,
+      categoryId: categoryId.trim()
+    }
+
     toast.promise(
-      createAccountAPI({ customerName, customerEmail, customerPhone, customerAddress, cityCodeId, customerDOB, customerGender }), {
-        pending: 'Creating customer...'
+      createAccountAPI(accountData),
+      {
+        pending: 'Creating customer...',
+        success: {
+          render({ data: res }) {
+            if (res && !res.error) {
+              navigate('/management/customer/list')
+              return 'Create customer successfully'
+            }
+            return res?.message || 'Cannot create customer'
+          }
+        },
+        error: {
+          render({ data: error }) {
+            if (error?.errors) {
+              const errorMessages = Object.values(error.errors).flat()
+              return errorMessages.join(', ') || 'Create customer failed'
+            }
+            return error.message || 'Create customer failed'
+          }
+        }
       }
-    ).then(res => {
-      if (!res.error) {
-        navigate('/admin/customer/list')
-      }
-    })
+    ).catch(() => {}) // Bắt lỗi để tránh unhandled promise rejection
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" component="h1" sx={{ mb: 3, fontWeight: 'bold' }}>
-        Create New Customer
-      </Typography>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={3}>
+    <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+        <Typography variant='h5' component='h1' sx={{ mb: 4, fontWeight: 'bold', textAlign: 'center' }}>
+          Create New Customer
+        </Typography>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={2}>
+            {/* Full Name */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label='Full Name'
+                fullWidth
+                variant='outlined'
+                {...register('customerName', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.customerName}
+                helperText={errors.customerName?.message}
+              />
+            </Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              label="Full Name"
-              fullWidth
-              {...register('customerName', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.customerName}
-              helperText={errors.customerName?.message}
-            />
+            {/* Email */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label='Email'
+                type='email'
+                fullWidth
+                variant='outlined'
+                {...register('customerEmail', {
+                  required: FIELD_REQUIRED_MESSAGE,
+                  pattern: { value: EMAIL_RULE, message: EMAIL_RULE_MESSAGE }
+                })}
+                error={!!errors.customerEmail}
+                helperText={errors.customerEmail?.message}
+              />
+            </Grid>
+
+            {/* Phone Number */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label='Phone Number'
+                fullWidth
+                variant='outlined'
+                {...register('customerPhone', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.customerPhone}
+                helperText={errors.customerPhone?.message}
+              />
+            </Grid>
+
+            {/* Date of Birth */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label=''
+                type='date'
+                fullWidth
+                variant='outlined'
+                {...register('customerDOB', {
+                  required: FIELD_REQUIRED_MESSAGE,
+                  validate: { validDate: (value) => DOB_RULE(value) || DOB_RULE_MESSAGE }
+                })}
+                error={!!errors.customerDOB}
+                helperText={errors.customerDOB?.message}
+              />
+            </Grid>
+
+            {/* Address */}
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                label='Address'
+                fullWidth
+                variant='outlined'
+                multiline
+                rows={2}
+                {...register('customerAddress', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.customerAddress}
+                helperText={errors.customerAddress?.message}
+              />
+            </Grid>
+
+            {/* City */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label='City'
+                fullWidth
+                select
+                variant='outlined'
+                {...register('cityCodeId', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.cityCodeId}
+                helperText={errors.cityCodeId?.message}
+              >
+                {cityCodes.map((option) => (
+                  <MenuItem key={option?.cityCodeId} value={option?.cityCodeId}>
+                    {option?.cityName}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+
+            {/* Service Plan */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label='Service Plan'
+                fullWidth
+                select
+                variant='outlined'
+                {...register('categoryId', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.categoryId}
+                helperText={errors.categoryId?.message}
+              >
+                {planList.map((option) => (
+                  <MenuItem key={option?.categoryId} value={option?.categoryId}>
+                    {option?.categoryName}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+
+            {/* Gender */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label='Gender'
+                fullWidth
+                select
+                variant='outlined'
+                {...register('customerGender', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.customerGender}
+                helperText={errors.customerGender?.message}
+              >
+                <MenuItem value='Male'>Male</MenuItem>
+                <MenuItem value='Female'>Female</MenuItem>
+                <MenuItem value='Other'>Other</MenuItem>
+              </TextField>
+            </Grid>
+
+            {/* Create Button */}
+            <Grid size={{ xs: 12 }} sx={{ textAlign: 'center', mt: 3 }}>
+              <Button
+                type='submit'
+                variant='contained'
+                size='large'
+                sx={{
+                  px: 5,
+                  py: 1.5,
+                  bgcolor: 'primary.main',
+                  '&:hover': { bgcolor: 'primary.dark' },
+                  borderRadius: 2
+                }}
+              >
+                Create Customer
+              </Button>
+            </Grid>
           </Grid>
-
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              label="Email"
-              type="email"
-              fullWidth
-              {...register('customerEmail', {
-                required: FIELD_REQUIRED_MESSAGE,
-                pattern: {
-                  value: EMAIL_RULE,
-                  message: EMAIL_RULE_MESSAGE
-                }
-              })}
-              error={!!errors.customerEmail}
-              helperText={errors.customerEmail?.message}
-            />
-          </Grid>
-
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              label="Phone"
-              fullWidth
-              {...register('customerPhone', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.customerPhone}
-              helperText={errors.customerPhone?.message}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              label=""
-              type="date"
-              fullWidth
-              {...register('employeeDOB', {
-                required: FIELD_REQUIRED_MESSAGE,
-                validate: {
-                  validDate: (value) => DOB_RULE(value) || DOB_RULE_MESSAGE
-                }
-              })}
-              error={!!errors.employeeDOB}
-              helperText={errors.employeeDOB?.message}
-            />
-          </Grid>
-          <Grid size={{ xs: 12 }}>
-            <TextField
-              label="Address"
-              fullWidth
-              multiline
-              rows={3}
-              {...register('customerAddress', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.customerAddress}
-              helperText={errors.customerAddress?.message}
-            />
-          </Grid>
-
-          {/* <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              label="Category"
-              fullWidth
-              select
-              {...register('categoryId', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.categoryId}
-              helperText={errors.categoryId?.message}
-            >
-              <MenuItem value="1">VIP</MenuItem>
-              <MenuItem value="2">Normal</MenuItem>
-            </TextField>
-          </Grid> */}
-
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              label="City"
-              fullWidth
-              select
-              {...register('cityCodeId', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.cityCodeId}
-              helperText={errors.cityCodeId?.message}
-            >
-              <MenuItem value="HCM">Ho Chi Minh</MenuItem>
-              <MenuItem value="HNN">Ha Noi</MenuItem>
-              <MenuItem value="DAD">Da Nang</MenuItem>
-            </TextField>
-          </Grid>
-
-
-
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              label="Gender"
-              fullWidth
-              select
-              {...register('accountGender', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.accountGender}
-              helperText={errors.accountGender?.message}
-            >
-              <MenuItem value="Male">Male</MenuItem>
-              <MenuItem value="Female">Female</MenuItem>
-              <MenuItem value="Other">Other</MenuItem>
-            </TextField>
-          </Grid>
-
-          <Grid size={{ xs: 12 }}>
-            <Button
-              type="submit"
-              variant="contained"
-              size="large"
-              fullWidth
-            //   disabled={isSubmitting}
-              sx={{ mt: 2 }}
-            >
-              Create Customer
-            </Button>
-          </Grid>
-        </Grid>
-      </form>
+        </form>
+      </Paper>
     </Box>
   )
 }
