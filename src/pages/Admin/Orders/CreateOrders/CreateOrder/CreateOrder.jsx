@@ -6,9 +6,9 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
-import CreateAccount from '~/pages/Admin/Orders/CreateAccount/CreateAccount'
-import SelectPlan from '~/pages/Admin/Orders/SelectPlan/SelectPlan'
-import ConfirmOrder from '~/pages/Admin/Orders/ConfirmOrder/ConfirmOrder'
+import CreateAccount from '~/pages/Admin/Orders/CreateOrders/CreateAccount/CreateAccount'
+import SelectPlan from '~/pages/Admin/Orders/CreateOrders/SelectPlan/SelectPlan'
+import ConfirmOrder from '~/pages/Admin/Orders/CreateOrders/ConfirmOrder/ConfirmOrder'
 import { toast } from 'react-toastify'
 const steps = ['Create Account', 'Select Plan', 'Confirm Order']
 

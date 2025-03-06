@@ -1,6 +1,17 @@
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
 import { API_ROOT } from '~/utils/constants'
 
+//token
+export const refreshTokenEmployeeAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Employee/RefreshToken`)
+  return response.data
+}
+
+export const refreshTokenAccountAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Account/RefreshToken`)
+  return response.data
+}
+
 // City code
 export const getCityCodeAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Store/CityCodes`)
@@ -39,10 +50,6 @@ export const activateEmployeeAPI = async (data) => {
   return response.data
 }
 
-export const refreshTokenEmployeeAPI = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Employee/RefreshToken`)
-  return response.data
-}
 
 // khúc này chưa xong
 export const updateEmployeePasswordAPI = async (data) => {
@@ -81,15 +88,6 @@ export const updateAccountPasswordAPI = async (data) => {
   return response.data
 }
 
-export const logoutAccountAPI = async () => {
-  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Account/Logout`)
-  return response.data
-}
-
-export const refreshTokenAccountAPI = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Account/RefreshToken`)
-  return response.data
-}
 
 export const sendOtpCodeAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/OtpRecord/Create`, data)
@@ -180,5 +178,27 @@ export const updateEquipmentAPI = async (data) => {
 
 export const getEquipmentByIdAPI = async (id) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Equipment/${id}`)
+  return response.data
+}
+
+// ORDER
+
+export const getAllOrdersAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Order`)
+  return response.data
+}
+
+export const createOrderAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Order/Create`, data)
+  return response.data
+}
+
+export const getOrderByIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Order/${id}`)
+  return response.data
+}
+
+export const updateOrderAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Order/Update`, data)
   return response.data
 }

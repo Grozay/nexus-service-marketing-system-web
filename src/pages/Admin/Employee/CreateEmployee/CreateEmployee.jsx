@@ -28,7 +28,7 @@ const CreateEmployee = () => {
       }
     ).then(res => {
       if (!res.error) {
-        navigate('/admin/employee')
+        navigate('/management/employee')
       }
     })
 
