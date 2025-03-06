@@ -14,7 +14,8 @@ import {
   DialogActions,
   Snackbar,
   Alert,
-  Pagination
+  Pagination,
+  Skeleton
 } from '@mui/material'
 import { Edit, Delete } from '@mui/icons-material'
 import image from '~/assets/equipment1.png'
@@ -33,20 +34,29 @@ import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
+import { Search } from '@mui/icons-material'
 const EquipmentManagement = () => {
   const [equipment, setEquipment] = useState([])
   const [openDialog, setOpenDialog] = useState(false)
   const [currentEquipment, setCurrentEquipment] = useState(null)
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
   const [page, setPage] = useState(1)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
   const itemsPerPage = 6
   const confirmUpdate = useConfirm()
   const { register, handleSubmit, formState: { errors }, setValue, control } = useForm()
 
   useEffect(() => {
     const fetchData = async () => {
-      const equipment = await getAllEquipmentsAPI()
-      setEquipment(equipment)
+      try {
+        const equipment = await getAllEquipmentsAPI()
+        setEquipment(equipment)
+      } catch (error) {
+        toast.error('Failed to fetch equipment data')
+      } finally {
+        setIsLoading(false)
+      }
     }
     fetchData()
   }, [])
@@ -125,15 +135,63 @@ const EquipmentManagement = () => {
     setOpenDialog(false)
   }
 
+  const filteredEquipment = equipment.filter(eq => 
+    eq.equipmentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    eq.equipmentDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    eq.equipmentType.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   const startIndex = (page - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
-  const paginatedData = equipment.slice(startIndex, endIndex)
+  const paginatedData = filteredEquipment.slice(startIndex, endIndex)
+
+  if (isLoading) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Skeleton variant="text" width={300} height={50} />
+          <Skeleton variant="rectangular" width={300} height={40} />
+        </Box>
+        <Box sx={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+          gap: 3
+        }}>
+          {Array.from(new Array(6)).map((_, index) => (
+            <Card key={index}>
+              <Skeleton variant="rectangular" height={200} />
+              <CardContent>
+                <Skeleton variant="text" height={40} />
+                <Skeleton variant="text" height={20} />
+                <Skeleton variant="text" height={20} />
+                <Skeleton variant="text" height={20} />
+              </CardContent>
+              <CardActions sx={{ p: 2 }}>
+                <Skeleton variant="rectangular" width="100%" height={40} />
+              </CardActions>
+            </Card>
+          ))}
+        </Box>
+      </Box>
+    )
+  }
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Equipment Management
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" gutterBottom>
+          Equipment Management
+        </Typography>
+        <TextField
+          label="Search Equipment"
+          variant="outlined"
+          size="small"
+          endIcon={<Search />}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ width: 300 }}
+        />
+      </Box>
 
       <Box sx={{
         display: 'grid',
@@ -199,7 +257,7 @@ const EquipmentManagement = () => {
 
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
         <Pagination
-          count={Math.ceil(equipment.length / itemsPerPage)}
+          count={Math.ceil(filteredEquipment.length / itemsPerPage)}
           page={page}
           onChange={(e, value) => setPage(value)}
           color="primary"

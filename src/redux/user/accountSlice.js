@@ -8,7 +8,7 @@ const initialState = {
 }
 
 //Các hành động gọi api (bất đồng bộ) và cập nhập dữ liệu vào redux, dùng middleware CreateAsyncThunk đi kèm với extraReducers
-
+//account
 export const loginAccountApi = createAsyncThunk(
   'account/loginAccountApi',
   async (data) => {
@@ -28,16 +28,17 @@ export const logoutAccountApi = createAsyncThunk(
   }
 )
 
+
 //tạo ra 1 slice trong redux store
 export const accountSlice = createSlice({
   name: 'account',
   initialState,
   //extraReducers: nơi xử lí dữ liệu bất đồng bộ
   extraReducers: (builder) => {
+    //account
     builder.addCase(loginAccountApi.fulfilled, (state, action) => {
       //action.payload là dữ liệu trả về từ axios call api
       const account = action.payload
-
       //update lại dữ liệu của currentUser
       state.currentAccount = account
     })

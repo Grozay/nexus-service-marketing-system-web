@@ -1,8 +1,6 @@
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Paper from '@mui/material/Paper'
-import Add from '@mui/icons-material/Add'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Close'
 import Menu from '@mui/material/Menu'
@@ -10,7 +8,8 @@ import MenuItem from '@mui/material/MenuItem'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
+import DoneAllIcon from '@mui/icons-material/DoneAll'
+import BlockIcon from '@mui/icons-material/Block'
 import {
   GridRowModes,
   DataGrid,
@@ -24,14 +23,11 @@ import {
 } from '@mui/x-data-grid'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
-import L from 'leaflet'
-import marker from 'leaflet/dist/images/marker-icon.png'
-import marker2x from 'leaflet/dist/images/marker-icon-2x.png'
-import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 import { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
 import { getAllRetailShopsAPI, updateRetailShopAPI, getRetailShopByIdAPI } from '~/apis'
+import Chip from '@mui/material/Chip'
 
 // Function to transform store data from API
 const transformStoreData = (stores) => {
@@ -59,37 +55,9 @@ const getAllStores = async () => {
   }
 }
 
-function EditToolbar(props) {
-  const { setRows, setRowModesModel } = props
-
-  const handleAddClick = () => {
-    const id = Date.now() // Use timestamp for unique ID
-    setRows((oldRows) => [
-      ...oldRows,
-      {
-        id,
-        storeName: '',
-        storeAddress: '',
-        storeCity: '',
-        storeLatitude: '',
-        storeLongitude: '',
-        storeOpenHours: '08:00 - 22:00',
-        storePhone: '',
-        storeStatus: 'Active',
-        isNew: true
-      }
-    ])
-    setRowModesModel((oldModel) => ({
-      ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: 'storeName' }
-    }))
-  }
-
+function EditToolbar() {
   return (
     <GridToolbarContainer>
-      <Button color="primary" startIcon={<Add />} onClick={handleAddClick}>
-        Add Retail Shop
-      </Button>
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
       <GridToolbarDensitySelector />
@@ -178,7 +146,7 @@ function RetailShopManagement() {
       const updatedRow = { ...newRow, isNew: false }
       setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)))
 
-      const { id, storeName, storeAddress, storeCity, storePhone, storeLatitude, storeLongitude, storeStatus } = updatedRow
+      const { id, storeName, storeAddress, storeCity, storePhone, storeLatitude, storeLongitude } = updatedRow
       const [storeOpenAt, storeCloseAt] = updatedRow.storeOpenHours.split(' - ')
 
       const payload = {
@@ -190,8 +158,7 @@ function RetailShopManagement() {
         storeLatitude,
         storeLongitude,
         storeOpenAt,
-        storeCloseAt,
-        storeStatus
+        storeCloseAt
       }
 
       const { confirmed } = await confirmUpdate({
@@ -214,6 +181,26 @@ function RetailShopManagement() {
     }
   }
 
+  const handleActivateClick = (id) => async () => {
+    try {
+      await updateRetailShopAPI({ storeId: id, storeStatus: 'Active' })
+      setRows(rows.map((row) => row.id === id ? { ...row, storeStatus: 'Active' } : row))
+      toast.success('Store activated successfully')
+    } catch (error) {
+      toast.error(error.message || 'Failed to activate store')
+    }
+  }
+
+  const handleDeactivateClick = (id) => async () => {
+    try {
+      await updateRetailShopAPI({ storeId: id, storeStatus: 'Inactive' })
+      setRows(rows.map((row) => row.id === id ? { ...row, storeStatus: 'Inactive' } : row))
+      toast.success('Store deactivated successfully')
+    } catch (error) {
+      toast.error(error.message || 'Failed to deactivate store')
+    }
+  }
+
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel)
   }
@@ -230,15 +217,6 @@ function RetailShopManagement() {
   const handleCloseMenu = () => {
     setAnchorEl(null)
     setSelectedId(null)
-  }
-
-  const handleViewDetail = (id) => async () => {
-    try {
-      const store = await getRetailShopByIdAPI(id)
-      setSelectedShop(store)
-    } catch (error) {
-      toast.error('Failed to fetch store details')
-    }
   }
 
   const ShopDetails = ({ shop }) => {
@@ -258,7 +236,7 @@ function RetailShopManagement() {
           <DetailItem label="Coordinates" value={`${shop.storeLatitude}, ${shop.storeLongitude}`} />
           <DetailItem label="Open Hours" value={shop.storeOpenHours} />
           <DetailItem label="Phone" value={shop.storePhone} />
-          <DetailItem label="Status" value={shop.storeStatus} />
+          <DetailItem label="Status" value={shop.storeStatus === 'Active' ? 'Active' : 'Inactive'} />
         </Box>
       </Paper>
     )
@@ -271,6 +249,7 @@ function RetailShopManagement() {
     </Box>
   )
 
+  console.log('🚀 ~ RetailShopManagement ~ rows:', rows.storeStatus)
   const columns = [
     { field: 'storeName', headerName: 'Store Name', width: 200, editable: true, filterable: true },
     { field: 'storeAddress', headerName: 'Address', width: 250, editable: true, filterable: true },
@@ -280,13 +259,19 @@ function RetailShopManagement() {
     { field: 'storeOpenHours', headerName: 'Open Hours', width: 150, editable: true, filterable: true },
     { field: 'storePhone', headerName: 'Phone', width: 150, editable: true, filterable: true },
     {
-      field: 'storeStatus',
-      headerName: 'Status',
+      field: 'status',
+      headerName: 'Store Status',
       width: 120,
-      editable: true,
-      type: 'singleSelect',
-      valueOptions: ['Active', 'Inactive'],
-      filterable: true
+      editable: false,
+      type: 'string',
+      renderCell: (params) => (
+        <Chip
+          label={params.row.storeStatus === 'Active' ? 'Active' : 'Inactive'}
+          color={params.row.storeStatus === 'Active' ? 'success' : 'error'}
+          variant="outlined"
+          size="small"
+        />
+      )
     },
     {
       field: 'actions',
@@ -296,6 +281,9 @@ function RetailShopManagement() {
       cellClassName: 'actions',
       getActions: ({ id }) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit
+        const isAnyRowInEditMode = Object.values(rowModesModel).some(
+          (model) => model.mode === GridRowModes.Edit
+        )
 
         if (isInEditMode) {
           return [
@@ -327,6 +315,7 @@ function RetailShopManagement() {
             className="textPrimary"
             onClick={handleMoreClick(id)}
             color="inherit"
+            disabled={isAnyRowInEditMode}
           />
         ]
       }
@@ -377,7 +366,7 @@ function RetailShopManagement() {
 
       <Paper sx={{ p: 2 }}>
         <Typography variant="h6" gutterBottom>Retail Shops List</Typography>
-        <Box sx={{ height: '100vh', width: '100%' }}>
+        <Box sx={{ height: '80vh', width: '100%' }}>
           <DataGrid
             rows={rows}
             columns={columns}
@@ -401,14 +390,33 @@ function RetailShopManagement() {
               handleCloseMenu()
             }}>
               <EditIcon fontSize="small" sx={{ mr: 1 }} />
-          Edit
+              Edit
             </MenuItem>
+            {
+              rows.find((row) => row.id === selectedId)?.status === false ? (
+                <MenuItem onClick={() => {
+                  handleActivateClick(selectedId)()
+                  handleCloseMenu()
+                }}>
+                  <DoneAllIcon fontSize="small" sx={{ mr: 1 }} />
+                Activate
+                </MenuItem>
+              ) : (
+                <MenuItem onClick={() => {
+                  handleDeactivateClick(selectedId)()
+                  handleCloseMenu()
+                }}>
+                  <BlockIcon fontSize="small" sx={{ mr: 1 }} />
+                Deactivate
+                </MenuItem>
+              )
+            }
             <MenuItem onClick={() => {
               handleDeleteClick(selectedId)()
               handleCloseMenu()
             }}>
               <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
-          Delete
+              Delete
             </MenuItem>
           </Menu>
         </Box>

@@ -29,6 +29,7 @@ export const logoutEmployeeApi = createAsyncThunk(
   }
 )
 
+
 //tạo ra 1 slice trong redux store
 export const userSlice = createSlice({
   name: 'user',
@@ -41,6 +42,9 @@ export const userSlice = createSlice({
 
       //update lại dữ liệu của currentUser
       state.currentUser = user
+    })
+    builder.addCase(logoutEmployeeApi.fulfilled, (state) => {
+      state.currentUser = null
     })
   }
 })

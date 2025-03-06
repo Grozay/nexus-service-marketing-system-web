@@ -13,7 +13,7 @@ import {
   PASSWORD_RULE
 } from '~/utils/validators'
 import { useDispatch } from 'react-redux'
-import { loginEmployeeApi } from '~/redux/user/userSlice'
+import { loginEmployeeApi } from '~/redux/user/employeeSlice'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
@@ -30,7 +30,7 @@ function LoginForm() {
       }
     ).then(res => {
       if (!res.error) {
-        navigate('/admin/')
+        navigate('/management/')
       }
     })
   }

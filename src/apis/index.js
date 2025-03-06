@@ -1,6 +1,28 @@
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
 import { API_ROOT } from '~/utils/constants'
 
+//token
+export const refreshTokenEmployeeAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Employee/RefreshToken`)
+  return response.data
+}
+
+export const refreshTokenAccountAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Account/RefreshToken`)
+  return response.data
+}
+
+// City code
+export const getCityCodeAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Store/CityCodes`)
+  return response.data
+}
+//get categoryPlan
+export const getCategoryPlanAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Plan/CategoriesPlans`)
+  return response.data
+}
+
 
 // Employees
 export const getAllEmployeesAPI = async () => {
@@ -23,29 +45,15 @@ export const updateEmployeeAPI = async (data) => {
   return response.data
 }
 
-export const logoutEmployeeAPI = async () => {
-  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Employee/Logout`)
-  return response.data
-}
-
 export const activateEmployeeAPI = async (data) => {
   const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Employee/Activate`, data)
   return response.data
 }
 
-export const refreshTokenEmployeeAPI = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Employee/RefreshToken`)
-  return response.data
-}
 
 // khúc này chưa xong
 export const updateEmployeePasswordAPI = async (data) => {
   const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Employee/UpdatePassword`, data)
-  return response.data
-}
-
-export const activateDeactivateEmployeeAPI = async (data) => {
-  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Employee/Activation`, data)
   return response.data
 }
 
@@ -70,20 +78,16 @@ export const updateAccountAPI = async (data) => {
   return response.data
 }
 
+export const activateAccountAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Account/Activate`, data)
+  return response.data
+}
+
 export const updateAccountPasswordAPI = async (data) => {
   const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Account/UpdatePassword`, data)
   return response.data
 }
 
-export const logoutAccountAPI = async () => {
-  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Account/Logout`)
-  return response.data
-}
-
-export const refreshTokenAccountAPI = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Account/RefreshToken`)
-  return response.data
-}
 
 export const sendOtpCodeAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/OtpRecord/Create`, data)
@@ -139,25 +143,24 @@ export const getVendorByIdAPI = async (id) => {
   return response.data
 }
 
-
 //retail shop
 export const getAllRetailShopsAPI = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/RetailShop`)
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Store`)
   return response.data
 }
 
 export const getRetailShopByIdAPI = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/RetailShop/${id}`)
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Store/${id}`)
   return response.data
 }
 
 export const createRetailShopAPI = async (data) => {
-  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/RetailShop/Create`, data)
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Store/Create`, data)
   return response.data
 }
 
 export const updateRetailShopAPI = async (data) => {
-  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/RetailShop/Update`, data)
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Store/Update`, data)
   return response.data
 }
 
@@ -188,4 +191,24 @@ export const contactUsAPI = async (data) => {
   return response.data
 }
 
+// ORDER
+export const getAllOrdersAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Order`)
+  return response.data
+}
+
+export const createOrderAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Order/Create`, data)
+  return response.data
+}
+
+export const getOrderByIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Order/${id}`)
+  return response.data
+}
+
+export const updateOrderAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Order/Update`, data)
+  return response.data
+}
 

@@ -27,9 +27,9 @@ const NotFound = lazy(() => import('~/pages/Customer/NotFound/NotFound'))
 const AuthAdmin = lazy(() => import('~/pages/Admin/AuthAdmin/Auth'))
 
 //giải pháp clean Code trong việc xác định các route nào cần đăng nhập tài khoản xong thì mới cho truy cập sử dụng outlet để hiển thị các child route
-const ProtectedRoute = ({ user }) => {
-  if (!user) {
-    return <Navigate to='/admin/login' replace={true} />
+const ProtectedRoute = ({ employee }) => {
+  if (!employee) {
+    return <Navigate to='/management/login' replace={true} />
   }
   return <Outlet />
 }
@@ -92,8 +92,8 @@ function App() {
           <Route path='*' element={<NotFound />} />
 
           {/* Protect Admin Route */}
-          <Route path='/admin/login' element={<AuthAdmin />} />
-          <Route path='/admin/*' element={<ProtectedRoute user={currentUser} />}>
+          <Route path='/management/login' element={<AuthAdmin />} />
+          <Route path='/management/*' element={<ProtectedRoute employee={currentUser} />}>
             <Route path='*' element={<Layout />} />
           </Route>
         </Routes>
