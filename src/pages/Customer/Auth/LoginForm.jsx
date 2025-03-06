@@ -28,14 +28,11 @@ function LoginForm() {
     const { userId, userPassword } = data
     toast.promise(
       dispatch(loginAccountApi({ userId, userPassword })), {
-        pending: 'Logging in...',
-        error: 'Login failed'
+        pending: 'Logging in...'
       }
     ).then(res => {
       //Đoạn này phải kiểm tra không có lỗi mới redirect về route /
-      if (res.error) {
-        toast.error('Login failed, Please check your account id and password')
-      } else {
+      if (!res.error) {
         navigate('/')
       }
     })

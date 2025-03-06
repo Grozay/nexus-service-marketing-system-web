@@ -107,6 +107,11 @@ export const getPlanListAPI = async () => {
   return response.data
 }
 
+export const getPlanByCategoryIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Plan/Categories/${id}`)
+  return response.data
+}
+
 // PRE-ORDER
 export const createPreOrderAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/PreOrder/Create`, data)
@@ -176,3 +181,11 @@ export const getEquipmentByIdAPI = async (id) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Equipment/${id}`)
   return response.data
 }
+
+//contact us
+export const contactUsAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Other/contact-us`, data)
+  return response.data
+}
+
+

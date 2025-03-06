@@ -1,4 +1,3 @@
-import React from 'react'
 import { Box, Container, Typography, Link, IconButton, Stack } from '@mui/material'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import TwitterIcon from '@mui/icons-material/Twitter'
@@ -14,15 +13,13 @@ const Footer = () => {
     <Box component="footer" sx={{ color: 'white', py: 4, height: (theme) => theme.nexus.footerHeight, backgroundColor: (theme) => theme.palette.primary.main }}>
       <Container maxWidth="lg">
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={4} justifyContent="space-between">
-          {/* Logo and Description Section */}
           <Box sx={{ maxWidth: 300 }}>
             <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, justifyContent: 'center', alignItems: 'center' }} />
             <Typography variant="body2">
-              NEXUS Telecom - Connecting people, building the digital future.
+            NEXUS SERVICE - Established in 2015, we are a leading provider of Dial-Up, Broadband, and Landline services in Vietnam, committed to connecting communities and empowering the digital future with reliable, innovative solutions
             </Typography>
           </Box>
 
-          {/* Quick Links Section */}
           <Box>
             <Typography variant="h6" gutterBottom>
               Quick Links
@@ -37,7 +34,7 @@ const Footer = () => {
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <KeyboardArrowRightIcon />
-              <ListLink component={Link} to="/equipment" primary="Equipment" />
+              <ListLink component={Link} to="/stores" primary="Store Locations" />
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <KeyboardArrowRightIcon />
@@ -45,27 +42,25 @@ const Footer = () => {
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <KeyboardArrowRightIcon />
-              <ListLink component={Link} to="/contact" primary="Contact" />
+              <ListLink component={Link} to="/contact-us" primary="Contact Us" />
             </Box>
           </Box>
 
-          {/* Contact Information Section */}
           <Box>
             <Typography variant="h6" gutterBottom>
-              Contact
+              Contact Information
             </Typography>
             <Typography variant="body2" component="p">
-              Address: [NEXUS Office Address]
+              Address: 123 Le Loi Street, District 1, Ho Chi Minh City
             </Typography>
             <Typography variant="body2" component="p">
-              Phone: [Contact Number]
+              Phone: 1900 1234
             </Typography>
             <Typography variant="body2" component="p">
-              Email: <Link href="mailto:info@nexus.vn" color="inherit" underline="hover">info@nexus.vn</Link>
+              Email: <Link href="mailto:support@nexusservice.vn" color="inherit" underline="hover">support@nexusservice.vn</Link>
             </Typography>
           </Box>
 
-          {/* Social Media Section */}
           <Box>
             <Typography variant="h6" gutterBottom>
               Social Media
@@ -87,13 +82,11 @@ const Footer = () => {
           </Box>
         </Stack>
 
-        {/* Divider Line */}
         <Divider sx={{ my: 2, borderColor: 'rgba(255, 255, 255, 0.3)' }} />
 
-        {/* Copyright Section */}
         <Box textAlign="center" pt={2}>
           <Typography variant="subtitle2" component="p">
-            © {new Date().getFullYear()} NEXUS Telecom. All rights reserved.
+            © {new Date().getFullYear()} NEXUS Telecom. All rights reserved
           </Typography>
           <Typography variant="caption" component="p">
             <Link href="/terms" color="inherit" underline="hover">Terms of Service</Link> | <Link href="/privacy" color="inherit" underline="hover">Privacy Policy</Link>
@@ -104,7 +97,6 @@ const Footer = () => {
   )
 }
 
-// Helper component to create ListItemLink
 const ListLink = ({ component, primary, to }) => (
   <ListItem sx={{ py: 0.5, display: 'block' }}>
     <Typography component={component} href={to} variant="body2" color="inherit" underline="hover" sx={{ display: 'block' }}>
