@@ -1,17 +1,5 @@
 import React from 'react'
-import {
-  Container,
-  Box,
-  Avatar,
-  Typography,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Divider,
-  Button,
-  Icon
-} from '@mui/material'
+import { Container, Box, Avatar, Typography, List, ListItem, ListItemIcon, ListItemText, Divider, Button, Icon } from '@mui/material'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import EmailIcon from '@mui/icons-material/Email'
 import PhoneIcon from '@mui/icons-material/Phone'
@@ -148,8 +136,8 @@ const Profile = () => {
             Registered Services
           </Typography>
           <List dense>
-            {customerData.registeredPlans.slice(0, showAllPlans ? customerData.registeredPlans.length : 5).map((plan, index) => (
-              <ListItem key={plan.id} 
+            {customerData.registeredPlans.slice(0, showAllPlans ? customerData.registeredPlans.length : 5).map((plan) => (
+              <ListItem key={plan.id}
                 sx={{
                   flexDirection: { xs: 'column', sm: 'row' },
                   alignItems: { xs: 'flex-start', sm: 'center' },
@@ -165,17 +153,17 @@ const Profile = () => {
                   secondary={`${plan.connectionType} - Registered: ${plan.registeredDate} - Status: ${plan.status}`}
                   sx={{ width: { xs: '100%', sm: 'auto' } }}
                 />
-                <Box 
-                  sx={{ 
+                <Box
+                  sx={{
                     position: { xs: 'absolute', sm: 'static' },
                     bottom: { xs: 8, sm: 'auto' },
                     left: { xs: 16, sm: 'auto' },
                     width: { xs: 'calc(100% - 32px)', sm: 'auto' }
                   }}
                 >
-                  <Button 
-                    aria-label="view" 
-                    size="small" 
+                  <Button
+                    aria-label="view"
+                    size="small"
                     variant="outlined"
                     fullWidth
                   >

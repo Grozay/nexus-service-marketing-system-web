@@ -116,6 +116,11 @@ export const GetPlanBySlugAPI = async (slug) => {
   return response.data
 }
 
+export const getPlanByCategoryIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Plan/Categories/${id}`)
+  return response.data
+}
+
 // PRE-ORDER
 export const createPreOrderAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/PreOrder/Create`, data)
@@ -142,7 +147,6 @@ export const getVendorByIdAPI = async (id) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Vendor/${id}`)
   return response.data
 }
-
 
 //retail shop
 export const getAllRetailShopsAPI = async () => {
@@ -186,8 +190,13 @@ export const getEquipmentByIdAPI = async (id) => {
   return response.data
 }
 
-// ORDER
+//contact us
+export const contactUsAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Other/contact-us`, data)
+  return response.data
+}
 
+// ORDER
 export const getAllOrdersAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Order`)
   return response.data
@@ -207,6 +216,7 @@ export const updateOrderAPI = async (data) => {
   const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Order/Update`, data)
   return response.data
 }
+
 
 // BILLING
 export const getAllBillingsAPI = async () => {
@@ -234,3 +244,4 @@ export const getAllPaymentsAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Payment`)
   return response.data
 }
+

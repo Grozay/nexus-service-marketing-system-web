@@ -47,14 +47,6 @@ const Register = () => {
     })
   }, [dispatch, slug])
 
-  // useEffect(() => {
-  //   if (currentPlan) {
-  //     setFormData((prevData) => ({
-  //       ...prevData
-  //     }))
-  //   }
-  // }, [currentPlan])
-
   const handleNext = () => {
     let errors = {}
     if (activeStep === 0) {
@@ -83,13 +75,13 @@ const Register = () => {
     toast.promise(
       createPreOrderAPI(formData),
       {
-        loading: 'Submitting...',
-        success: 'Subscription successful!',
-        error: 'Error submitting subscription'
+        pending: 'Submitting...',
+        success: 'Registered successfully!',
+        error: 'Error registering'
       }
     ).then((res) => {
       if (!res.error) {
-        navigate('/service')
+        navigate('/services')
       }
     })
   }

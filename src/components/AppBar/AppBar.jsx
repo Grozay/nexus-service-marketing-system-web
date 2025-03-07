@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
@@ -11,7 +12,6 @@ import Button from '@mui/material/Button'
 import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
-import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
 import LogoutIcon from '@mui/icons-material/Logout'
@@ -25,38 +25,41 @@ import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
-
 const NavBar = () => {
   const [anchorElNav, setAnchorElNav] = useState(null)
   const [anchorElUser, setAnchorElUser] = useState(null)
   const [anchorElNavPlans, setAnchorElNavPlans] = useState(null)
+  const [anchorElNavSupport, setAnchorElNavSupport] = useState(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const currentAccount = useSelector(selectCurrentAccount)
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget)
-  }
+  // eslint-disable-next-line no-console
+  console.log(anchorElNav)
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget)
   }
-
   const handleOpenNavMenuPlans = (event) => {
     setAnchorElNavPlans(event.currentTarget)
+  }
+  const handleOpenNavMenuSupport = (event) => {
+    setAnchorElNavSupport(event.currentTarget)
   }
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null)
   }
-
   const handleCloseUserMenu = () => {
     setAnchorElUser(null)
   }
-
   const handleCloseNavMenuPlans = () => {
     setAnchorElNavPlans(null)
+  }
+  const handleCloseNavMenuSupport = () => {
+    setAnchorElNavSupport(null)
   }
 
   const toggleDrawer = (open) => (event) => {
@@ -66,7 +69,6 @@ const NavBar = () => {
     setDrawerOpen(open)
   }
 
-  //Confirm logout
   const confirmLogout = useConfirm()
   const handleLogout = async () => {
     const { confirmed } = await confirmLogout({
@@ -142,8 +144,6 @@ const NavBar = () => {
             <Typography
               variant="h5"
               noWrap
-              component="a"
-              href="#app-bar-with-responsive-menu"
               sx={{
                 mr: 2,
                 display: { xs: 'flex', md: 'none' },
@@ -157,14 +157,33 @@ const NavBar = () => {
             >
               NEXUS SERVICE
             </Typography>
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex', justifyContent: 'center' } }}>
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex', justifyContent: 'center' }, gap: 1 }}>
               <Button
-                id="basic-button"
-                aria-controls={Boolean(anchorElNavPlans) ? 'basic-menu' : undefined}
+                id="services-button"
+                aria-controls={Boolean(anchorElNavPlans) ? 'services-menu' : undefined}
                 aria-haspopup="true"
                 aria-expanded={Boolean(anchorElNavPlans) ? 'true' : undefined}
                 onClick={handleOpenNavMenuPlans}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{
+                  my: 2,
+                  color: 'white',
+                  display: 'block',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&:hover::after': {
+                    width: '100%'
+                  },
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    width: 0,
+                    height: '2px',
+                    backgroundColor: 'white',
+                    transition: 'width 0.3s ease-in-out'
+                  }
+                }}
               >
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   <span>Services</span>
@@ -172,12 +191,12 @@ const NavBar = () => {
                 </Box>
               </Button>
               <Menu
-                id="basic-menu"
+                id="services-menu"
                 anchorEl={anchorElNavPlans}
                 open={Boolean(anchorElNavPlans)}
                 onClose={handleCloseNavMenuPlans}
                 MenuListProps={{
-                  'aria-labelledby': 'basic-button'
+                  'aria-labelledby': 'services-button'
                 }}
               >
                 <MenuItem component={Link} to='/service/dial-up-connection' onClick={handleCloseNavMenuPlans}>
@@ -190,31 +209,116 @@ const NavBar = () => {
                   <Typography textAlign="center">Landline Connection</Typography>
                 </MenuItem>
               </Menu>
+
               <Link to={'/about-us'} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <Button
                   onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
+                  sx={{
+                    my: 2,
+                    color: 'white',
+                    display: 'block',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    '&:hover::after': {
+                      width: '100%'
+                    },
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      width: 0,
+                      height: '2px',
+                      backgroundColor: 'white',
+                      transition: 'width 0.3s ease-in-out'
+                    }
+                  }}
                 >
                   About Us
                 </Button>
               </Link>
-              <Link to={'/support'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <Button
-                  onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
-                >
-                  Support
-                </Button>
-              </Link>
+
+              <Button
+                id="support-button"
+                aria-controls={Boolean(anchorElNavSupport) ? 'support-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={Boolean(anchorElNavSupport) ? 'true' : undefined}
+                onClick={handleOpenNavMenuSupport}
+                sx={{
+                  my: 2,
+                  color: 'white',
+                  display: 'block',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&:hover::after': {
+                    width: '100%'
+                  },
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    width: 0,
+                    height: '2px',
+                    backgroundColor: 'white',
+                    transition: 'width 0.3s ease-in-out'
+                  }
+                }}
+              >
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <span>Support</span>
+                  <ExpandMoreIcon fontSize="medium" />
+                </Box>
+              </Button>
+              <Menu
+                id="support-menu"
+                anchorEl={anchorElNavSupport}
+                open={Boolean(anchorElNavSupport)}
+                onClose={handleCloseNavMenuSupport}
+                MenuListProps={{
+                  'aria-labelledby': 'support-button'
+                }}
+              >
+                <MenuItem component={Link} to='/support' onClick={handleCloseNavMenuSupport}>
+                  <Typography textAlign="center">Support</Typography>
+                </MenuItem>
+                <MenuItem component={Link} to='/stores' onClick={handleCloseNavMenuSupport}>
+                  <Typography textAlign="center">Store Locations</Typography>
+                </MenuItem>
+                <MenuItem component={Link} to='/contact-us' onClick={handleCloseNavMenuSupport}>
+                  <Typography textAlign="center">Contact Us</Typography>
+                </MenuItem>
+              </Menu>
+
               <Link to={'/news'} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <Button
                   onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
+                  sx={{
+                    my: 2,
+                    color: 'white',
+                    display: 'block',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    '&:hover::after': {
+                      width: '100%'
+                    },
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      width: 0,
+                      height: '2px',
+                      backgroundColor: 'white',
+                      transition: 'width 0.3s ease-in-out'
+                    }
+                  }}
                 >
                   News & Events
                 </Button>
               </Link>
             </Box>
+
             <Box sx={{ flexGrow: 0 }}>
               <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
                 <Box sx={{ display: { xs: 'none', md: 'block' } }}>
@@ -298,4 +402,5 @@ const NavBar = () => {
     </Box>
   )
 }
+
 export default NavBar
