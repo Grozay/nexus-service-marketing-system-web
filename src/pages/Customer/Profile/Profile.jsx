@@ -13,6 +13,7 @@ import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid'
 import { Link } from 'react-router-dom'
 import Grid from '@mui/material/Grid2'
 import AppBar from '~/components/AppBar/AppBar'
+
 const Profile = () => {
   // Sample customer data (replace with real API data)
   const customerData = {
@@ -200,13 +201,13 @@ const Profile = () => {
             Account Settings
           </Typography>
           <List dense>
-            <ListItem component={Link} to="/profile/change-password">
+            <ListItem component={Link} to="/account/profile/change-password">
               <ListItemIcon>
                 <VpnKeyIcon />
               </ListItemIcon>
               <ListItemText primary="Change Password" />
             </ListItem>
-            <ListItem component={Link} to="/profile/update-profile">
+            <ListItem component={Link} to="/account/profile/update-profile">
               <ListItemIcon>
                 <EditIcon />
               </ListItemIcon>

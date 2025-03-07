@@ -1,8 +1,9 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { interceptorLoadingElements } from '~/utils/formatter'
-import { refreshTokenEmployeeAPI } from '~/apis'
+import { refreshTokenAccountAPI, refreshTokenEmployeeAPI } from '~/apis'
 import { logoutEmployeeApi } from '~/redux/user/employeeSlice.js'
+import { logoutAccountApi } from '~/redux/user/accountSlice'
 
 //Không thể import {store } from '~/redux/store.js' theo cách thông thường
 //giải pháp: Inject store : là kỹ thuật khi cần sửa dụng biến redux store ở các file ngoài phạm vi component như file này
@@ -34,6 +35,16 @@ authorizedAxiosInstance.interceptors.request.use((config) => {
 //Mục đichs tạo ra promíe này để khi nào gọi api refresh_token xong xuôi thì mới retry lại nhiều api bị lỗi trước đó.
 let refreshTokenPromise = null
 
+// Hàm xác định loại người dùng từ Redux store
+const getUserType = () => {
+  const state = axiosReduxStore.getState()
+  const currentUser = state.user?.currentUser // Employee
+  const currentAccount = state.account?.currentAccount // Customer
+
+  if (currentUser) return 'employee'
+  if (currentAccount) return 'account'
+  return null // Không có người dùng nào đăng nhập
+}
 // intercepter response: Can thiệp vào giữa mọi response nhận được từ BE
 authorizedAxiosInstance.interceptors.response.use((response) => {
   // Any status code that lie within the range of 2xx cause this function to trigger
@@ -52,27 +63,48 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
 
   //Quang trọng: Xử lý việc refresh token tự động
   //Trường hợp 1: Nếu như nhận mã 401 thừ BE, thì gọi api đăng xuất luôn
+
+  // Xử lý lỗi 401 - Token hết hạn hoặc không hợp lệ
   if (error?.response?.status === 401) {
-    // axiosReduxStore.dispatch(logoutEmployeeApi(false))
-    axiosReduxStore.dispatch(logoutEmployeeApi())
+    const userType = getUserType()
+    if (userType === 'employee') {
+      axiosReduxStore.dispatch(logoutEmployeeApi())
+    } else if (userType === 'account') {
+      axiosReduxStore.dispatch(logoutAccountApi())
+    }
+    return Promise.reject(error)
   }
-  //Trường hợp 2: Nếu như nhận mã 401 thừ BE, thì gọi api refresh_token để lấy token mới
+  //Trường hợp 2: Nếu như nhận mã 410 thừ BE, thì gọi api refresh_token để lấy token mới
   //Đầu tiên lấy được cái request api đang bị lỗi thong qua error.config
   const originalRequests = error.config
   // Kiểm tra xem error.response có tồn tại không trước khi truy cập thuộc tính status
   if (error?.response?.status === 410 && !originalRequests._retry) {
     // Gán thêm một thuộc tính _retry vào originalRequests để biết được rằng đây là request đã được retry
     originalRequests._retry = true
+    //Lay user Type
+    const userType = getUserType()
+    if (!userType) {
+      // Nếu không xác định được userType, logout cả hai và báo lỗi
+      axiosReduxStore.dispatch(logoutEmployeeApi())
+      axiosReduxStore.dispatch(logoutAccountApi())
+      return Promise.reject(new Error('Error - Refresh Token'))
+    }
     // Kiểm tra xem nếu chưa có refreshTokenPromise thì thực hiện việc gọi api refresh_token
     if (!refreshTokenPromise) {
-      refreshTokenPromise = refreshTokenEmployeeAPI()
+      refreshTokenPromise = userType === 'employee' ? refreshTokenEmployeeAPI() : refreshTokenAccountAPI()
+
+      refreshTokenPromise = refreshTokenPromise
         .then((data) => {
           // AccessToken đã nằm trong httpOnly cookie (xử lý từ BE)
           return data?.accessToken
         })
         .catch((_error) => {
           // Nếu nhận bất kì lỗi nào từ api refresh token thì cứ logout luôn
-          axiosReduxStore.dispatch(logoutEmployeeApi())
+          if (userType === 'employee') {
+            axiosReduxStore.dispatch(logoutEmployeeApi())
+          } else if (userType === 'account') {
+            axiosReduxStore.dispatch(logoutAccountApi())
+          }
           return Promise.reject(_error)
         })
         .finally(() => {
@@ -80,6 +112,7 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
           refreshTokenPromise = null
         })
     }
+    // Kiểm tra xem nếu chưa có refreshTokenPromise2 thì thực hiện việc gọi api refresh_token
     // Khi refreshTokenPromise được gán xong, thì sẽ retry lại cái request api bị lỗi
     // eslint-disable-next-line no-unused-vars
     return refreshTokenPromise.then((accessToken) => {

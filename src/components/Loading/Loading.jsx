@@ -9,7 +9,7 @@ function Loading() {
       alignItems="center"
       minHeight="100vh"
       sx={{
-        backgroundColor: 'background.default', 
+        backgroundColor: 'background.default',
         position: 'fixed',
         top: 0,
         left: 0,
