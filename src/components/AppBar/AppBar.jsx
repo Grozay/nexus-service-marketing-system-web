@@ -15,10 +15,10 @@ import AdbIcon from '@mui/icons-material/Adb'
 import { Link, useNavigate } from 'react-router-dom'
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
 import LogoutIcon from '@mui/icons-material/Logout'
-import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck'
+// import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck'
 import ModeSelect from '../ModeSelect/ModeSelect'
 import DrawerAppBar from './DrawerAppBar/DrawerAppBar'
-import LocalShippingIcon from '@mui/icons-material/LocalShipping'
+// import LocalShippingIcon from '@mui/icons-material/LocalShipping'
 import { useDispatch, useSelector } from 'react-redux'
 import { logoutAccountApi, selectCurrentAccount } from '~/redux/user/accountSlice'
 import { toast } from 'react-toastify'
@@ -36,9 +36,6 @@ const NavBar = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  // eslint-disable-next-line no-console
-  console.log(anchorElNav)
-
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget)
   }
@@ -50,7 +47,7 @@ const NavBar = () => {
   }
 
   const handleCloseNavMenu = () => {
-    setAnchorElNav(null)
+    setAnchorElNav(anchorElNav)
   }
   const handleCloseUserMenu = () => {
     setAnchorElUser(null)
@@ -362,7 +359,7 @@ const NavBar = () => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <Link to={'/profile'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link to={'/account/profile'} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <MenuItem onClick={handleCloseUserMenu} role="menuitem" tabIndex={0}>
                     <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
                       <PersonOutlineIcon />
@@ -370,7 +367,8 @@ const NavBar = () => {
                     </Typography>
                   </MenuItem>
                 </Link>
-                <Link to={'/profile/registered-plans'} style={{ textDecoration: 'none', color: 'inherit' }}>
+
+                {/* <Link to={'/account/registered-plans'} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <MenuItem onClick={handleCloseUserMenu}>
                     <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
                       <PlaylistAddCheckIcon fontSize="small" />
@@ -378,14 +376,15 @@ const NavBar = () => {
                     </Typography>
                   </MenuItem>
                 </Link>
-                <Link to={'/profile/order-status'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link to={'/account/order-status'} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <MenuItem onClick={handleCloseUserMenu}>
                     <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>
                       <LocalShippingIcon fontSize="small" />
                       Order Status
                     </Typography>
                   </MenuItem>
-                </Link>
+                </Link> */}
+
                 <Typography onClick={handleLogout} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <MenuItem onClick={handleCloseUserMenu}>
                     <Typography sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: 1 }}>

@@ -14,15 +14,12 @@ const Register = lazy(() => import('~/pages/Customer/Register/Register'))
 const Profile = lazy(() => import('~/pages/Customer/Profile/Profile'))
 const Support = lazy(() => import('~/pages/Customer/Support/Support'))
 const AboutUs = lazy(() => import('~/pages/Customer/AboutUs/AboutUs'))
-const RegisteredPlans = lazy(() => import('~/pages/Customer/Profile/RegisteredPlans/RegisteredPlans'))
-const RegisterPlansDetail = lazy(() => import('~/pages/Customer/Profile/RegisteredPlans/RegisteredPlansDetail/RegisterPlansDetail'))
 const ChangePassword = lazy(() => import('~/pages/Customer/Profile/ChangePassword/ChangePassword'))
 const UpdateProfile = lazy(() => import('~/pages/Customer/Profile/UpdateProfile/UpdateProfile'))
 const ContactUs = lazy(() => import('~/pages/Customer/ContactUs/ContactUs'))
 const Stores = lazy(() => import('~/pages/Customer/Stores/Stores'))
-const OrderStatus = lazy(() => import('~/pages/Customer/Profile/OrderStatus/OrderStatus'))
 const News = lazy(() => import('~/pages/Customer/News/News'))
-const NewsDetail = lazy(() => import('~/pages/Customer/News/NewsDetail/NewsDetail'))
+const NewsDetails = lazy(() => import('~/pages/Customer/News/NewsDetails/NewsDetails'))
 const NotFound = lazy(() => import('~/pages/Customer/NotFound/NotFound'))
 const AuthAdmin = lazy(() => import('~/pages/Admin/AuthAdmin/Auth'))
 
@@ -52,7 +49,7 @@ function App() {
           <Route path='/stores' element={<Stores />} />
           <Route path='/register/:slug' element={<Register />} />
           <Route path='/news' element={<News />} />
-          <Route path='/news/:slug' element={<NewsDetail />} />
+          <Route path='/news/:slug' element={<NewsDetails />} />
 
           {currentAccount ? (
             <>
@@ -62,11 +59,12 @@ function App() {
               <Route path='/account/reset-password' element={
                 <Navigate to='/' replace={true} />} />
               <Route path='/account/profile' element={<Profile />} />
-              <Route path='/account/profile/registered-plans' element={<RegisteredPlans />} />
-              <Route path='/account/profile/registered-plans/:slug' element={<RegisterPlansDetail />} />
               <Route path='/account/profile/update-profile' element={<UpdateProfile />} />
               <Route path='/account/profile/change-password' element={<ChangePassword />} />
-              <Route path='/account/profile/order-status' element={<OrderStatus />} />
+
+              {/* <Route path='/account/profile/registered-plans' element={<RegisteredPlans />} />
+              <Route path='/account/profile/registered-plans/:slug' element={<RegisterPlansDetail />} />
+              <Route path='/account/profile/order-status' element={<OrderStatus />} /> */}
             </>
           ) : (
             <>
@@ -75,16 +73,16 @@ function App() {
               <Route path='/account/reset-password' element={<Auth />} />
               <Route path='/account/profile' element={
                 <Navigate to='/account/login' replace={true} />} />
-              <Route path='/account/profile/registered-plans' element={
-                <Navigate to='/account/login' replace={true} />} />
-              <Route path='/account/profile/registered-plans/:slug' element={
-                <Navigate to='/account/login' replace={true} />} />
               <Route path='/account/profile/update-profile' element={
                 <Navigate to='/account/login' replace={true} />} />
               <Route path='/account/profile/change-password' element={
                 <Navigate to='/account/login' replace={true} />} />
-              <Route path='/account/profile/order-status' element={
+              {/* <Route path='/account/profile/registered-plans' element={
                 <Navigate to='/account/login' replace={true} />} />
+              <Route path='/account/profile/registered-plans/:slug' element={
+                <Navigate to='/account/login' replace={true} />} />
+              <Route path='/account/profile/order-status' element={
+                <Navigate to='/account/login' replace={true} />} /> */}
             </>
           )}
 
@@ -98,6 +96,7 @@ function App() {
           </Route>
         </Routes>
       </Suspense>
+      {/* Popup and Modal */}
       <PageFly />
     </>
   )

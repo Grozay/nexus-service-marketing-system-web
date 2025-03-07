@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -6,10 +6,21 @@ import IconButton from '@mui/material/IconButton'
 import HowToRegIcon from '@mui/icons-material/HowToReg'
 import CloseIcon from '@mui/icons-material/Close'
 import Fade from '@mui/material/Fade'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 const PageFly = () => {
   const [isVisible, setIsVisible] = useState(true)
+  const location = useLocation() // Lấy thông tin đường dẫn hiện tại
+
+  // Kiểm tra đường dẫn mỗi khi location thay đổi
+  useEffect(() => {
+    // Nếu đường dẫn chứa "domain/management", ẩn component
+    if (location.pathname.includes('management')) {
+      setIsVisible(false)
+    } else {
+      setIsVisible(true) // Hiển thị ở các trang khác
+    }
+  }, [location]) // Chạy lại khi location thay đổi
 
   return (
     <Fade in={isVisible} timeout={2000}>
