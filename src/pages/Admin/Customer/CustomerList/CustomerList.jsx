@@ -16,17 +16,17 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons
 } from '@mui/x-data-grid'
-import { getAllAccountsAPI, getAccountByIdAPI, activateAccountAPI } from '~/apis'
+import { getAllAccountsAPI, activateAccountAPI } from '~/apis'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { updateAccountAPI } from '~/apis'
 import { formatDate } from '~/utils/formatter'
+import { useNavigate } from 'react-router-dom'
 import Chip from '@mui/material/Chip'
 import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
 import Typography from '@mui/material/Typography'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
-import Modal from '@mui/material/Modal'
 import DoneAllIcon from '@mui/icons-material/DoneAll'
 import BlockIcon from '@mui/icons-material/Block'
 
@@ -78,9 +78,7 @@ export default function CustomerList() {
   const [selectedId, setSelectedId] = useState(null)
   const [previousRow, setPreviousRow] = useState(null)
   const confirmUpdate = useConfirm()
-  const [selectedCustomer, setSelectedCustomer] = useState(null)
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
-
+  const navigate = useNavigate()
   // Fetch customers on component mount
   useEffect(() => {
     const fetchData = async () => {
@@ -142,14 +140,8 @@ export default function CustomerList() {
     setRows(rows.map((row) => (row.id === id ? { ...row, status: false } : row)))
   }
 
-  const handleViewDetail = (id) => async () => {
-    try {
-      const customer = await getAccountByIdAPI(id)
-      setSelectedCustomer(customer)
-      setIsDetailModalOpen(true)
-    } catch (error) {
-      toast.error(error.message || 'Failed to fetch customer details')
-    }
+  const handleViewDetail = (id) => () => {
+    return () => navigate(`/management/customer/${id}`)
   }
 
   const handleCancelClick = (id) => () => {
@@ -307,60 +299,6 @@ export default function CustomerList() {
     }
   ]
 
-  const renderDetailModal = () => (
-    <Modal
-      open={isDetailModalOpen}
-      onClose={() => setIsDetailModalOpen(false)}
-      aria-labelledby="customer-detail-modal"
-      aria-describedby="customer-detail-modal-description"
-    >
-      <Box sx={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 600,
-        bgcolor: 'background.paper',
-        boxShadow: 24,
-        p: 4,
-        borderRadius: 2
-      }}>
-        {selectedCustomer && (
-          <>
-            <Typography variant="h6" component="h2" gutterBottom>
-              Customer Details
-            </Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
-              <DetailItem label="ID" value={selectedCustomer?.accountId} />
-              <DetailItem label="Name" value={selectedCustomer?.accountName} />
-              <DetailItem label="Email" value={selectedCustomer?.accountEmail} />
-              <DetailItem label="Phone" value={selectedCustomer?.accountPhone} />
-              <DetailItem label="Address" value={selectedCustomer?.accountAddress} />
-              <DetailItem label="City" value={selectedCustomer?.cityCodeDetails?.cityName} />
-              <DetailItem label="Category" value={selectedCustomer?.categoryDetails?.categoryName} />
-              <DetailItem label="Identity" value={selectedCustomer?.accountIdentity} />
-              <DetailItem label="DOB" value={formatDate(selectedCustomer?.accountDOB)} />
-              <DetailItem label="Gender" value={selectedCustomer?.accountGender} />
-              <DetailItem label="Deposit" value={selectedCustomer?.categoryDetails?.categoryDeposit + '$'} />
-              <DetailItem label="Status" value={selectedCustomer?.accountIsActive ? 'Active' : 'Inactive'} />
-              <DetailItem label="Joined Date" value={formatDate(selectedCustomer?.accountCreatedAt)} />
-            </Box>
-          </>
-        )}
-      </Box>
-    </Modal>
-  )
-
-  const DetailItem = ({ label, value }) => (
-    <Box>
-      <Typography variant="subtitle2" color="text.secondary">
-        {label}
-      </Typography>
-      <Typography variant="body1">
-        {value || 'N/A'}
-      </Typography>
-    </Box>
-  )
 
   return (
     <Box
@@ -445,15 +383,11 @@ export default function CustomerList() {
           <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
           Delete
         </MenuItem>
-        <MenuItem onClick={() => {
-          handleViewDetail(selectedId)()
-          handleCloseMenu()
-        }}>
+        <MenuItem onClick={handleViewDetail(selectedId)()}>
           <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1 }} />
           View Detail
         </MenuItem>
       </Menu>
-      {renderDetailModal()}
     </Box>
   )
 }

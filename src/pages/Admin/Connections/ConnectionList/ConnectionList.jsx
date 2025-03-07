@@ -4,7 +4,6 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Close'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import Select from '@mui/material/Select'
 import { useState, useEffect } from 'react'
 import {
   GridRowModes,
@@ -17,49 +16,46 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons
 } from '@mui/x-data-grid'
-import { getAllEmployeesAPI } from '~/apis'
+import { getPlanListAPI } from '~/apis' // Assuming this API fetches plan list
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import { updateEmployeeAPI } from '~/apis'
+import { updateAccountAPI } from '~/apis' // Keep for now, might need to change to plan update API
 import { formatDate } from '~/utils/formatter'
 import Chip from '@mui/material/Chip'
 import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
 import Typography from '@mui/material/Typography'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
-import { activateEmployeeAPI } from '~/apis'
+import Modal from '@mui/material/Modal'
 import DoneAllIcon from '@mui/icons-material/DoneAll'
 import BlockIcon from '@mui/icons-material/Block'
 import { useNavigate } from 'react-router-dom'
-// Function to transform employee data from API
-const transformEmployeeData = (employees) => {
-  if (!Array.isArray(employees)) return []
-  return employees
-    .filter(employee => !employee.isDeleted)
-    .map(employee => ({
-      id: employee.employeeId,
-      name: employee.employeeName,
-      email: employee.employeeEmail,
-      phone: employee.employeePhone,
-      role: employee.employeeRole,
-      status: employee.employeeIsActive,
-      joinDate: new Date(employee.employeeCreatedAt),
-      gender: employee.employeeGender,
-      address: employee.employeeAddress,
-      dob: new Date(employee.employeeDOB)
+// Function to transform plan data from API
+const transformPlanData = (plans) => {
+  if (!Array.isArray(plans)) return []
+  return plans
+    .filter(plan => plan) // Assuming no isDeleted equivalent for plans, remove filter if needed
+    .map(plan => ({
+      id: plan.planId,
+      name: plan.planName,
+      type: plan.planType,
+      price: plan.planPrice, // Changed from deposit to price
+      validity: plan.planValidity, // Changed from Validity to validity
+      status: plan.planIsActive,
+      slug: plan.planSlug
     }))
 }
 
-// Fetch all employees from API
-const getAllEmployees = async () => {
+// Fetch all plans from API
+const getAllPlans = async () => {
   try {
-    const response = await getAllEmployeesAPI()
+    const response = await getPlanListAPI() // Using getPlanListAPI
     if (!Array.isArray(response)) {
       return []
     }
-    return transformEmployeeData(response)
+    return transformPlanData(response)
   } catch (error) {
-    throw new Error('Error fetching employees:', error)
+    throw new Error('Error fetching plans:', error)
   }
 }
 
@@ -74,19 +70,22 @@ function EditToolbar() {
   )
 }
 
-export default function EmployeeList() {
+export default function ConnectionList() { // Renamed from CustomerList to ConnectionList
   const [rows, setRows] = useState([])
   const [rowModesModel, setRowModesModel] = useState({})
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedId, setSelectedId] = useState(null)
   const [previousRow, setPreviousRow] = useState(null)
   const confirmUpdate = useConfirm()
+  const [selectedPlan, setSelectedPlan] = useState(null) // Changed from selectedCustomer to selectedPlan
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
   const navigate = useNavigate()
-  // Fetch employees on component mount
+  // Fetch plans on component mount
   useEffect(() => {
     const fetchData = async () => {
-      const employees = await getAllEmployees()
-      setRows(employees)
+      const plans = await getAllPlans() // Using getAllPlans
+      console.log('🚀 ~ fetchData ~ plans:', plans)
+      setRows(plans)
     }
     fetchData()
   }, [])
@@ -111,36 +110,50 @@ export default function EmployeeList() {
     try {
       const { confirmed } = await confirmUpdate({
         title: 'Confirm Delete',
-        description: 'Are you sure you want to delete this employee?',
+        description: 'Are you sure you want to delete this plan?', // Updated description
         confirmationText: 'Delete',
         cancellationText: 'Cancel'
       })
 
       if (confirmed) {
-        // Call API to soft delete
-        await updateEmployeeAPI({
-          employeeId: id,
+        // Call API to soft delete - Assuming plan API is similar to account API for delete
+        await updateAccountAPI({ // Keep updateAccountAPI for now, might need to change
+          accountId: id, // Assuming planId can be used as accountId for now, adjust if needed
           isDeleted: true
         })
         // Update local state
         setRows(rows.filter((row) => row.id !== id))
-        toast.success('Employee deleted successfully')
+        toast.success('Plan deleted successfully') // Updated message
       }
     } catch (error) {
-      toast.error(error.message || 'Failed to delete employee')
+      toast.error(error.message || 'Failed to delete plan') // Updated message
     }
   }
 
-  const handleActivateClick = (id) => async () => {
-    await activateEmployeeAPI({ employeeId: id, employeeIsActive: true })
-    toast.success('Employee activated successfully')
-    setRows(rows.map((row) => (row.id === id ? { ...row, status: true } : row)))
-  }
+  //   const handleActivateClick = (id) => async () => {
+  //     await activateAccountAPI({ accountId: id, accountIsActive: true }) // Keep activateAccountAPI for now, might need to change
+  //     toast.success('Plan activated successfully') // Updated message
+  //     setRows(rows.map((row) => (row.id === id ? { ...row, status: true } : row)))
+  //   }
 
-  const handleDeactivateClick = (id) => async () => {
-    await activateEmployeeAPI({ employeeId: id, employeeIsActive: false })
-    toast.success('Employee deactivated successfully')
-    setRows(rows.map((row) => (row.id === id ? { ...row, status: false } : row)))
+  //   const handleDeactivateClick = (id) => async () => {
+  //     await activateAccountAPI({ accountId: id, accountIsActive: false }) // Keep deactivateAccountAPI for now, might need to change
+  //     toast.success('Plan deactivated successfully') // Updated message
+  //     setRows(rows.map((row) => (row.id === id ? { ...row, status: false } : row)))
+  //   }
+
+  //   const handleViewDetail = (id) => async () => {
+  //     try {
+  //       const plan = await getAccountByIdAPI(id) // Keep getAccountByIdAPI for now, might need to change to getPlanByIdAPI
+  //       setSelectedPlan(plan) // Changed from setSelectedCustomer to setSelectedPlan
+  //       setIsDetailModalOpen(true)
+  //     } catch (error) {
+  //       toast.error(error.message || 'Failed to fetch plan details') // Updated message
+  //     }
+  //   }
+
+  const handleViewDetail = (slug) => () => {
+    return () => navigate(`/management/connection-plans/${slug}`)
   }
 
   const handleCancelClick = (id) => () => {
@@ -160,40 +173,38 @@ export default function EmployeeList() {
 
   const processRowUpdate = async (newRow) => {
     try {
-      // Validate required fields
-      if (!newRow.name || !newRow.email || !newRow.phone) {
+      // Validate required fields - Adjust validation based on plan fields
+      if (!newRow.name || !newRow.type || !newRow.price) { // Adjusted fields based on plan data
         throw new Error('Please fill in all required fields')
       }
 
       const updatedRow = { ...newRow, isNew: false }
       setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)))
 
-      const { id, name, role, dob, gender, address, phone, email } = updatedRow
+      const { id, name, validity, price, type } = updatedRow // Adjusted fields based on plan data
 
-      // Format date properly
-      const formattedDOB = formatDate(dob)
+      // Format date properly - Remove date formatting as plan data example doesn't have date
+      // const formattedDOB = formatDate(dob)
 
       const payload = {
-        employeeId: id,
-        employeeName: name,
-        employeeRole: role,
-        employeeDOB: formattedDOB,
-        employeeGender: gender,
-        employeeAddress: address,
-        employeePhone: phone,
-        employeeEmail: email
+        planId: id, // Changed from accountId to planId
+        planName: name, // Changed from accountName to planName
+        planType: type, // Changed from accountAddress to planType, assuming type maps to address field for now
+        planValidity: validity, // Assuming validity maps to dob field for now
+        planPrice: price // Changed from accountPhone to planPrice, assuming price maps to phone field for now
+        // accountEmail: email - Removed email as plan data example doesn't have email
       }
 
       const { confirmed } = await confirmUpdate({
         title: 'Confirm Update',
-        description: 'Are you sure you want to update this employee?',
+        description: 'Are you sure you want to update this plan?', // Updated description
         confirmationText: 'Update',
         cancellationText: 'Cancel'
       })
 
       if (confirmed) {
-        await updateEmployeeAPI(payload)
-        toast.success('Update employee successfully')
+        await updateAccountAPI(payload) // Keep updateAccountAPI for now, might need to change to plan update API
+        toast.success('Update plan successfully') // Updated message
       } else {
         throw new Error('Update cancelled by user')
       }
@@ -201,9 +212,9 @@ export default function EmployeeList() {
     } catch (error) {
       if (error?.errors) {
         const errorMessages = Object.values(error.errors).flat()
-        toast.error(errorMessages.join(', ') || 'Update employee failed')
+        toast.error(errorMessages.join(', ') || 'Update plan failed') // Updated message
       } else {
-        toast.error(error.message || 'Update employee failed')
+        toast.error(error.message || 'Update plan failed') // Updated message
       }
       throw error
     }
@@ -223,40 +234,12 @@ export default function EmployeeList() {
     setSelectedId(null)
   }
 
-  const handleViewDetail = (id) => {
-    return () => navigate(`/management/employee/${id}`)
-  }
-
   const columns = [
-    { field: 'id', headerName: 'Employee ID', width: 150, editable: false },
-    { field: 'name', headerName: 'Name', width: 150, editable: true },
-    { field: 'email', headerName: 'Email', width: 200, editable: true },
-    { field: 'phone', headerName: 'Phone', width: 150, editable: true },
-    {
-      field: 'role',
-      headerName: 'Role',
-      width: 150,
-      editable: true,
-      type: 'singleSelect',
-      valueOptions: ['Account Staff', 'Retail Staff', 'Technical Staff'],
-      renderEditCell: (params) => (
-        <Select
-          value={params.value || ''}
-          onChange={(e) => params.api.setEditCellValue({
-            id: params.id,
-            field: params.field,
-            value: e.target.value
-          })}
-          size="small"
-          fullWidth
-          native
-        >
-          <option value="Account Staff">Account Staff</option>
-          <option value="Retail Staff">Retail Staff</option>
-          <option value="Technical Staff">Technical Staff</option>
-        </Select>
-      )
-    },
+    { field: 'id', headerName: 'Plan ID', width: 150, editable: false }, // Updated headerName
+    { field: 'name', headerName: 'Plan Name', width: 150, editable: true }, // Updated headerName
+    { field: 'type', headerName: 'Plan Type', width: 200, editable: true }, // Updated headerName
+    { field: 'price', headerName: 'Price', width: 150, editable: true }, // Updated headerName and field
+    { field: 'validity', headerName: 'Validity', width: 200, editable: true }, // Updated headerName and field
     {
       field: 'status',
       headerName: 'Status',
@@ -272,13 +255,7 @@ export default function EmployeeList() {
         />
       )
     },
-    {
-      field: 'joinDate',
-      headerName: 'Join Date',
-      width: 150,
-      editable: false,
-      type: 'date'
-    },
+    // Removed joinDate column as plan data example doesn't have join date
     {
       field: 'actions',
       type: 'actions',
@@ -328,6 +305,58 @@ export default function EmployeeList() {
     }
   ]
 
+  const renderDetailModal = () => (
+    <Modal
+      open={isDetailModalOpen}
+      onClose={() => setIsDetailModalOpen(false)}
+      aria-labelledby="plan-detail-modal" // Updated aria-labelledby
+      aria-describedby="plan-detail-modal-description" // Updated aria-describedby
+    >
+      <Box sx={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 600,
+        bgcolor: 'background.paper',
+        boxShadow: 24,
+        p: 4,
+        borderRadius: 2
+      }}>
+        {selectedPlan && ( // Changed from selectedCustomer to selectedPlan
+          <>
+            <Typography variant="h6" component="h2" gutterBottom>
+              Plan Details {/* Updated title */}
+            </Typography>
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
+              <DetailItem label="ID" value={selectedPlan?.planId} /> {/* Updated value */}
+              <DetailItem label="Name" value={selectedPlan?.planName} /> {/* Updated value */}
+              <DetailItem label="Type" value={selectedPlan?.planType} /> {/* Updated value */}
+              <DetailItem label="Price" value={selectedPlan?.planPrice} /> {/* Updated value */}
+              <DetailItem label="Validity" value={selectedPlan?.planValidity} /> {/* Updated value */}
+              {/* Removed customer specific detail items, add plan specific details if available in API response */}
+              {/* Example if plan details include category: */}
+              {/* <DetailItem label="Category" value={selectedPlan?.plan_Category?.categoryName} /> */}
+              <DetailItem label="Status" value={selectedPlan?.planIsActive ? 'Active' : 'Inactive'} /> {/* Updated value */}
+              {/* Removed Joined Date as plan data example doesn't have join date */}
+            </Box>
+          </>
+        )}
+      </Box>
+    </Modal>
+  )
+
+  const DetailItem = ({ label, value }) => (
+    <Box>
+      <Typography variant="subtitle2" color="text.secondary">
+        {label}
+      </Typography>
+      <Typography variant="body1">
+        {value || 'N/A'}
+      </Typography>
+    </Box>
+  )
+
   return (
     <Box
       sx={{
@@ -350,11 +379,12 @@ export default function EmployeeList() {
           fontWeight: 'bold'
         }}
       >
-        Employee Management
+        Connection Plan Management {/* Updated title */}
       </Typography>
       <DataGrid
         rows={rows}
         columns={columns}
+        getRowId={(row) => row?.id || Math.random().toString(36).slice(2, 11)}
         editMode="row"
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}
@@ -387,7 +417,7 @@ export default function EmployeeList() {
         {
           rows.find((row) => row.id === selectedId)?.status === false ? (
             <MenuItem onClick={() => {
-              handleActivateClick(selectedId)()
+            //   handleActivateClick(selectedId)()
               handleCloseMenu()
             }}>
               <DoneAllIcon fontSize="small" sx={{ mr: 1 }} />
@@ -395,7 +425,7 @@ export default function EmployeeList() {
             </MenuItem>
           ) : (
             <MenuItem onClick={() => {
-              handleDeactivateClick(selectedId)()
+            //   handleDeactivateClick(selectedId)()
               handleCloseMenu()
             }}>
               <BlockIcon fontSize="small" sx={{ mr: 1 }} />
@@ -410,11 +440,16 @@ export default function EmployeeList() {
           <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
           Delete
         </MenuItem>
-        <MenuItem onClick={handleViewDetail(selectedId)}>
+        <MenuItem onClick={() => {
+          const selectedPlan = rows.find(row => row.id === selectedId)
+          console.log('🚀 ~ ConnectionList ~ selectedPlan:', selectedPlan.planSlug)
+          handleViewDetail(selectedPlan?.planSlug)()
+        }}>
           <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1 }} />
           View Detail
         </MenuItem>
       </Menu>
+      {renderDetailModal()}
     </Box>
   )
 }

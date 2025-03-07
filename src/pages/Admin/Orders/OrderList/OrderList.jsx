@@ -178,52 +178,52 @@ function OrderList() {
     try {
       // Validate required fields
       if (!newRow.name || !newRow.amount) {
-        throw new Error('Please fill in all required fields (Name and Amount)');
+        throw new Error('Please fill in all required fields (Name and Amount)')
       }
-  
-      const updatedRow = { ...newRow, isNew: false };
-      setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-  
-      const { id, name, description, amount } = updatedRow;
-  
+
+      const updatedRow = { ...newRow, isNew: false }
+      setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)))
+
+      const { id, name, description, amount } = updatedRow
+
       // Retrieve the original row to get the storeId
-      const originalRow = rows.find((row) => row.id === id);
+      const originalRow = rows.find((row) => row.id === id)
       if (!originalRow.storeId) {
-        throw new Error('Store ID is missing in the original order data');
+        throw new Error('Store ID is missing in the original order data')
       }
-  
+
       const payload = {
         orderId: id,
         orderName: name,
         orderDescription: description,
         orderAmount: amount,
         storeId: originalRow.storeId // Include the original storeId in the payload
-      };
-  
+      }
+
       const { confirmed } = await confirmUpdate({
         title: 'Confirm Update',
         description: 'Are you sure you want to update this order?',
         confirmationText: 'Update',
         cancellationText: 'Cancel'
-      });
-  
+      })
+
       if (confirmed) {
-        await updateOrderAPI(payload);
-        toast.success('Order updated successfully');
+        await updateOrderAPI(payload)
+        toast.success('Order updated successfully')
       } else {
-        throw new Error('Update cancelled by user');
+        throw new Error('Update cancelled by user')
       }
-      return updatedRow;
+      return updatedRow
     } catch (error) {
       // Handle specific error messages from the backend
       if (error.message.includes('FOREIGN KEY constraint')) {
-        toast.error('Update failed: Invalid store ID. Please ensure the store exists.');
+        toast.error('Update failed: Invalid store ID. Please ensure the store exists.')
       } else {
-        toast.error(error.message || 'Update order failed');
+        toast.error(error.message || 'Update order failed')
       }
-      throw error;
+      throw error
     }
-  };
+  }
 
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel)

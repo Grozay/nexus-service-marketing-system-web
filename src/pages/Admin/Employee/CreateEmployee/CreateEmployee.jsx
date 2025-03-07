@@ -21,9 +21,9 @@ const CreateEmployee = () => {
   const { register, handleSubmit, formState: { errors } } = useForm()
   const navigate = useNavigate()
   const onCreateEmployee = (data) => {
-    const { employeeId, employeeName, employeeEmail, employeePassword, employeePhone, employeeDOB, employeeGender, employeeAddress, employeeRole } = data
+    const { employeeName, employeeEmail, employeePassword, employeePhone, employeeDOB, employeeGender, employeeAddress, employeeRole } = data
     toast.promise(
-      createEmployeeAPI({ employeeId, employeeName, employeeEmail, employeePassword, employeePhone, employeeDOB, employeeGender, employeeAddress, employeeRole }), {
+      createEmployeeAPI({ employeeName, employeeEmail, employeePassword, employeePhone, employeeDOB, employeeGender, employeeAddress, employeeRole }), {
         pending: 'Creating employee...'
       }
     ).then(res => {
@@ -42,7 +42,7 @@ const CreateEmployee = () => {
 
       <form onSubmit={handleSubmit(onCreateEmployee)}>
         <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
+          {/* <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="User ID"
               fullWidth
@@ -50,7 +50,7 @@ const CreateEmployee = () => {
               error={!!errors.employeeId}
               helperText={errors.employeeId?.message}
             />
-          </Grid>
+          </Grid> */}
 
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField
@@ -108,7 +108,7 @@ const CreateEmployee = () => {
 
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField
-              label=""
+              label="Date of Birth"
               type="date"
               fullWidth
               {...register('employeeDOB', {
@@ -156,9 +156,9 @@ const CreateEmployee = () => {
               error={!!errors.employeeRole}
               helperText={errors.employeeRole?.message}
             >
-              <MenuItem value="Account Staff">Account Staff</MenuItem>
-              <MenuItem value="Retail Staff">Retail Staff</MenuItem>
-              <MenuItem value="Technical Staff">Technical Staff</MenuItem>
+              <MenuItem value="acs">Account Staff</MenuItem>
+              <MenuItem value="css">Retail Staff</MenuItem>
+              <MenuItem value="tes">Technical Staff</MenuItem>
             </TextField>
           </Grid>
 

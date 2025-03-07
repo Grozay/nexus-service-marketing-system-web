@@ -16,10 +16,8 @@ import AssignmentIcon from '@mui/icons-material/Assignment'
 import ReceiptIcon from '@mui/icons-material/Receipt'
 import PaymentIcon from '@mui/icons-material/Payment'
 import FeedbackIcon from '@mui/icons-material/Feedback'
-import ConnectionPlan from '~/pages/Admin/Connections/ConnectionPlan'
 import CreateOrder from '~/pages/Admin/Orders/CreateOrders/CreateOrder/CreateOrder'
 import OrderList from '~/pages/Admin/Orders/OrderList/OrderList'
-import Billing from '~/pages/Admin/Billing/Billing'
 import Payments from '~/pages/Admin/Payments/Payments'
 import CustomerFeedbackPage from '~/pages/Admin/Feedback/FeedbackCustomer'
 import EmployeeFeedbackPage from '~/pages/Admin/Feedback/FeedbackEmployee'
@@ -38,6 +36,16 @@ import VendorList from '~/pages/Admin/Vendor/VendorList/VendorList'
 import CreateVendor from '~/pages/Admin/Vendor/CreateVendor/CreateVendor'
 import RetailShopList from '~/pages/Admin/RetailShop/RetailShopList/RetailShopList'
 import CreateRetailShop from '~/pages/Admin/RetailShop/CreateRetailShop/CreateRetailShop'
+import ConnectionList from '~/pages/Admin/Connections/ConnectionList/ConnectionList'
+// import CreateConnectionPlan from '~/pages/Admin/Connections/CreateConnectionPlan/CreateConnectionPlan'
+import CreateBilling from '~/pages/Admin/Billing/CreateBilling/CreateBilling'
+import BillingList from '~/pages/Admin/Billing/BillingList/BillingList'
+import EmployeeDetail from '~/pages/Admin/Employee/EmployeeDetail/EmployeeDetail'
+import CustomerDetail from '~/pages/Admin/Customer/CustomerDetail/CustomerDetail'
+import EquipmentDetail from '~/pages/Admin/Equipment/EquipmentDetail/EquipmentDetail'
+import VendorDetail from '~/pages/Admin/Vendor/VendorDetail/VendorDetail'
+import RetailShopDetail from '~/pages/Admin/RetailShop/RetailShopDetail/RetailShopDetail'
+import ConnectionDetail from '~/pages/Admin/Connections/ConnectionDetail/ConnectionDetail'
 const NAVIGATION = (currentUser) => {
   const baseNav = []
 
@@ -78,7 +86,12 @@ const NAVIGATION = (currentUser) => {
           { segment: 'create', title: 'Create Retail Shop' }
         ]
       },
-      { segment: 'management/connection-plans', title: 'Connection Plan', icon: <LanIcon /> },
+      { segment: 'management/connection-plans', title: 'Connection Plan', icon: <LanIcon />,
+        children: [
+          { segment: 'list', title: 'Connection Plan List' },
+          { segment: 'create', title: 'Create Connection Plan' }
+        ]
+      },
       {
         segment: 'management/orders',
         title: 'Order',
@@ -88,7 +101,12 @@ const NAVIGATION = (currentUser) => {
           { segment: 'list', title: 'Order List' }
         ]
       },
-      { segment: 'management/billing', title: 'Billing', icon: <ReceiptIcon /> },
+      { segment: 'management/billing', title: 'Billing', icon: <ReceiptIcon />,
+        children: [
+          { segment: 'create', title: 'Create Billing' },
+          { segment: 'list', title: 'Billing List' }
+        ]
+      },
       { segment: 'management/payments', title: 'Payment', icon: <PaymentIcon /> },
       {
         segment: 'management/feedbacks',
@@ -225,28 +243,38 @@ function Layout(props) {
             <Route index element={<Navigate to="list" replace />} />
             <Route path="list" element={<EmployeeList />} />
             <Route path="create" element={<CreateEmployee />} />
+            <Route path=":id" element={<EmployeeDetail />} />
           </Route>
           <Route path="customer">
             <Route index element={<Navigate to="list" replace />} />
             <Route path="list" element={<CustomerList />} />
             <Route path="create" element={<CreateCustomer />} />
+            <Route path=":id" element={<CustomerDetail />} />
           </Route>
           <Route path="equipment">
             <Route index element={<Navigate to="list" replace />} />
             <Route path="list" element={<EquipmentList />} />
             <Route path="create" element={<CreateEquipment />} />
+            <Route path=":id" element={<EquipmentDetail />} />
           </Route>
           <Route path="vendor">
             <Route index element={<Navigate to="list" replace />} />
             <Route path="list" element={<VendorList />} />
             <Route path="create" element={<CreateVendor />} />
+            <Route path=":id" element={<VendorDetail />} />
           </Route>
           <Route path="retail-shop">
             <Route index element={<Navigate to="list" replace />} />
             <Route path="list" element={<RetailShopList />} />
             <Route path="create" element={<CreateRetailShop />} />
+            <Route path=":id" element={<RetailShopDetail />} />
           </Route>
-          <Route path="connection-plans" element={<ConnectionPlan />} />
+          <Route path="connection-plans">
+            <Route index element={<Navigate to="list" replace />} />
+            <Route path="list" element={<ConnectionList />} />
+            <Route path=":id" element={<ConnectionDetail />} />
+            {/* <Route path="create" element={<CreateConnectionPlan />} /> */}
+          </Route>
           <Route path="orders">
             <Route index element={<Navigate to="list" replace />} />
             <Route path="create" element={<CreateOrder />} />
@@ -257,7 +285,11 @@ function Layout(props) {
             <Route path="customer" element={<CustomerFeedbackPage />} />
             <Route path="employee" element={<EmployeeFeedbackPage />} />
           </Route>
-          <Route path="billing" element={<Billing />} />
+          <Route path="billing">
+            <Route index element={<Navigate to="list" replace />} />
+            <Route path="create" element={<CreateBilling />} />
+            <Route path="list" element={<BillingList />} />
+          </Route>
           <Route path="payments" element={<Payments />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

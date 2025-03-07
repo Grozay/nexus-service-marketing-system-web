@@ -111,6 +111,11 @@ export const getPlanListAPI = async () => {
   return response.data
 }
 
+export const GetPlanBySlugAPI = async (slug) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Plan/${slug}`)
+  return response.data
+}
+
 // PRE-ORDER
 export const createPreOrderAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/PreOrder/Create`, data)
@@ -200,5 +205,32 @@ export const getOrderByIdAPI = async (id) => {
 
 export const updateOrderAPI = async (data) => {
   const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Order/Update`, data)
+  return response.data
+}
+
+// BILLING
+export const getAllBillingsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Billing`)
+  return response.data
+}
+
+export const createBillingAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Billing/Create`, data)
+  return response.data
+}
+
+export const getOrderIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Billing/order/${id}`)
+  return response.data
+}
+
+export const updateBillingAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Billing/update`, data)
+  return response.data
+}
+
+// PAYMENT
+export const getAllPaymentsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Payment`)
   return response.data
 }
