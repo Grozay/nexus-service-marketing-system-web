@@ -17,7 +17,7 @@ import {
   Pagination,
   Skeleton
 } from '@mui/material'
-import { Edit, Delete } from '@mui/icons-material'
+import { Edit, Delete, Visibility } from '@mui/icons-material'
 import image from '~/assets/equipment1.png'
 import { useForm, Controller } from 'react-hook-form'
 import { getAllEquipmentsAPI, updateEquipmentAPI } from '~/apis'
@@ -35,7 +35,9 @@ import InputLabel from '@mui/material/InputLabel'
 import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
 import { Search } from '@mui/icons-material'
+import { useNavigate } from 'react-router-dom'
 const EquipmentManagement = () => {
+  const navigate = useNavigate()
   const [equipment, setEquipment] = useState([])
   const [openDialog, setOpenDialog] = useState(false)
   const [currentEquipment, setCurrentEquipment] = useState(null)
@@ -76,6 +78,10 @@ const EquipmentManagement = () => {
   const handleEdit = (equipment) => {
     setCurrentEquipment(equipment)
     setOpenDialog(true)
+  }
+
+  const handleViewDetail = (id) => () => {
+    return () => navigate(`/management/equipment/${id}`)
   }
 
   const handleDelete = (id) => {
@@ -248,6 +254,14 @@ const EquipmentManagement = () => {
                   sx={{ flex: 1 }}
                 >
                   Delete
+                </Button>
+                <Button
+                  size="small"
+                  startIcon={<Visibility />}
+                  onClick={handleViewDetail(eq.equipmentId)()}
+                  sx={{ flex: 1 }}
+                >
+                  View
                 </Button>
               </Box>
             </CardActions>

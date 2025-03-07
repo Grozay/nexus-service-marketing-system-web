@@ -145,7 +145,7 @@ const CreateCustomer = () => {
             {/* Date of Birth */}
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                label=''
+                label='Date of Birth'
                 type='date'
                 fullWidth
                 variant='outlined'

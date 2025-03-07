@@ -27,10 +27,9 @@ import { useConfirm } from 'material-ui-confirm'
 import Typography from '@mui/material/Typography'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
 import Modal from '@mui/material/Modal'
-import { getVendorByIdAPI } from '~/apis'
 import DoneAllIcon from '@mui/icons-material/DoneAll'
 import BlockIcon from '@mui/icons-material/Block'
-
+import { useNavigate } from 'react-router-dom'
 // Function to transform vendor data from API
 const transformVendorData = (vendors) => {
   if (!Array.isArray(vendors)) return []
@@ -74,6 +73,7 @@ function EditToolbar() {
 }
 
 export default function VendorList() {
+  const navigate = useNavigate()
   const [rows, setRows] = useState([])
   const [rowModesModel, setRowModesModel] = useState({})
   const [anchorEl, setAnchorEl] = useState(null)
@@ -218,14 +218,8 @@ export default function VendorList() {
     setSelectedId(null)
   }
 
-  const handleViewDetail = (id) => async () => {
-    try {
-      const vendor = await getVendorByIdAPI(id)
-      setSelectedVendor(vendor)
-      setIsDetailModalOpen(true)
-    } catch (error) {
-      toast.error(error.message || 'Failed to fetch vendor details')
-    }
+  const handleViewDetail = (id) => () => {
+    return () => navigate(`/management/vendor/${id}`)
   }
 
   const renderDetailModal = () => (
@@ -446,10 +440,7 @@ export default function VendorList() {
           <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
           Delete
         </MenuItem>
-        <MenuItem onClick={() => {
-          handleViewDetail(selectedId)()
-          handleCloseMenu()
-        }}>
+        <MenuItem onClick={handleViewDetail(selectedId)()}>
           <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1 }} />
           View Detail
         </MenuItem>

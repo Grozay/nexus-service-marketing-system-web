@@ -216,7 +216,7 @@ const SelectPlan = ({ onNext, setPlanData, setStoreData }) => {
           </Grid>
         </Box>
         <Button type="submit" variant="contained" sx={{ mt: 2 }}>
-          Tiếp Theo
+          Next
         </Button>
       </form>
     </Box>

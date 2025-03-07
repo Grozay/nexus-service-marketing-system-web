@@ -28,7 +28,8 @@ import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
 import { getAllRetailShopsAPI, updateRetailShopAPI, getRetailShopByIdAPI } from '~/apis'
 import Chip from '@mui/material/Chip'
-
+import { useNavigate } from 'react-router-dom'
+import { Visibility } from '@mui/icons-material'
 // Function to transform store data from API
 const transformStoreData = (stores) => {
   if (!Array.isArray(stores)) return []
@@ -74,7 +75,7 @@ function RetailShopManagement() {
   const [selectedId, setSelectedId] = useState(null)
   const [previousRow, setPreviousRow] = useState(null)
   const confirmUpdate = useConfirm()
-
+  const navigate = useNavigate()
   // Fetch stores on component mount
   useEffect(() => {
     const fetchData = async () => {
@@ -92,6 +93,10 @@ function RetailShopManagement() {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true
     }
+  }
+
+  const handleViewDetail = (id) => () => {
+    return () => navigate(`/management/retail-shop/${id}`)
   }
 
   const handleEditClick = (id) => () => {
@@ -417,6 +422,10 @@ function RetailShopManagement() {
             }}>
               <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
               Delete
+            </MenuItem>
+            <MenuItem onClick={handleViewDetail(selectedId)()}>
+              <Visibility fontSize="small" sx={{ mr: 1 }} />
+              View
             </MenuItem>
           </Menu>
         </Box>

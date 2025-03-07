@@ -50,7 +50,7 @@ const NotFound = () => {
             variant="contained"
             size="large"
             component={Link}
-            to="/"
+            to="/management/"
             sx={{ mt: 2 }}
           >
               Back to Homepage
