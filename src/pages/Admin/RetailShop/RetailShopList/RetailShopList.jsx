@@ -319,6 +319,7 @@ export default function RetailShopManagement() {
                   <Box>
                     <Typography variant="subtitle1">{shop.storeName}</Typography>
                     <Typography variant="body2">{shop.storeAddress}</Typography>
+                    <Typography variant="body2">{shop.storeOpenHours}</Typography>
                     <Typography
                       variant="body2"
                       sx={{

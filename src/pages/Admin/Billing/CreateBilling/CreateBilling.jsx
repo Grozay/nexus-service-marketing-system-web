@@ -70,7 +70,7 @@ const CreateBilling = () => {
 
       // Prepare billing data
       const billingData = {
-        billing: {  // Add billing object
+        billing: { // Add billing object
           billingName: `Bill for Order ${selectedOrder.id}`,
           subscriptionId: selectedOrder.plan ? parseInt(selectedOrder.plan) : null, // Convert to integer
           depositId: null,
@@ -134,7 +134,6 @@ const CreateBilling = () => {
   const orderColumns = [
     { field: 'id', headerName: 'Order ID', width: 100 },
     { field: 'name', headerName: 'Order Name', width: 200 },
-    { field: 'description', headerName: 'Description', width: 250 },
     { field: 'amount', headerName: 'Amount', width: 100, type: 'number' },
     { field: 'status', headerName: 'Status', width: 120,
       renderCell: (params) => (
@@ -185,7 +184,7 @@ const CreateBilling = () => {
           getRowId={(row) => row.id}
           pageSize={5}
           rowsPerPageOptions={[5, 10, 20]}
-          sx={{ height: '400px' }}
+          sx={{ height: '100%' }}
         />
       </CardContent>
     </Card>

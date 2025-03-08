@@ -431,7 +431,6 @@ export default function EmployeeList() {
           <DeleteIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
           Delete
         </MenuItem>
-
       </Menu>
     </Box>
   )

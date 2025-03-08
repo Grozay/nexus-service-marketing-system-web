@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Close'
@@ -16,19 +15,17 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons
 } from '@mui/x-data-grid'
-import { getAllOrdersAPI, getOrderByIdAPI, updateOrderAPI } from '~/apis'
+import { getAllOrdersAPI, updateOrderAPI } from '~/apis'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import { formatDate } from '~/utils/formatter'
 import Chip from '@mui/material/Chip'
 import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
 import Typography from '@mui/material/Typography'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
-import Modal from '@mui/material/Modal'
 import DoneAllIcon from '@mui/icons-material/DoneAll'
 import BlockIcon from '@mui/icons-material/Block'
-
+import { useNavigate } from 'react-router-dom'
 // Transform order data from API
 const transformOrderData = (orders) => {
   if (!Array.isArray(orders)) return []
@@ -43,7 +40,7 @@ const transformOrderData = (orders) => {
       plan: order.planDetails?.planName,
       employee: order.employeeDetails?.employeeName,
       store: order.storeDetails?.storeName,
-      storeId: order.storeId, // Add storeId here
+      storeId: order.storeId,
       createdAt: new Date(order.orderCreatedAt),
       isActive: order.orderIsFeasible,
       accountEmail: order.accountDetails?.accountEmail,
@@ -81,19 +78,19 @@ function OrderList() {
   const [rowModesModel, setRowModesModel] = useState({})
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedId, setSelectedId] = useState(null)
+  const navigate = useNavigate()
   const [previousRow, setPreviousRow] = useState(null)
   const confirmUpdate = useConfirm()
-  const [selectedOrder, setSelectedOrder] = useState(null)
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
 
   // Fetch orders on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
         const orders = await getAllOrders()
+        console.log('🚀 ~ fetchData ~ orders:', orders)
         setRows(orders)
       } catch (error) {
-        toast.error('Failed to fetch orders')
+        throw new Error(error)
       }
     }
     fetchData()
@@ -105,11 +102,11 @@ function OrderList() {
     }
   }
 
-  const handleEditClick = (id) => () => {
-    const row = rows.find((row) => row.id === id)
-    setPreviousRow(row)
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
-  }
+  // const handleEditClick = (id) => () => {
+  //   const row = rows.find((row) => row.id === id)
+  //   setPreviousRow(row)
+  //   setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
+  // }
 
   const handleSaveClick = (id) => () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } })
@@ -149,14 +146,8 @@ function OrderList() {
     setRows(rows.map((row) => (row.id === id ? { ...row, isActive: false } : row)))
   }
 
-  const handleViewDetail = (id) => async () => {
-    try {
-      const order = await getOrderByIdAPI(id)
-      setSelectedOrder(order)
-      setIsDetailModalOpen(true)
-    } catch (error) {
-      toast.error(error.message || 'Failed to fetch order details')
-    }
+  const handleViewDetail = (id) => () => {
+    navigate(`/management/orders/${id}`)
   }
 
   const handleCancelClick = (id) => () => {
@@ -241,15 +232,8 @@ function OrderList() {
 
   const columns = [
     { field: 'id', headerName: 'Order ID', width: 150, editable: false },
-    { field: 'name', headerName: 'Order Name', width: 200, editable: true },
-    { field: 'description', headerName: 'Description', width: 250, editable: true },
     { field: 'amount', headerName: 'Amount', width: 100, editable: true, type: 'number' },
     { field: 'status', headerName: 'Status', width: 120, editable: false },
-    { field: 'plan', headerName: 'Plan', width: 150, editable: false },
-    { field: 'employee', headerName: 'Employee', width: 150, editable: false },
-    { field: 'store', headerName: 'Store', width: 150, editable: false },
-    { field: 'storeId', headerName: 'Store ID', width: 100, editable: false }, // Add this for debugging
-    { field: 'accountEmail', headerName: 'Account Email', width: 200, editable: true },
     { field: 'accountPhone', headerName: 'Account Phone', width: 150, editable: true },
     { field: 'accountAddress', headerName: 'Account Address', width: 200, editable: true },
     {
@@ -323,61 +307,6 @@ function OrderList() {
     }
   ]
 
-  const renderDetailModal = () => (
-    <Modal
-      open={isDetailModalOpen}
-      onClose={() => setIsDetailModalOpen(false)}
-      aria-labelledby="order-detail-modal"
-      aria-describedby="order-detail-modal-description"
-    >
-      <Box sx={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 600,
-        bgcolor: 'background.paper',
-        boxShadow: 24,
-        p: 4,
-        borderRadius: 2
-      }}>
-        {selectedOrder && (
-          <>
-            <Typography variant="h6" component="h2" gutterBottom>
-              Order Details
-            </Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
-              <DetailItem label="Order ID" value={selectedOrder?.orderId} />
-              <DetailItem label="Order Name" value={selectedOrder?.orderName} />
-              <DetailItem label="Description" value={selectedOrder?.orderDescription} />
-              <DetailItem label="Order Amount" value={selectedOrder?.orderAmount} />
-              <DetailItem label="Order Status" value={selectedOrder?.orderStatus} />
-              <DetailItem label="Plan" value={selectedOrder?.planDetails?.planName} />
-              <DetailItem label="Employee" value={selectedOrder?.employeeDetails?.employeeName} />
-              <DetailItem label="Store" value={selectedOrder?.storeDetails?.storeName} />
-              <DetailItem label="Feasible" value={selectedOrder?.orderIsFeasible ? 'Yes' : 'No'} />
-              <DetailItem label="Created At" value={formatDate(selectedOrder?.orderCreatedAt)} />
-              <DetailItem label="Account Email" value={selectedOrder?.accountDetails?.accountEmail} />
-              <DetailItem label="Account Phone" value={selectedOrder?.accountDetails?.accountPhone} />
-              <DetailItem label="Account Address" value={selectedOrder?.accountDetails?.accountAddress} />
-            </Box>
-          </>
-        )}
-      </Box>
-    </Modal>
-  )
-
-  const DetailItem = ({ label, value }) => (
-    <Box>
-      <Typography variant="subtitle2" color="text.secondary">
-        {label}
-      </Typography>
-      <Typography variant="body1">
-        {value || 'N/A'}
-      </Typography>
-    </Box>
-  )
-
   return (
     <Box
       sx={{
@@ -428,48 +357,46 @@ function OrderList() {
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
       >
-        <MenuItem onClick={() => {
-          handleEditClick(selectedId)()
-          handleCloseMenu()
-        }}>
-          <EditIcon fontSize="small" sx={{ mr: 1 }} />
-          Edit
-        </MenuItem>
         {
-          rows.find((row) => row.id === selectedId)?.isActive === false ? (
-            <MenuItem onClick={() => {
-              handleActivateClick(selectedId)()
-              handleCloseMenu()
-            }}>
-              <DoneAllIcon fontSize="small" sx={{ mr: 1 }} />
+          rows.find((row) => row.id === selectedId)?.status === false ? (
+            <MenuItem
+              onClick={() => {
+                handleActivateClick(selectedId)()
+                handleCloseMenu()
+              }}
+            >
+              <DoneAllIcon fontSize="small" sx={{ mr: 1, color: 'success.main' }} />
               Activate
             </MenuItem>
           ) : (
-            <MenuItem onClick={() => {
-              handleDeactivateClick(selectedId)()
-              handleCloseMenu()
-            }}>
-              <BlockIcon fontSize="small" sx={{ mr: 1 }} />
+            <MenuItem
+              onClick={() => {
+                handleDeactivateClick(selectedId)()
+                handleCloseMenu()
+              }}
+            >
+              <BlockIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
               Deactivate
             </MenuItem>
           )
         }
-        <MenuItem onClick={() => {
-          handleDeleteClick(selectedId)()
-          handleCloseMenu()
-        }}>
-          <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
-          Delete
-        </MenuItem>
-        <MenuItem onClick={() => {
-          handleViewDetail(selectedId)()
-          handleCloseMenu()
-        }}>
-          <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1 }} />
+        <MenuItem
+          onClick={handleViewDetail(selectedId)}
+        >
+          <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1, color: 'info.main' }} />
           View Detail
         </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            handleDeleteClick(selectedId)()
+            handleCloseMenu()
+          }}
+        >
+          <DeleteIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
+          Delete
+        </MenuItem>
       </Menu>
-      {renderDetailModal()}
     </Box>
   )
 }

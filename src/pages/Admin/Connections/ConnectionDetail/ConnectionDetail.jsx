@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Box, Typography, Paper, Divider, Button, Chip, Avatar } from '@mui/material'
+import { Box, Typography, Paper, Divider, Button, Chip } from '@mui/material'
 import Grid from '@mui/material/Grid2'
 import { toast } from 'react-toastify'
 import { GetPlanBySlugAPI } from '~/apis' // Giả định API cho plan
@@ -10,21 +10,22 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn'
 import CategoryIcon from '@mui/icons-material/Category'
 import AccessTimeIcon from '@mui/icons-material/AccessTime'
 import InfoIcon from '@mui/icons-material/Info'
-import EventIcon from '@mui/icons-material/Event'
 
 export default function PlanDetail() {
-  const { slug } = useParams() // Lấy planId từ URL
+  const { slug } = useParams()
   const navigate = useNavigate()
   const [plan, setPlan] = useState(null)
 
-  // Fetch thông tin gói dịch vụ khi component được mount
   useEffect(() => {
     const fetchPlan = async () => {
       try {
+        if (!slug) {
+          throw new Error('no connection plan')
+        }
         const data = await GetPlanBySlugAPI(slug)
         setPlan(data)
       } catch (error) {
-        toast.error(error.message || 'Failed to fetch plan details')
+        toast.error(error.message || 'Không thể tải thông tin gói dịch vụ')
         navigate('/management/plan/list')
       }
     }
@@ -47,7 +48,7 @@ export default function PlanDetail() {
         <Button
           variant="outlined"
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/management/plan/list')}
+          onClick={() => navigate('/management/connection-plans/list')}
           sx={{ mr: 2 }}
         >
           Back to List
@@ -61,13 +62,6 @@ export default function PlanDetail() {
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         {/* Thông tin cơ bản với avatar */}
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-          <Avatar
-            sx={{ width: 100, height: 100, mr: 3 }}
-            alt={plan.planName}
-            src="/path-to-plan-image.jpg" // Thay bằng URL ảnh nếu có
-          >
-            {plan.planName?.charAt(0)}
-          </Avatar>
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
               {plan.planName}

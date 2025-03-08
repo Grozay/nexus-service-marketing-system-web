@@ -1,225 +1,276 @@
 import { useState, useEffect } from 'react'
-import {
-  Select,
-  MenuItem,
-  Button,
-  Box,
-  Typography,
-  FormControl,
-  InputLabel,
-  TextField
-} from '@mui/material'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import CircularProgress from '@mui/material/CircularProgress'
 import Grid from '@mui/material/Grid2'
 import { useForm, Controller } from 'react-hook-form'
-import { getAllRetailShopsAPI, getPlanListAPI } from '~/apis'
+import { getAllRetailShopsAPI, getPlanListAPI, getAllAccountsAPI } from '~/apis'
 import { toast } from 'react-toastify'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker'
+import dayjs from 'dayjs'
 
-const SelectPlan = ({ onNext, setPlanData, setStoreData }) => {
-  const { control, handleSubmit, watch, formState: { errors } } = useForm({
+const SelectPlan = ({ onNext, setPlanData, setStoreData, setAccountData }) => {
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors }
+  } = useForm({
     defaultValues: {
       planId: '',
       storeId: '',
       startDate: '',
-      endDate: ''
+      endDate: '',
+      accountId: ''
     }
   })
+
   const [allPlans, setAllPlans] = useState([])
   const [allStores, setAllStores] = useState([])
-
-  // Fetch plans and stores data
-  useEffect(() => {
-    // Fetch plans data
-    getPlanListAPI()
-      .then(data => setAllPlans(data))
-      .catch(() => toast.error('Error fetching plans'))
-
-    // Fetch stores data
-    getAllRetailShopsAPI()
-      .then(data => {
-        setAllStores(data)
-      })
-      .catch(() => toast.error('Error fetching stores'))
-  }, [])
-
-  // Validate date range using native Date methods
-  const validateDates = (startDate, endDate) => {
-    if (!startDate || !endDate) {
-      toast.error('Please select both start and end dates')
-      return false
-    }
-
-    // Parse dates and handle timezone issues
-    const start = new Date(startDate + 'T00:00:00')
-    const end = new Date(endDate + 'T00:00:00')
-
-    // Check if dates are valid
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      toast.error('Invalid date format')
-      return false
-    }
-
-    // Check if end date is before start date
-    if (end < start) {
-      toast.error('End date cannot be before start date')
-      return false
-    }
-
-    // Check if duration is reasonable (not more than 2 years)
-    const maxEndDate = new Date(start)
-    maxEndDate.setFullYear(maxEndDate.getFullYear() + 2)
-    if (end > maxEndDate) {
-      toast.error('Plan duration cannot exceed 2 years')
-      return false
-    }
-
-    return true
-  }
-
-  const onSubmit = (data) => {
-    const { planId, storeId, startDate, endDate } = data
-    // Validate required fields
-    if (!planId || !storeId) {
-      toast.error('Please select a plan and store')
-      return
-    }
-    // Validate dates
-    if (!validateDates(startDate, endDate)) return
-
-    // Find selected plan and store
-    const selectedPlanData = allPlans.find(plan => plan.planId === planId)
-    const selectedStoreData = allStores.find(store => store.storeId === storeId)
-
-    // Pass data to parent component
-    if (selectedPlanData && selectedStoreData) {
-      setPlanData({
-        ...selectedPlanData,
-        startDate: new Date(startDate),
-        endDate: new Date(endDate)
-      })
-      setStoreData(selectedStoreData)
-      onNext()
-    } else {
-      toast.error('Plan or store not found')
-    }
-  }
+  const [accountList, setAccountList] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const startDateValue = watch('startDate')
+  const planIdValue = watch('planId') // Theo dõi giá trị planId
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true)
+        const [plans, stores, accounts] = await Promise.all([
+          getPlanListAPI(),
+          getAllRetailShopsAPI(),
+          getAllAccountsAPI()
+        ])
+        setAllPlans(plans || [])
+        setAllStores(stores || [])
+        setAccountList(accounts || [])
+      } catch (error) {
+        throw new Error('Error fetching data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
+  const onSubmit = (data) => {
+    const { planId, storeId, startDate, endDate, accountId } = data
+
+    const selectedPlanData = allPlans.find(plan => plan.planId === planId)
+    const selectedStoreData = allStores.find(store => store.storeId === storeId)
+    const selectedAccountData = accountList.find(account => account.accountId === accountId)
+
+    if (!selectedPlanData || !selectedStoreData || !selectedAccountData) {
+      toast.error('Selected plan, store, or account not found')
+      return
+    }
+
+    const start = dayjs(startDate)
+    const end = dayjs(endDate)
+
+    if (!start.isValid() || !end.isValid()) {
+      toast.error('Invalid date format')
+      return
+    }
+
+    setPlanData({
+      ...selectedPlanData,
+      startDate: start.toDate(),
+      endDate: end.toDate(),
+      depositAmount: selectedPlanData.planPrice // Thêm depositAmount bằng planPrice
+    })
+    setStoreData({
+      ...selectedStoreData,
+      account: selectedAccountData
+    })
+    setAccountData(selectedAccountData)
+    onNext()
+  }
+
+  const selectedPlan = allPlans.find(plan => plan.planId === planIdValue)
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <CircularProgress />
+      </Box>
+    )
+  }
 
   return (
-    <Box sx={{ mt: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        Select Plan
-      </Typography>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <FormControl fullWidth error={!!errors.planId}>
-                <InputLabel id="plan-label">Plan</InputLabel>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Box sx={{ mt: 3 }}>
+        <Box sx={{ margin: '1em', display: 'flex', justifyContent: 'center', gap: 1 }}>
+          <Typography variant="h4">Select Plan</Typography>
+        </Box>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12 }}>
                 <Controller
-                  name="planId"
+                  name="accountId"
                   control={control}
-                  rules={{ required: 'Please select a plan' }}
+                  rules={{ required: 'Please select an account' }}
                   render={({ field, fieldState: { error } }) => (
-                    <>
-                      <Select
-                        {...field}
-                        labelId="plan-label"
-                        label="Plan"
-                        fullWidth
-                        margin="normal"
-                      >
+                    <Autocomplete
+                      options={accountList}
+                      getOptionLabel={(option) => `${option.accountName} (${option.accountId})`}
+                      value={accountList.find(option => option.accountId === field.value) || null}
+                      onChange={(_, newValue) => field.onChange(newValue ? newValue.accountId : '')}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Search Account"
+                          variant="outlined"
+                          fullWidth
+                          margin="normal"
+                          error={!!error}
+                          helperText={error?.message}
+                        />
+                      )}
+                      noOptionsText="No accounts found"
+                      sx={{ minWidth: 300 }}
+                    />
+                  )}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <FormControl fullWidth error={!!errors.planId}>
+                  <InputLabel id="plan-label">Plan</InputLabel>
+                  <Controller
+                    name="planId"
+                    control={control}
+                    rules={{ required: 'Please select a plan' }}
+                    render={({ field }) => (
+                      <Select {...field} labelId="plan-label" label="Plan" fullWidth margin="normal">
                         {allPlans.map((plan) => (
                           <MenuItem key={plan.planId} value={plan.planId}>
                             {plan.planName} - {plan.planPrice} VND
                           </MenuItem>
                         ))}
                       </Select>
-                      {error && <Typography color="error" variant="caption">{error.message}</Typography>}
-                    </>
+                    )}
+                  />
+                  {errors.planId && <Typography color="error" variant="caption">{errors.planId.message}</Typography>}
+                </FormControl>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <FormControl fullWidth error={!!errors.storeId}>
+                  <InputLabel id="store-label">Store</InputLabel>
+                  <Controller
+                    name="storeId"
+                    control={control}
+                    rules={{ required: 'Please select a store' }}
+                    render={({ field }) => (
+                      <Select {...field} labelId="store-label" label="Store" fullWidth margin="normal">
+                        {allStores.map((store) => (
+                          <MenuItem key={store.storeId} value={store.storeId}>
+                            {store.storeName} - {store.storeCity}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                  {errors.storeId && <Typography color="error" variant="caption">{errors.storeId.message}</Typography>}
+                </FormControl>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Controller
+                  name="startDate"
+                  control={control}
+                  rules={{
+                    required: 'Please select a start date',
+                    validate: (value) => dayjs(value).isValid() && !dayjs(value).isBefore(dayjs(), 'day') || 'Start date cannot be in the past'
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <DesktopDatePicker
+                      label="Start Date"
+                      value={field.value ? dayjs(field.value) : null}
+                      onChange={(newValue) => field.onChange(newValue ? newValue.format('YYYY-MM-DD') : null)}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: !!error,
+                          helperText: error?.message,
+                          inputProps: { min: dayjs().format('YYYY-MM-DD') }
+                        }
+                      }}
+                    />
                   )}
                 />
-              </FormControl>
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <FormControl fullWidth error={!!errors.storeId}>
-                <InputLabel id="store-label">Store</InputLabel>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Controller
-                  name="storeId"
+                  name="endDate"
                   control={control}
-                  rules={{ required: 'Please select a store' }}
-                  render={({ field, fieldState: { error } }) => {
-                    return (
-                      <>
-                        <Select
-                          {...field}
-                          labelId="store-label"
-                          label="Store"
-                          fullWidth
-                          margin="normal"
-                        >
-                          {allStores.map((store) => (
-                            <MenuItem key={store.storeId} value={store.storeId}>
-                              {store.storeName} - {store.storeCity}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        {error && <Typography color="error" variant="caption">{error.message}</Typography>}
-                      </>
-                    );
+                  rules={{
+                    required: 'Please select an end date',
+                    validate: (value) => {
+                      const start = dayjs(startDateValue)
+                      const end = dayjs(value)
+                      if (!end.isValid()) return 'Invalid end date'
+                      if (end.isBefore(start)) return 'End date cannot be before start date'
+                      if (end.diff(start, 'year', true) > 2) return 'Plan duration cannot exceed 2 years'
+                      return true
+                    }
                   }}
+                  render={({ field, fieldState: { error } }) => (
+                    <DesktopDatePicker
+                      label="End Date"
+                      value={field.value ? dayjs(field.value) : null}
+                      onChange={(newValue) => field.onChange(newValue ? newValue.format('YYYY-MM-DD') : null)}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: !!error,
+                          helperText: error?.message,
+                          inputProps: { min: startDateValue || dayjs().format('YYYY-MM-DD') }
+                        }
+                      }}
+                    />
+                  )}
                 />
-              </FormControl>
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Controller
-                name="startDate"
-                control={control}
-                rules={{ required: 'Please select a start date' }}
-                render={({ field, fieldState: { error } }) => (
+              </Grid>
+
+              {/* Field Deposit hiển thị khi đã chọn plan */}
+              {planIdValue && (
+                <Grid size={{ xs: 12, md: 12 }}>
                   <TextField
-                    {...field}
-                    key={field.value}
-                    label=""
-                    type="date"
+                    label="Deposit Amount (VND)"
+                    value={selectedPlan ? selectedPlan.planPrice : ''}
                     fullWidth
-                    error={!!error}
-                    helperText={error?.message}
-                    inputProps={{
-                      min: new Date().toISOString().split('T')[0]
+                    margin="normal"
+                    disabled
+                    InputProps={{
+                      readOnly: true
                     }}
                   />
-                )}
-              />
+                </Grid>
+              )}
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Controller
-                name="endDate"
-                control={control}
-                rules={{ required: 'Please select an end date' }}
-                render={({ field, fieldState: { error } }) => (
-                  <TextField
-                    {...field}
-                    key={field.value}
-                    label=""
-                    type="date"
-                    fullWidth
-                    error={!!error}
-                    helperText={error?.message}
-                    inputProps={{
-                      min: startDateValue || new Date().toISOString().split('T')[0]
-                    }}
-                  />
-                )}
-              />
-            </Grid>
-          </Grid>
-        </Box>
-        <Button type="submit" variant="contained" sx={{ mt: 2 }}>
-          Next
-        </Button>
-      </form>
-    </Box>
+          </Box>
+          <Box sx={{ padding: '0 1em 1em 1em', mt: 2 }}>
+            <Button type="submit" variant="contained" fullWidth disabled={isLoading}>
+              Next
+            </Button>
+          </Box>
+        </form>
+      </Box>
+    </LocalizationProvider>
   )
 }
 

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Box, Typography, Card, CardContent, Button, TextField, Select, MenuItem, FormControl, InputLabel } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import { useNavigate } from 'react-router-dom'
-import { Order } from '~/apis/mock-data'
 import PaymentIcon from '@mui/icons-material/Payment'
 import Chip from '@mui/material/Chip'
 import { getAllBillingsAPI, getOrderIdAPI } from '~/apis'
@@ -73,7 +72,6 @@ const BillingList = () => {
   // Định nghĩa columns cho DataGrid
   const columns = [
     { field: 'billingId', headerName: 'Billing ID', width: 120 },
-    { field: 'billingName', headerName: 'Billing Name', width: 200 },
     { field: 'orderId', headerName: 'Order ID', width: 150 },
     { field: 'billingSubTotal', headerName: 'Sub Total', width: 120, type: 'number' },
     { field: 'billingDiscount', headerName: 'Discount', width: 120, type: 'number' },
