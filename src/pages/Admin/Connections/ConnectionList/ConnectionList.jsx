@@ -187,12 +187,11 @@ export default function ConnectionList() { // Renamed from CustomerList to Conne
       // const formattedDOB = formatDate(dob)
 
       const payload = {
-        planId: id, // Changed from accountId to planId
-        planName: name, // Changed from accountName to planName
-        planType: type, // Changed from accountAddress to planType, assuming type maps to address field for now
-        planValidity: validity, // Assuming validity maps to dob field for now
-        planPrice: price // Changed from accountPhone to planPrice, assuming price maps to phone field for now
-        // accountEmail: email - Removed email as plan data example doesn't have email
+        planId: id,
+        planName: name,
+        planType: type,
+        planValidity: validity,
+        planPrice: price
       }
 
       const { confirmed } = await confirmUpdate({

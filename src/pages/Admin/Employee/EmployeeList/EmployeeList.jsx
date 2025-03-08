@@ -17,23 +17,29 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons
 } from '@mui/x-data-grid'
-import { getAllEmployeesAPI } from '~/apis'
+import { getAllEmployeesAPI, activateEmployeeAPI, updateEmployeeAPI, deleteEmployeeAPI } from '~/apis'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import { updateEmployeeAPI } from '~/apis'
 import { formatDate } from '~/utils/formatter'
 import Chip from '@mui/material/Chip'
 import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
 import Typography from '@mui/material/Typography'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
-import { activateEmployeeAPI } from '~/apis'
 import DoneAllIcon from '@mui/icons-material/DoneAll'
 import BlockIcon from '@mui/icons-material/Block'
 import { useNavigate } from 'react-router-dom'
+
 // Function to transform employee data from API
 const transformEmployeeData = (employees) => {
   if (!Array.isArray(employees)) return []
+  const roleMap = {
+    'css': 'Retail Staff',
+    'acs': 'Accountant Staff',
+    'tes': 'Technical Staff',
+    'admin': 'Admin'
+  }
+
   return employees
     .filter(employee => !employee.isDeleted)
     .map(employee => ({
@@ -41,7 +47,8 @@ const transformEmployeeData = (employees) => {
       name: employee.employeeName,
       email: employee.employeeEmail,
       phone: employee.employeePhone,
-      role: employee.employeeRole,
+      role: employee.employeeRole || '', // Ensure role is always defined
+      displayRole: roleMap[employee.employeeRole] || employee.employeeRole || '', // Fallback to original value or empty string
       status: employee.employeeIsActive,
       joinDate: new Date(employee.employeeCreatedAt),
       gender: employee.employeeGender,
@@ -82,7 +89,7 @@ export default function EmployeeList() {
   const [previousRow, setPreviousRow] = useState(null)
   const confirmUpdate = useConfirm()
   const navigate = useNavigate()
-  // Fetch employees on component mount
+
   useEffect(() => {
     const fetchData = async () => {
       const employees = await getAllEmployees()
@@ -117,12 +124,7 @@ export default function EmployeeList() {
       })
 
       if (confirmed) {
-        // Call API to soft delete
-        await updateEmployeeAPI({
-          employeeId: id,
-          isDeleted: true
-        })
-        // Update local state
+        await deleteEmployeeAPI(id)
         setRows(rows.filter((row) => row.id !== id))
         toast.success('Employee deleted successfully')
       }
@@ -160,7 +162,6 @@ export default function EmployeeList() {
 
   const processRowUpdate = async (newRow) => {
     try {
-      // Validate required fields
       if (!newRow.name || !newRow.email || !newRow.phone) {
         throw new Error('Please fill in all required fields')
       }
@@ -170,8 +171,11 @@ export default function EmployeeList() {
 
       const { id, name, role, dob, gender, address, phone, email } = updatedRow
 
-      // Format date properly
       const formattedDOB = formatDate(dob)
+
+      if (role === 'admin') {
+        throw new Error('Cannot edit to admin role')
+      }
 
       const payload = {
         employeeId: id,
@@ -238,22 +242,30 @@ export default function EmployeeList() {
       width: 150,
       editable: true,
       type: 'singleSelect',
-      valueOptions: ['Account Staff', 'Retail Staff', 'Technical Staff'],
+      valueOptions: [
+        { value: 'css', label: 'Retail Staff' },
+        { value: 'acs', label: 'Accountant Staff' },
+        { value: 'tes', label: 'Technical Staff' }
+      ],
+      valueGetter: (params) => params.row?.role || '',
+      renderCell: (params) => params.row?.displayRole || params.row?.role || '',
       renderEditCell: (params) => (
         <Select
           value={params.value || ''}
-          onChange={(e) => params.api.setEditCellValue({
-            id: params.id,
-            field: params.field,
-            value: e.target.value
-          })}
+          onChange={(e) => {
+            params.api.setEditCellValue({
+              id: params.id,
+              field: params.field,
+              value: e.target.value
+            })
+          }}
           size="small"
           fullWidth
           native
         >
-          <option value="Account Staff">Account Staff</option>
-          <option value="Retail Staff">Retail Staff</option>
-          <option value="Technical Staff">Technical Staff</option>
+          <option value="css">Retail Staff</option>
+          <option value="acs">Accountant Staff</option>
+          <option value="tes">Technical Staff</option>
         </Select>
       )
     },
@@ -271,13 +283,6 @@ export default function EmployeeList() {
           size="small"
         />
       )
-    },
-    {
-      field: 'joinDate',
-      headerName: 'Join Date',
-      width: 150,
-      editable: false,
-      type: 'date'
     },
     {
       field: 'actions',
@@ -377,43 +382,56 @@ export default function EmployeeList() {
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
       >
-        <MenuItem onClick={() => {
-          handleEditClick(selectedId)()
-          handleCloseMenu()
-        }}>
-          <EditIcon fontSize="small" sx={{ mr: 1 }} />
+        <MenuItem
+          onClick={() => {
+            handleEditClick(selectedId)()
+            handleCloseMenu()
+          }}
+          disabled={rows.find((row) => row.id === selectedId)?.role === 'admin'}
+        >
+          <EditIcon fontSize="small" sx={{ mr: 1, color: 'primary.main' }} />
           Edit
         </MenuItem>
         {
           rows.find((row) => row.id === selectedId)?.status === false ? (
-            <MenuItem onClick={() => {
-              handleActivateClick(selectedId)()
-              handleCloseMenu()
-            }}>
-              <DoneAllIcon fontSize="small" sx={{ mr: 1 }} />
+            <MenuItem
+              onClick={() => {
+                handleActivateClick(selectedId)()
+                handleCloseMenu()
+              }}
+            >
+              <DoneAllIcon fontSize="small" sx={{ mr: 1, color: 'success.main' }} />
               Activate
             </MenuItem>
           ) : (
-            <MenuItem onClick={() => {
-              handleDeactivateClick(selectedId)()
-              handleCloseMenu()
-            }}>
-              <BlockIcon fontSize="small" sx={{ mr: 1 }} />
+            <MenuItem
+              onClick={() => {
+                handleDeactivateClick(selectedId)()
+                handleCloseMenu()
+              }}
+            >
+              <BlockIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
               Deactivate
             </MenuItem>
           )
         }
-        <MenuItem onClick={() => {
-          handleDeleteClick(selectedId)()
-          handleCloseMenu()
-        }}>
-          <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
-          Delete
-        </MenuItem>
-        <MenuItem onClick={handleViewDetail(selectedId)}>
-          <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1 }} />
+        <MenuItem
+          onClick={handleViewDetail(selectedId)}
+        >
+          <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1, color: 'info.main' }} />
           View Detail
         </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            handleDeleteClick(selectedId)()
+            handleCloseMenu()
+          }}
+        >
+          <DeleteIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
+          Delete
+        </MenuItem>
+
       </Menu>
     </Box>
   )

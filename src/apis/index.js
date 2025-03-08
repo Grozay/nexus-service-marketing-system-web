@@ -45,6 +45,11 @@ export const updateEmployeeAPI = async (data) => {
   return response.data
 }
 
+export const deleteEmployeeAPI = async (id) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/employee/delete/${id}`)
+  return response.data
+}
+
 export const activateEmployeeAPI = async (data) => {
   const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Employee/Activate`, data)
   return response.data
@@ -68,6 +73,11 @@ export const getAccountByIdAPI = async (id) => {
   return response.data
 }
 
+export const getOrderByAccountIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Order/Account/${id}`)
+  return response.data
+}
+
 export const createAccountAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Account/CreateNew`, data)
   return response.data
@@ -75,6 +85,11 @@ export const createAccountAPI = async (data) => {
 
 export const updateAccountAPI = async (data) => {
   const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Account/Update`, data)
+  return response.data
+}
+
+export const deleteAccountAPI = async (id) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/account/delete/${id}`)
   return response.data
 }
 
@@ -143,6 +158,11 @@ export const updateVendorAPI = async (data) => {
   return response.data
 }
 
+export const deleteVendorAPI = async (id) => {
+  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Vendor/Delete/${id}`)
+  return response.data
+}
+
 export const getVendorByIdAPI = async (id) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Vendor/${id}`)
   return response.data
@@ -161,6 +181,11 @@ export const getRetailShopByIdAPI = async (id) => {
 
 export const createRetailShopAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Store/Create`, data)
+  return response.data
+}
+
+export const deleteRetailShopAPI = async (id) => {
+  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Store/Delete/${id}`)
   return response.data
 }
 

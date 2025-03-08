@@ -18,15 +18,14 @@ import {
   Skeleton
 } from '@mui/material'
 import { Edit, Delete, Visibility } from '@mui/icons-material'
-import image from '~/assets/equipment1.png'
+import routerPhoto from '~/assets/router.png'
+import cablePhoto from '~/assets/cable.jpg'
+import modemPhoto from '~/assets/modem.jpg'
+import switchPhoto from '~/assets/switch.jpg'
 import { useForm, Controller } from 'react-hook-form'
 import { getAllEquipmentsAPI, updateEquipmentAPI } from '~/apis'
 import {
-  FIELD_REQUIRED_MESSAGE,
-  EMAIL_RULE,
-  EMAIL_RULE_MESSAGE,
-  DOB_RULE,
-  DOB_RULE_MESSAGE
+  FIELD_REQUIRED_MESSAGE
 } from '~/utils/validators'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
@@ -36,6 +35,7 @@ import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
 import { Search } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
+
 const EquipmentManagement = () => {
   const navigate = useNavigate()
   const [equipment, setEquipment] = useState([])
@@ -45,7 +45,7 @@ const EquipmentManagement = () => {
   const [page, setPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(true)
-  const itemsPerPage = 6
+  const itemsPerPage = 8
   const confirmUpdate = useConfirm()
   const { register, handleSubmit, formState: { errors }, setValue, control } = useForm()
 
@@ -55,7 +55,7 @@ const EquipmentManagement = () => {
         const equipment = await getAllEquipmentsAPI()
         setEquipment(equipment)
       } catch (error) {
-        toast.error('Failed to fetch equipment data')
+        throw Error(error)
       } finally {
         setIsLoading(false)
       }
@@ -84,9 +84,22 @@ const EquipmentManagement = () => {
     return () => navigate(`/management/equipment/${id}`)
   }
 
-  const handleDelete = (id) => {
-    setEquipment(equipment.filter(e => e.equipmentId !== id))
-    setSnackbar({ open: true, message: 'Equipment deleted successfully', severity: 'success' })
+  const handleDelete = (id) => async () => {
+    try {
+      const { confirmed } = await confirmUpdate({
+        title: 'Confirm Delete',
+        description: 'Are you sure you want to delete this equipment?',
+        confirmationText: 'Delete',
+        cancellationText: 'Cancel'
+      })
+
+      if (confirmed) {
+        setEquipment(equipment.filter(e => e.equipmentId !== id))
+        toast.success('Equipment deleted successfully')
+      }
+    } catch (error) {
+      toast.error(error.message || 'Failed to delete equipment')
+    }
   }
 
   const handleSave = async (data) => {
@@ -109,29 +122,58 @@ const EquipmentManagement = () => {
       })
 
       if (confirmed) {
-        const { equipmentId, equipmentName, equipmentDescription, vendorId, equipmentCost, equipmentInventory, equipmentPhoto, equipmentType, equipmentStatus } = updatedEquipment
-        await updateEquipmentAPI({
+        const {
           equipmentId,
           equipmentName,
           equipmentDescription,
           vendorId,
           equipmentCost,
           equipmentInventory,
-          equipmentPhoto,
           equipmentType,
           equipmentStatus
-        })
+        } = updatedEquipment
+
+        let photo = ''
+        if (equipmentType === 'Router') {
+          photo = routerPhoto
+        } else if (equipmentType === 'Cable') {
+          photo = cablePhoto
+        } else if (equipmentType === 'Modem') {
+          photo = modemPhoto
+        } else if (equipmentType === 'Switch') {
+          photo = switchPhoto
+        }
+
+        // Send data as a flat object
+        const payload = {
+          equipmentId,
+          equipmentName,
+          equipmentDescription,
+          vendorId,
+          equipmentCost,
+          equipmentInventory,
+          equipmentType,
+          equipmentStatus,
+          equipmentPhoto: photo
+        }
+
+        if (!payload.equipmentName) {
+          throw new Error('Equipment Name is required')
+        }
+
+        console.log('Payload being sent:', JSON.stringify(payload, null, 2))
+        await updateEquipmentAPI(payload)
         setOpenDialog(false)
-        toast.success('Update equipment successfully')
+        toast.success('Equipment updated successfully')
       } else {
-        throw new Error('Update equipment cancelled by user')
+        throw new Error('Equipment update cancelled by user')
       }
     } catch (error) {
       if (error?.errors) {
         const errorMessages = Object.values(error.errors).flat()
-        toast.error(errorMessages.join(', ') || 'Update equipment failed')
+        toast.error(errorMessages.join(', ') || 'Failed to update equipment')
       } else {
-        toast.error(error.message || 'Update equipment failed')
+        toast.error(error.message || 'Failed to update equipment')
       }
       throw error
     }
@@ -141,7 +183,7 @@ const EquipmentManagement = () => {
     setOpenDialog(false)
   }
 
-  const filteredEquipment = equipment.filter(eq => 
+  const filteredEquipment = equipment.filter(eq =>
     eq.equipmentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     eq.equipmentDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
     eq.equipmentType.toLowerCase().includes(searchTerm.toLowerCase())
@@ -209,8 +251,12 @@ const EquipmentManagement = () => {
             <CardMedia
               component="img"
               height="200"
-              // image={eq.equipmentPhoto}
-              image={image}
+              image={
+                eq.equipmentType === 'Router' ? routerPhoto :
+                  eq.equipmentType === 'Cable' ? cablePhoto :
+                    eq.equipmentType === 'Modem' ? modemPhoto :
+                      eq.equipmentType === 'Switch' ? switchPhoto : ''
+              }
               alt={eq.equipmentName}
             />
             <CardContent sx={{ flexGrow: 1 }}>
@@ -245,15 +291,6 @@ const EquipmentManagement = () => {
                   sx={{ flex: 1, mr: 1 }}
                 >
                   Edit
-                </Button>
-                <Button
-                  size="small"
-                  startIcon={<Delete />}
-                  color="error"
-                  onClick={() => handleDelete(eq.equipmentId)}
-                  sx={{ flex: 1 }}
-                >
-                  Delete
                 </Button>
                 <Button
                   size="small"
@@ -315,7 +352,6 @@ const EquipmentManagement = () => {
                 step: '0.01',
                 min: '0',
                 onKeyDown: (e) => {
-                  // Prevent negative sign input
                   if (e.key === '-') {
                     e.preventDefault()
                   }
@@ -328,7 +364,7 @@ const EquipmentManagement = () => {
                   message: 'Cost must be greater than or equal to 0'
                 },
                 pattern: {
-                  value: /^\d*\.?\d*$/, // Only allow numbers and decimal points
+                  value: /^\d*\.?\d*$/,
                   message: 'Please enter a valid number'
                 }
               })}
@@ -344,7 +380,6 @@ const EquipmentManagement = () => {
                 step: '0.01',
                 min: '0',
                 onKeyDown: (e) => {
-                  // Prevent negative sign input
                   if (e.key === '-') {
                     e.preventDefault()
                   }
@@ -360,34 +395,25 @@ const EquipmentManagement = () => {
               error={!!errors.equipmentInventory}
               helperText={errors.equipmentInventory?.message}
             />
-            <TextField
-              margin="dense"
-              label="Photo URL"
-              // type='file'
-              fullWidth
-              {...register('equipmentPhoto', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.equipmentPhoto}
-              helperText={errors.equipmentPhoto?.message}
-            />
             <FormControl fullWidth margin="dense">
               <InputLabel id="equipment-type-label">Type</InputLabel>
               <Controller
                 name="equipmentType"
-                control={control} // control từ useForm
+                control={control}
                 rules={{ required: FIELD_REQUIRED_MESSAGE }}
                 render={({ field }) => (
                   <Select
                     labelId="equipment-type-label"
                     label="Type"
                     {...field}
-                    value={field.value || ''} // Giá trị mặc định là chuỗi rỗng nếu không có
+                    value={field.value || ''}
                     onChange={(e) => field.onChange(e.target.value)}
                     error={!!errors.equipmentType}
                   >
                     <MenuItem value="Router">Router</MenuItem>
                     <MenuItem value="Cable">Cable</MenuItem>
                     <MenuItem value="Modem">Modem</MenuItem>
-                    <MenuItem value="VoIP Phone">VoIP Phone</MenuItem>
+                    <MenuItem value="Switch">Switch</MenuItem>
                   </Select>
                 )}
               />
@@ -409,7 +435,7 @@ const EquipmentManagement = () => {
                     labelId="equipment-status-label"
                     label="Status"
                     {...field}
-                    value={field.value || ''} // Giá trị mặc định là chuỗi rỗng nếu không có
+                    value={field.value || ''}
                     onChange={(e) => field.onChange(e.target.value)}
                     error={!!errors.equipmentStatus}
                   >
@@ -428,12 +454,11 @@ const EquipmentManagement = () => {
             <DialogActions>
               <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
               <Button type="submit" color="primary">
-                  Save
+                Save
               </Button>
             </DialogActions>
           </form>
         </DialogContent>
-
       </Dialog>
 
       <Snackbar

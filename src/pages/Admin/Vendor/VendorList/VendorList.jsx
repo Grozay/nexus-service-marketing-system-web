@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Close'
@@ -16,20 +15,19 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons
 } from '@mui/x-data-grid'
-import { getAllVendorsAPI } from '~/apis'
+import { getAllVendorsAPI, updateVendorAPI, deleteVendorAPI } from '~/apis'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import { updateVendorAPI } from '~/apis'
 import { formatDate } from '~/utils/formatter'
 import Chip from '@mui/material/Chip'
 import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
 import Typography from '@mui/material/Typography'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
-import Modal from '@mui/material/Modal'
 import DoneAllIcon from '@mui/icons-material/DoneAll'
 import BlockIcon from '@mui/icons-material/Block'
 import { useNavigate } from 'react-router-dom'
+import EditIcon from '@mui/icons-material/Edit'
 // Function to transform vendor data from API
 const transformVendorData = (vendors) => {
   if (!Array.isArray(vendors)) return []
@@ -44,7 +42,7 @@ const transformVendorData = (vendors) => {
       email: vendor.vendorEmail,
       startDate: new Date(vendor.vendorStartFrom),
       endDate: new Date(vendor.vendorEndTo),
-      status: vendor.vendorStatus
+      status: vendor.vendorStatus === 'Active'
     }))
 }
 
@@ -52,12 +50,9 @@ const transformVendorData = (vendors) => {
 const getAllVendors = async () => {
   try {
     const response = await getAllVendorsAPI()
-    if (!Array.isArray(response)) {
-      return []
-    }
     return transformVendorData(response)
   } catch (error) {
-    throw new Error('Error fetching vendors:', error)
+    throw new Error('Error fetching vendors: ' + error.message)
   }
 }
 
@@ -80,14 +75,15 @@ export default function VendorList() {
   const [selectedId, setSelectedId] = useState(null)
   const [previousRow, setPreviousRow] = useState(null)
   const confirmUpdate = useConfirm()
-  const [selectedVendor, setSelectedVendor] = useState(null)
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
 
-  // Fetch vendors on component mount
   useEffect(() => {
     const fetchData = async () => {
-      const vendors = await getAllVendors()
-      setRows(vendors)
+      try {
+        const vendors = await getAllVendors()
+        setRows(vendors)
+      } catch (error) {
+        toast.error(error.message)
+      }
     }
     fetchData()
   }, [])
@@ -96,12 +92,6 @@ export default function VendorList() {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true
     }
-  }
-
-  const handleEditClick = (id) => () => {
-    const row = rows.find((row) => row.id === id)
-    setPreviousRow(row)
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
   }
 
   const handleSaveClick = (id) => () => {
@@ -118,16 +108,19 @@ export default function VendorList() {
       })
 
       if (confirmed) {
-        await updateVendorAPI({
-          vendorId: id,
-          isDeleted: true
-        })
+        await deleteVendorAPI(id)
         setRows(rows.filter((row) => row.id !== id))
         toast.success('Vendor deleted successfully')
       }
     } catch (error) {
       toast.error(error.message || 'Failed to delete vendor')
     }
+  }
+
+  const handleEditClick = (id) => () => {
+    const row = rows.find((row) => row.id === id)
+    setPreviousRow(row)
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
   }
 
   const handleCancelClick = (id) => () => {
@@ -156,6 +149,9 @@ export default function VendorList() {
 
       const { id, name, address, description, phone, email, startDate, endDate } = updatedRow
 
+      if (phone.length !== 10) {
+        throw new Error('Phone number must be 10 digits')
+      }
       const payload = {
         vendorId: id,
         vendorName: name,
@@ -165,6 +161,7 @@ export default function VendorList() {
         vendorEmail: email,
         vendorStartFrom: formatDate(startDate),
         vendorEndTo: formatDate(endDate),
+        vendorStatus: updatedRow.status ? 'Active' : 'Inactive'
       }
 
       const { confirmed } = await confirmUpdate({
@@ -176,32 +173,35 @@ export default function VendorList() {
 
       if (confirmed) {
         await updateVendorAPI(payload)
-        toast.success('Update vendor successfully')
+        toast.success('Vendor updated successfully')
       } else {
         throw new Error('Update cancelled by user')
       }
       return updatedRow
     } catch (error) {
-      if (error?.errors) {
-        const errorMessages = Object.values(error.errors).flat()
-        toast.error(errorMessages.join(', ') || 'Update vendor failed')
-      } else {
-        toast.error(error.message || 'Update vendor failed')
-      }
+      toast.error(error.message || 'Failed to update vendor')
       throw error
     }
   }
 
   const handleActivateClick = (id) => async () => {
-    await updateVendorAPI({ vendorId: id, vendorStatus: 'Active' })
-    toast.success('Employee activated successfully')
-    setRows(rows.map((row) => (row.id === id ? { ...row, status: true } : row)))
+    try {
+      await updateVendorAPI({ vendorId: id, vendorStatus: 'Active' })
+      toast.success('Vendor activated successfully')
+      setRows(rows.map((row) => (row.id === id ? { ...row, status: true } : row)))
+    } catch (error) {
+      toast.error(error.message || 'Failed to activate vendor')
+    }
   }
 
   const handleDeactivateClick = (id) => async () => {
-    await updateVendorAPI({ vendorId: id, vendorStatus: 'Inactive' })
-    toast.success('Employee deactivated successfully')
-    setRows(rows.map((row) => (row.id === id ? { ...row, status: false } : row)))
+    try {
+      await updateVendorAPI({ vendorId: id, vendorStatus: 'Inactive' })
+      toast.success('Vendor deactivated successfully')
+      setRows(rows.map((row) => (row.id === id ? { ...row, status: false } : row)))
+    } catch (error) {
+      toast.error(error.message || 'Failed to deactivate vendor')
+    }
   }
 
   const handleRowModesModelChange = (newRowModesModel) => {
@@ -222,69 +222,15 @@ export default function VendorList() {
     return () => navigate(`/management/vendor/${id}`)
   }
 
-  const renderDetailModal = () => (
-    <Modal
-      open={isDetailModalOpen}
-      onClose={() => setIsDetailModalOpen(false)}
-      aria-labelledby="vendor-detail-modal"
-      aria-describedby="vendor-detail-modal-description"
-    >
-      <Box sx={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 600,
-        bgcolor: 'background.paper',
-        boxShadow: 24,
-        p: 4,
-        borderRadius: 2
-      }}>
-        {selectedVendor && (
-          <>
-            <Typography variant="h6" component="h2" gutterBottom>
-              Vendor Details
-            </Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
-              <DetailItem label="Vendor ID" value={selectedVendor.vendorId} />
-              <DetailItem label="Name" value={selectedVendor.vendorName} />
-              <DetailItem label="Address" value={selectedVendor.vendorAddress} />
-              <DetailItem label="Description" value={selectedVendor.vendorDescription} />
-              <DetailItem label="Phone" value={selectedVendor.vendorPhone} />
-              <DetailItem label="Email" value={selectedVendor.vendorEmail} />
-              <DetailItem label="Start Date" value={formatDate(selectedVendor.vendorStartFrom)} />
-              <DetailItem label="End Date" value={formatDate(selectedVendor.vendorEndTo)} />
-              <DetailItem label="Status" value={selectedVendor.vendorStatus} />
-            </Box>
-          </>
-        )}
-      </Box>
-    </Modal>
-  )
-
-  const DetailItem = ({ label, value }) => (
-    <Box>
-      <Typography variant="subtitle2" color="text.secondary">
-        {label}
-      </Typography>
-      <Typography variant="body1">
-        {value || 'N/A'}
-      </Typography>
-    </Box>
-  )
-
   const columns = [
-    { field: 'id', headerName: 'Vendor ID', width: 150, editable: false },
-    { field: 'name', headerName: 'Vendor Name', width: 200, editable: true, type: 'string' },
-    { field: 'address', headerName: 'Vendor Address', width: 250, editable: true, type: 'string' },
-    { field: 'description', headerName: 'Vendor Description', width: 300, editable: true, type: 'string' },
-    { field: 'phone', headerName: 'Vendor Phone', width: 150, editable: true, type: 'string' },
-    { field: 'email', headerName: 'Vendor Email', width: 200, editable: true, type: 'string' },
+    { field: 'name', headerName: 'Name', width: 200, editable: true },
+    { field: 'address', headerName: 'Address', width: 250, editable: true },
+    { field: 'phone', headerName: 'Phone', width: 150, editable: true },
     {
       field: 'startDate',
       headerName: 'Start Date',
       width: 150,
-      editable: true,
+      editable: false,
       type: 'date'
     },
     {
@@ -296,14 +242,14 @@ export default function VendorList() {
     },
     {
       field: 'status',
-      headerName: 'Vendor Status',
+      headerName: 'Status',
       width: 120,
       editable: false,
-      type: 'string',
+      type: 'boolean',
       renderCell: (params) => (
         <Chip
-          label={params.value === 'Active' ? 'Active' : 'Inactive'}
-          color={params.value === 'Active' ? 'success' : 'error'}
+          label={params.value ? 'Active' : 'Inactive'}
+          color={params.value ? 'success' : 'error'}
           variant="outlined"
           size="small"
         />
@@ -327,9 +273,7 @@ export default function VendorList() {
               key={id}
               icon={<SaveIcon />}
               label="Save"
-              sx={{
-                color: 'primary.main'
-              }}
+              sx={{ color: 'primary.main' }}
               onClick={handleSaveClick(id)}
             />,
             <GridActionsCellItem
@@ -364,23 +308,16 @@ export default function VendorList() {
         height: '100%',
         width: '100%',
         p: 3,
-        '& .actions': {
-          color: 'text.secondary'
-        },
-        '& .textPrimary': {
-          color: 'text.primary'
-        }
+        '& .actions': { color: 'text.secondary' },
+        '& .textPrimary': { color: 'text.primary' }
       }}
     >
       <Typography
         variant="h4"
         component="h1"
-        sx={{
-          mb: 3,
-          fontWeight: 'bold'
-        }}
+        sx={{ mb: 3, fontWeight: 'bold' }}
       >
-        Employee Management
+        Vendor Management
       </Typography>
       <DataGrid
         rows={rows}
@@ -391,9 +328,7 @@ export default function VendorList() {
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
         slots={{ toolbar: EditToolbar }}
-        slotProps={{
-          toolbar: { setRows, setRowModesModel }
-        }}
+        slotProps={{ toolbar: { setRows, setRowModesModel } }}
         sx={{
           height: 'calc(100vh - 200px)',
           boxShadow: 2,
@@ -407,45 +342,50 @@ export default function VendorList() {
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
       >
-        <MenuItem onClick={() => {
-          handleEditClick(selectedId)()
-          handleCloseMenu()
-        }}>
-          <EditIcon fontSize="small" sx={{ mr: 1 }} />
-          Edit
+        <MenuItem
+          onClick={() => {
+            handleEditClick(selectedId)()
+            handleCloseMenu()
+          }}
+        >
+          <EditIcon fontSize="small" sx={{ mr: 1, color: 'primary.main' }} />
+            Edit
         </MenuItem>
-        {
-          rows.find((row) => row.id === selectedId)?.status === false ? (
-            <MenuItem onClick={() => {
+        {rows.find((row) => row.id === selectedId)?.status === false ? (
+          <MenuItem
+            onClick={() => {
               handleActivateClick(selectedId)()
               handleCloseMenu()
-            }}>
-              <DoneAllIcon fontSize="small" sx={{ mr: 1 }} />
-              Activate
-            </MenuItem>
-          ) : (
-            <MenuItem onClick={() => {
+            }}
+          >
+            <DoneAllIcon fontSize="small" sx={{ mr: 1, color: 'success.main' }} />
+            Activate
+          </MenuItem>
+        ) : (
+          <MenuItem
+            onClick={() => {
               handleDeactivateClick(selectedId)()
               handleCloseMenu()
-            }}>
-              <BlockIcon fontSize="small" sx={{ mr: 1 }} />
-              Deactivate
-            </MenuItem>
-          )
-        }
-        <MenuItem onClick={() => {
-          handleDeleteClick(selectedId)()
-          handleCloseMenu()
-        }}>
-          <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
-          Delete
-        </MenuItem>
+            }}
+          >
+            <BlockIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
+            Deactivate
+          </MenuItem>
+        )}
         <MenuItem onClick={handleViewDetail(selectedId)()}>
-          <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1 }} />
+          <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1, color: 'info.main' }} />
           View Detail
         </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleDeleteClick(selectedId)()
+            handleCloseMenu()
+          }}
+        >
+          <DeleteIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
+          Delete
+        </MenuItem>
       </Menu>
-      {renderDetailModal()}
     </Box>
   )
 }
