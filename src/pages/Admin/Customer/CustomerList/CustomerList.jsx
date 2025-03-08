@@ -372,7 +372,6 @@ export default function CustomerList() {
           <DeleteIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
           Delete
         </MenuItem>
-
       </Menu>
     </Box>
   )

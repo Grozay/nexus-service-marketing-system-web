@@ -131,8 +131,40 @@ export const GetPlanBySlugAPI = async (slug) => {
   return response.data
 }
 
+export const activatePlanAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Plan/Activate`, data)
+  return response.data
+}
+
+export const createPlanAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Plan/Create`, data)
+  return response.data
+}
+
 export const getPlanByCategoryIdAPI = async (id) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Plan/Categories/${id}`)
+  return response.data
+}
+
+//SUBSCRIPTION
+export const getAllSubscriptionsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Subscription`)
+  return response.data
+}
+
+export const createSubscriptionAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Subscription/Create`, data)
+  return response.data
+}
+
+//DEPOSIT
+export const getAllDepositsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Deposit`)
+  return response.data
+}
+
+export const createDepositAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Deposit/Create`, data)
   return response.data
 }
 
@@ -202,6 +234,11 @@ export const getAllEquipmentsAPI = async () => {
 
 export const createEquipmentAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Equipment/Create`, data)
+  return response.data
+}
+
+export const deleteEquipmentAPI = async (id) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Equipment/Delete/${id}`)
   return response.data
 }
 

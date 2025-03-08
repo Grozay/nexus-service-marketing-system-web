@@ -16,17 +16,15 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons
 } from '@mui/x-data-grid'
-import { getPlanListAPI } from '~/apis' // Assuming this API fetches plan list
+import { getPlanListAPI } from '~/apis'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import { updateAccountAPI } from '~/apis' // Keep for now, might need to change to plan update API
-import { formatDate } from '~/utils/formatter'
+import { updateAccountAPI, activatePlanAPI } from '~/apis'
 import Chip from '@mui/material/Chip'
 import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
 import Typography from '@mui/material/Typography'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
-import Modal from '@mui/material/Modal'
 import DoneAllIcon from '@mui/icons-material/DoneAll'
 import BlockIcon from '@mui/icons-material/Block'
 import { useNavigate } from 'react-router-dom'
@@ -42,14 +40,14 @@ const transformPlanData = (plans) => {
       price: plan.planPrice, // Changed from deposit to price
       validity: plan.planValidity, // Changed from Validity to validity
       status: plan.planIsActive,
-      slug: plan.planSlug
+      slug: plan.slug
     }))
 }
 
 // Fetch all plans from API
 const getAllPlans = async () => {
   try {
-    const response = await getPlanListAPI() // Using getPlanListAPI
+    const response = await getPlanListAPI()
     if (!Array.isArray(response)) {
       return []
     }
@@ -70,21 +68,18 @@ function EditToolbar() {
   )
 }
 
-export default function ConnectionList() { // Renamed from CustomerList to ConnectionList
+export default function ConnectionList() {
   const [rows, setRows] = useState([])
   const [rowModesModel, setRowModesModel] = useState({})
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedId, setSelectedId] = useState(null)
   const [previousRow, setPreviousRow] = useState(null)
   const confirmUpdate = useConfirm()
-  const [selectedPlan, setSelectedPlan] = useState(null) // Changed from selectedCustomer to selectedPlan
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
   const navigate = useNavigate()
   // Fetch plans on component mount
   useEffect(() => {
     const fetchData = async () => {
-      const plans = await getAllPlans() // Using getAllPlans
-      console.log('🚀 ~ fetchData ~ plans:', plans)
+      const plans = await getAllPlans()
       setRows(plans)
     }
     fetchData()
@@ -130,31 +125,25 @@ export default function ConnectionList() { // Renamed from CustomerList to Conne
     }
   }
 
-  //   const handleActivateClick = (id) => async () => {
-  //     await activateAccountAPI({ accountId: id, accountIsActive: true }) // Keep activateAccountAPI for now, might need to change
-  //     toast.success('Plan activated successfully') // Updated message
-  //     setRows(rows.map((row) => (row.id === id ? { ...row, status: true } : row)))
-  //   }
+  const handleActivateClick = (id) => async () => {
+    await activatePlanAPI({ planId: id, planIsActive: true })
+    toast.success('Plan activated successfully')
+    setRows(rows.map((row) => (row.id === id ? { ...row, status: true } : row)))
+  }
 
-  //   const handleDeactivateClick = (id) => async () => {
-  //     await activateAccountAPI({ accountId: id, accountIsActive: false }) // Keep deactivateAccountAPI for now, might need to change
-  //     toast.success('Plan deactivated successfully') // Updated message
-  //     setRows(rows.map((row) => (row.id === id ? { ...row, status: false } : row)))
-  //   }
-
-  //   const handleViewDetail = (id) => async () => {
-  //     try {
-  //       const plan = await getAccountByIdAPI(id) // Keep getAccountByIdAPI for now, might need to change to getPlanByIdAPI
-  //       setSelectedPlan(plan) // Changed from setSelectedCustomer to setSelectedPlan
-  //       setIsDetailModalOpen(true)
-  //     } catch (error) {
-  //       toast.error(error.message || 'Failed to fetch plan details') // Updated message
-  //     }
-  //   }
+  const handleDeactivateClick = (id) => async () => {
+    await activatePlanAPI({ planId: id, planIsActive: false })
+    toast.success('Plan deactivated successfully') // Updated message
+    setRows(rows.map((row) => (row.id === id ? { ...row, status: false } : row)))
+  }
 
   const handleViewDetail = (slug) => () => {
-    return () => navigate(`/management/connection-plans/${slug}`)
-  }
+    if (slug) {
+      navigate(`/management/connection-plans/${slug}`);
+    } else {
+      toast.error('no connection plan');
+    }
+  };
 
   const handleCancelClick = (id) => () => {
     setRowModesModel({
@@ -196,24 +185,23 @@ export default function ConnectionList() { // Renamed from CustomerList to Conne
 
       const { confirmed } = await confirmUpdate({
         title: 'Confirm Update',
-        description: 'Are you sure you want to update this plan?', // Updated description
+        description: 'Are you sure you want to update this plan?',
         confirmationText: 'Update',
         cancellationText: 'Cancel'
       })
 
       if (confirmed) {
-        await updateAccountAPI(payload) // Keep updateAccountAPI for now, might need to change to plan update API
-        toast.success('Update plan successfully') // Updated message
-      } else {
+        await updateAccountAPI(payload)
+        toast.success('Update plan successfully')
         throw new Error('Update cancelled by user')
       }
       return updatedRow
     } catch (error) {
       if (error?.errors) {
         const errorMessages = Object.values(error.errors).flat()
-        toast.error(errorMessages.join(', ') || 'Update plan failed') // Updated message
+        toast.error(errorMessages.join(', ') || 'Update plan failed')
       } else {
-        toast.error(error.message || 'Update plan failed') // Updated message
+        toast.error(error.message || 'Update plan failed')
       }
       throw error
     }
@@ -234,11 +222,11 @@ export default function ConnectionList() { // Renamed from CustomerList to Conne
   }
 
   const columns = [
-    { field: 'id', headerName: 'Plan ID', width: 150, editable: false }, // Updated headerName
-    { field: 'name', headerName: 'Plan Name', width: 150, editable: true }, // Updated headerName
-    { field: 'type', headerName: 'Plan Type', width: 200, editable: true }, // Updated headerName
-    { field: 'price', headerName: 'Price', width: 150, editable: true }, // Updated headerName and field
-    { field: 'validity', headerName: 'Validity', width: 200, editable: true }, // Updated headerName and field
+    { field: 'id', headerName: 'Plan ID', width: 150, editable: false },
+    { field: 'name', headerName: 'Plan Name', width: 150, editable: true },
+    { field: 'type', headerName: 'Plan Type', width: 200, editable: true },
+    { field: 'price', headerName: 'Price', width: 150, editable: true },
+    { field: 'validity', headerName: 'Validity', width: 200, editable: true },
     {
       field: 'status',
       headerName: 'Status',
@@ -254,7 +242,6 @@ export default function ConnectionList() { // Renamed from CustomerList to Conne
         />
       )
     },
-    // Removed joinDate column as plan data example doesn't have join date
     {
       field: 'actions',
       type: 'actions',
@@ -303,58 +290,6 @@ export default function ConnectionList() { // Renamed from CustomerList to Conne
       }
     }
   ]
-
-  const renderDetailModal = () => (
-    <Modal
-      open={isDetailModalOpen}
-      onClose={() => setIsDetailModalOpen(false)}
-      aria-labelledby="plan-detail-modal" // Updated aria-labelledby
-      aria-describedby="plan-detail-modal-description" // Updated aria-describedby
-    >
-      <Box sx={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 600,
-        bgcolor: 'background.paper',
-        boxShadow: 24,
-        p: 4,
-        borderRadius: 2
-      }}>
-        {selectedPlan && ( // Changed from selectedCustomer to selectedPlan
-          <>
-            <Typography variant="h6" component="h2" gutterBottom>
-              Plan Details {/* Updated title */}
-            </Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
-              <DetailItem label="ID" value={selectedPlan?.planId} /> {/* Updated value */}
-              <DetailItem label="Name" value={selectedPlan?.planName} /> {/* Updated value */}
-              <DetailItem label="Type" value={selectedPlan?.planType} /> {/* Updated value */}
-              <DetailItem label="Price" value={selectedPlan?.planPrice} /> {/* Updated value */}
-              <DetailItem label="Validity" value={selectedPlan?.planValidity} /> {/* Updated value */}
-              {/* Removed customer specific detail items, add plan specific details if available in API response */}
-              {/* Example if plan details include category: */}
-              {/* <DetailItem label="Category" value={selectedPlan?.plan_Category?.categoryName} /> */}
-              <DetailItem label="Status" value={selectedPlan?.planIsActive ? 'Active' : 'Inactive'} /> {/* Updated value */}
-              {/* Removed Joined Date as plan data example doesn't have join date */}
-            </Box>
-          </>
-        )}
-      </Box>
-    </Modal>
-  )
-
-  const DetailItem = ({ label, value }) => (
-    <Box>
-      <Typography variant="subtitle2" color="text.secondary">
-        {label}
-      </Typography>
-      <Typography variant="body1">
-        {value || 'N/A'}
-      </Typography>
-    </Box>
-  )
 
   return (
     <Box
@@ -406,49 +341,49 @@ export default function ConnectionList() { // Renamed from CustomerList to Conne
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
       >
-        <MenuItem onClick={() => {
-          handleEditClick(selectedId)()
-          handleCloseMenu()
-        }}>
-          <EditIcon fontSize="small" sx={{ mr: 1 }} />
-          Edit
-        </MenuItem>
         {
           rows.find((row) => row.id === selectedId)?.status === false ? (
-            <MenuItem onClick={() => {
-            //   handleActivateClick(selectedId)()
-              handleCloseMenu()
-            }}>
-              <DoneAllIcon fontSize="small" sx={{ mr: 1 }} />
+            <MenuItem
+              onClick={() => {
+                handleActivateClick(selectedId)()
+                handleCloseMenu()
+              }}
+            >
+              <DoneAllIcon fontSize="small" sx={{ mr: 1, color: 'success.main' }} />
               Activate
             </MenuItem>
           ) : (
-            <MenuItem onClick={() => {
-            //   handleDeactivateClick(selectedId)()
-              handleCloseMenu()
-            }}>
-              <BlockIcon fontSize="small" sx={{ mr: 1 }} />
+            <MenuItem
+              onClick={() => {
+                handleDeactivateClick(selectedId)()
+                handleCloseMenu()
+              }}
+            >
+              <BlockIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
               Deactivate
             </MenuItem>
           )
         }
-        <MenuItem onClick={() => {
-          handleDeleteClick(selectedId)()
-          handleCloseMenu()
-        }}>
-          <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
-          Delete
-        </MenuItem>
-        <MenuItem onClick={() => {
-          const selectedPlan = rows.find(row => row.id === selectedId)
-          console.log('🚀 ~ ConnectionList ~ selectedPlan:', selectedPlan.planSlug)
-          handleViewDetail(selectedPlan?.planSlug)()
-        }}>
-          <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1 }} />
+        <MenuItem
+          onClick={() => {
+            const plan = rows.find((row) => row.id === selectedId)
+            handleViewDetail(plan?.slug)()
+          }}
+        >
+          <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1, color: 'info.main' }} />
           View Detail
         </MenuItem>
+
+        {/* <MenuItem
+          onClick={() => {
+            handleDeleteClick(selectedId)()
+            handleCloseMenu()
+          }}
+        >
+          <DeleteIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
+          Delete
+        </MenuItem> */}
       </Menu>
-      {renderDetailModal()}
     </Box>
   )
 }

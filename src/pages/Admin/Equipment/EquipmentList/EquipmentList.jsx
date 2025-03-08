@@ -1,29 +1,27 @@
 import { useState, useEffect } from 'react'
-import {
-  Box,
-  Button,
-  Typography,
-  Card,
-  CardMedia,
-  CardContent,
-  CardActions,
-  TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Snackbar,
-  Alert,
-  Pagination,
-  Skeleton
-} from '@mui/material'
-import { Edit, Delete, Visibility } from '@mui/icons-material'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
+import Card from '@mui/material/Card'
+import CardMedia from '@mui/material/CardMedia'
+import CardContent from '@mui/material/CardContent'
+import CardActions from '@mui/material/CardActions'
+import TextField from '@mui/material/TextField'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
+import Pagination from '@mui/material/Pagination'
+import Skeleton from '@mui/material/Skeleton'
+import { Edit, Visibility, Delete } from '@mui/icons-material'
 import routerPhoto from '~/assets/router.png'
 import cablePhoto from '~/assets/cable.jpg'
 import modemPhoto from '~/assets/modem.jpg'
 import switchPhoto from '~/assets/switch.jpg'
 import { useForm, Controller } from 'react-hook-form'
-import { getAllEquipmentsAPI, updateEquipmentAPI } from '~/apis'
+import { getAllEquipmentsAPI, updateEquipmentAPI, deleteEquipmentAPI } from '~/apis'
 import {
   FIELD_REQUIRED_MESSAGE
 } from '~/utils/validators'
@@ -94,6 +92,8 @@ const EquipmentManagement = () => {
       })
 
       if (confirmed) {
+
+        await deleteEquipmentAPI(id)
         setEquipment(equipment.filter(e => e.equipmentId !== id))
         toast.success('Equipment deleted successfully')
       }
@@ -161,7 +161,6 @@ const EquipmentManagement = () => {
           throw new Error('Equipment Name is required')
         }
 
-        console.log('Payload being sent:', JSON.stringify(payload, null, 2))
         await updateEquipmentAPI(payload)
         setOpenDialog(false)
         toast.success('Equipment updated successfully')
@@ -270,7 +269,13 @@ const EquipmentManagement = () => {
                 Type: {eq.equipmentType}
               </Typography>
               <Typography variant="body2">
-                Status: {eq.equipmentStatus}
+                Status: <span style={{
+                  color: eq.equipmentStatus === 'Active' ? '#2e7d32' :
+                    eq.equipmentStatus === 'Available' ? '#ed6c02' :
+                      eq.equipmentStatus === 'Low Stock' ? '#d32f2f' : 'inherit'
+                }}>
+                  {eq.equipmentStatus}
+                </span>
               </Typography>
               <Typography variant="body2">
                 Vendor: {eq?.vendorDetails?.vendorName}
@@ -300,6 +305,16 @@ const EquipmentManagement = () => {
                 >
                   View
                 </Button>
+                <Button
+                  size="small"
+                  startIcon={<Delete />}
+                  onClick={handleDelete(eq.equipmentId)}
+                  sx={{ flex: 1, mr: 1 }}
+                  color="error"
+                >
+                  Delete
+                </Button>
+
               </Box>
             </CardActions>
           </Card>

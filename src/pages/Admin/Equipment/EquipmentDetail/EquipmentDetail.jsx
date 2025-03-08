@@ -81,7 +81,11 @@ export default function EquipmentDetail() {
             </Typography>
             <Chip
               label={equipment.equipmentStatus}
-              color={equipment.equipmentStatus === 'Available' ? 'success' : 'error'}
+              color={
+                equipment.equipmentStatus === 'Active' ? 'success' :
+                  equipment.equipmentStatus === 'Available' ? 'warning' :
+                    equipment.equipmentStatus === 'Low Stock' ? 'error' : 'default'
+              }
               variant="outlined"
               size="small"
               sx={{ mt: 1 }}
