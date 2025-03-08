@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Box, Typography, Paper, Divider, Button, Chip, Avatar } from '@mui/material'
+import { Box, Typography, Paper, Divider, Button, Chip, Avatar, Collapse } from '@mui/material'
 import Grid from '@mui/material/Grid2'
 import { toast } from 'react-toastify'
-import { getAccountByIdAPI } from '~/apis' // Giả định API cho customer
+import { getOrderByAccountIdAPI } from '~/apis'
 import { formatDate } from '~/utils/formatter'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import EmailIcon from '@mui/icons-material/Email'
@@ -14,18 +14,36 @@ import CakeIcon from '@mui/icons-material/Cake'
 import EventIcon from '@mui/icons-material/Event'
 import CategoryIcon from '@mui/icons-material/Category'
 import LocationCityIcon from '@mui/icons-material/LocationCity'
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import VisibilityIcon from '@mui/icons-material/Visibility' // Icon cho nút View Detail
 
 export default function CustomerDetail() {
-  const { id } = useParams() // Lấy accountId từ URL
+  const { id } = useParams()
   const navigate = useNavigate()
   const [customer, setCustomer] = useState(null)
+  const [plans, setPlans] = useState([])
+  const [expandedPlan, setExpandedPlan] = useState(null)
 
-  // Fetch thông tin khách hàng khi component được mount
   useEffect(() => {
     const fetchCustomer = async () => {
       try {
-        const data = await getAccountByIdAPI(id)
-        setCustomer(data)
+        const orderData = await getOrderByAccountIdAPI(id)
+        if (orderData && orderData.length > 0) {
+          setCustomer(orderData[0].accountDetails)
+          const planList = orderData.map((order) => ({
+            planId: order.planDetails.planId, // Giả sử API trả về planId
+            planName: order.planDetails.planName,
+            planDetails: order.planDetails.planDetails,
+            planPrice: order.planDetails.planPrice,
+            planValidity: order.planDetails.planValidity,
+            planDescription: order.planDetails.planDescription,
+            planIsActive: order.planDetails.planIsActive
+          }))
+          setPlans(planList)
+        } else {
+          throw new Error('No customer data found for this account ID')
+        }
       } catch (error) {
         toast.error(error.message || 'Failed to fetch customer details')
         navigate('/management/customer/list')
@@ -34,7 +52,6 @@ export default function CustomerDetail() {
     fetchCustomer()
   }, [id, navigate])
 
-  // Nếu chưa có dữ liệu, hiển thị loading
   if (!customer) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -43,9 +60,16 @@ export default function CustomerDetail() {
     )
   }
 
+  const handleExpandPlan = (index) => {
+    setExpandedPlan(expandedPlan === index ? null : index)
+  }
+
+  const handleViewPlanDetail = (planId) => {
+    navigate(`/management/plan/${planId}`) // Điều hướng đến trang chi tiết gói
+  }
+
   return (
     <Box sx={{ p: 4, maxWidth: '1200px', margin: '0 auto' }}>
-      {/* Header với nút quay lại */}
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
         <Button
           variant="outlined"
@@ -60,14 +84,12 @@ export default function CustomerDetail() {
         </Typography>
       </Box>
 
-      {/* Main content */}
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-        {/* Thông tin cơ bản với avatar */}
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
           <Avatar
             sx={{ width: 100, height: 100, mr: 3 }}
             alt={customer.accountName}
-            src="/path-to-avatar.jpg" // Thay bằng URL ảnh nếu có
+            src="/path-to-avatar.jpg"
           >
             {customer.accountName?.charAt(0)}
           </Avatar>
@@ -90,77 +112,93 @@ export default function CustomerDetail() {
 
         <Divider sx={{ mb: 4 }} />
 
-        {/* Thông tin chi tiết chia thành các box */}
         <Grid container spacing={3}>
-          {/* Box 1: Thông tin liên hệ */}
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
               <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
                 Contact Information
               </Typography>
-              <DetailItem
-                icon={<EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />}
-                label="Email"
-                value={customer.accountEmail}
-              />
-              <DetailItem
-                icon={<PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />}
-                label="Phone"
-                value={customer.accountPhone}
-              />
-              <DetailItem
-                icon={<HomeIcon sx={{ mr: 1, color: 'text.secondary' }} />}
-                label="Address"
-                value={customer.accountAddress}
-              />
+              <DetailItem icon={<EmailIcon />} label="Email" value={customer.accountEmail} />
+              <DetailItem icon={<PhoneIcon />} label="Phone" value={customer.accountPhone} />
+              <DetailItem icon={<HomeIcon />} label="Address" value={customer.accountAddress} />
             </Paper>
           </Grid>
 
-          {/* Box 2: Thông tin cá nhân */}
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
               <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
                 Personal Information
               </Typography>
-              <DetailItem
-                icon={<PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />}
-                label="Gender"
-                value={customer.accountGender}
-              />
-              <DetailItem
-                icon={<CakeIcon sx={{ mr: 1, color: 'text.secondary' }} />}
-                label="Date of Birth"
-                value={formatDate(customer.accountDOB)}
-              />
-              <DetailItem
-                icon={<PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />}
-                label="Identity"
-                value={customer.accountIdentity || 'N/A'}
-              />
+              <DetailItem icon={<PersonIcon />} label="Gender" value={customer.accountGender} />
+              <DetailItem icon={<CakeIcon />} label="Date of Birth" value={formatDate(customer.accountDOB)} />
+              <DetailItem icon={<PersonIcon />} label="Identity" value={customer.accountIdentity || 'N/A'} />
             </Paper>
           </Grid>
 
-          {/* Box 3: Thông tin tài khoản */}
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
               <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
                 Account Information
               </Typography>
-              <DetailItem
-                icon={<EventIcon sx={{ mr: 1, color: 'text.secondary' }} />}
-                label="Join Date"
-                value={formatDate(customer.accountCreatedAt)}
-              />
-              <DetailItem
-                icon={<LocationCityIcon sx={{ mr: 1, color: 'text.secondary' }} />}
-                label="City"
-                value={customer.cityCodeDetails?.cityName || 'N/A'}
-              />
-              <DetailItem
-                icon={<CategoryIcon sx={{ mr: 1, color: 'text.secondary' }} />}
-                label="Category"
-                value={customer.categoryDetails?.categoryName || 'N/A'}
-              />
+              <DetailItem icon={<EventIcon />} label="Join Date" value={formatDate(customer.accountCreatedAt)} />
+              <DetailItem icon={<LocationCityIcon />} label="City" value={customer.cityCodeDetails?.cityName || 'N/A'} />
+              <DetailItem icon={<CategoryIcon />} label="Category" value={customer.categoryDetails?.categoryName || 'N/A'} />
+            </Paper>
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
+                Subscription Plans
+              </Typography>
+              {plans.length > 0 ? (
+                <Box sx={{ maxHeight: '300px', overflowY: 'auto' }}>
+                  {plans.map((plan, index) => (
+                    <Box key={index} sx={{ mb: 2, border: '1px solid #e0e0e0', borderRadius: 2, p: 2 }}>
+                      <Box
+                        sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                        onClick={() => handleExpandPlan(index)}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <CardGiftcardIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                          <Typography variant="subtitle1">{plan.planName}</Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <Chip
+                            label={plan.planIsActive ? 'Active' : 'Inactive'}
+                            color={plan.planIsActive ? 'success' : 'error'}
+                            variant="outlined"
+                            size="small"
+                            sx={{ mr: 1 }}
+                          />
+                          <ExpandMoreIcon />
+                        </Box>
+                      </Box>
+                      <Collapse in={expandedPlan === index}>
+                        <Box sx={{ mt: 2 }}>
+                          <DetailItem icon={<EventIcon />} label="Details" value={plan.planDetails} />
+                          <DetailItem icon={<Typography>$</Typography>} label="Price" value={`${plan.planPrice} USD`} />
+                          <DetailItem icon={<EventIcon />} label="Validity" value={plan.planValidity} />
+                          <DetailItem icon={<CategoryIcon />} label="Description" value={plan.planDescription} />
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            startIcon={<VisibilityIcon />}
+                            onClick={() => handleViewPlanDetail(plan.planId)}
+                            sx={{ mt: 2 }}
+                          >
+                            View Detail
+                          </Button>
+                        </Box>
+                      </Collapse>
+                    </Box>
+                  ))}
+                </Box>
+              ) : (
+                <Typography variant="body1" color="text.secondary">
+                  No plans found for this customer.
+                </Typography>
+              )}
             </Paper>
           </Grid>
         </Grid>
@@ -169,11 +207,10 @@ export default function CustomerDetail() {
   )
 }
 
-// Component hiển thị từng mục thông tin với icon
 const DetailItem = ({ icon, label, value }) => (
   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
     {icon}
-    <Box>
+    <Box sx={{ ml: 1 }}>
       <Typography variant="subtitle2" color="text.secondary">
         {label}
       </Typography>

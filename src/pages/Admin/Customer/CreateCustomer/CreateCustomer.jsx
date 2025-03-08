@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid2'
 import MenuItem from '@mui/material/MenuItem'
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker'
 import Paper from '@mui/material/Paper'
 import {
   FIELD_REQUIRED_MESSAGE,
@@ -17,13 +18,20 @@ import {
   DOB_RULE,
   DOB_RULE_MESSAGE
 } from '~/utils/validators'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import dayjs from 'dayjs' // Thêm dayjs để xử lý ngày tháng
 
 const CreateCustomer = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm()
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm({
+    defaultValues: {
+      customerDOB: null // Giá trị mặc định cho customerDOB
+    }
+  })
   const navigate = useNavigate()
   const [cityCodes, setCityCodes] = useState([])
   const [planList, setPlanList] = useState([])
-  // Fetch city codes
+
   useEffect(() => {
     const fetchCityCodes = async () => {
       try {
@@ -36,7 +44,6 @@ const CreateCustomer = () => {
     fetchCityCodes()
   }, [])
 
-  // Fetch service plans
   useEffect(() => {
     const fetchPlanList = async () => {
       try {
@@ -50,9 +57,8 @@ const CreateCustomer = () => {
   }, [])
 
   const onSubmit = async (data) => {
-    const { customerName, customerEmail, customerPhone, customerAddress, cityCodeId, customerDOB, customerGender, categoryId } = data
-    // Validate data before submitting
-    if (!customerName || !customerEmail || !customerPhone || !customerAddress || !cityCodeId || !customerDOB || !customerGender || !categoryId) {
+    const { customerName, customerEmail, customerPhone, customerAddress, cityCodeId, customerDOB, customerGender, categoryId, customerIdentity } = data
+    if (!customerName || !customerEmail || !customerPhone || !customerAddress || !cityCodeId || !customerDOB || !customerGender || !categoryId || !customerIdentity ) {
       toast.error('Please fill in all required fields')
       return
     }
@@ -65,7 +71,8 @@ const CreateCustomer = () => {
       cityCodeId: cityCodeId.trim(),
       accountDOB: customerDOB,
       accountGender: customerGender,
-      categoryId: categoryId.trim()
+      categoryId: categoryId.trim(),
+      accountIdentity: customerIdentity.trim()
     }
 
     toast.promise(
@@ -91,7 +98,7 @@ const CreateCustomer = () => {
           }
         }
       }
-    ).catch(() => {}) // Bắt lỗi để tránh unhandled promise rejection
+    ).catch(() => {})
   }
 
   return (
@@ -102,7 +109,6 @@ const CreateCustomer = () => {
         </Typography>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
-            {/* Full Name */}
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label='Full Name'
@@ -114,7 +120,6 @@ const CreateCustomer = () => {
               />
             </Grid>
 
-            {/* Email */}
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label='Email'
@@ -130,7 +135,17 @@ const CreateCustomer = () => {
               />
             </Grid>
 
-            {/* Phone Number */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label='Identity'
+                fullWidth
+                variant='outlined'
+                {...register('customerIdentity', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.customerIdentity}
+                helperText={errors.customerIdentity?.message}
+              />
+            </Grid>
+
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label='Phone Number'
@@ -143,22 +158,50 @@ const CreateCustomer = () => {
             </Grid>
 
             {/* Date of Birth */}
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <DesktopDatePicker
+                  label='Date of Birth'
+                  value={null} // Giá trị ban đầu là null
+                  onChange={(newValue) => {
+                    const formattedDate = newValue ? dayjs(newValue).format('YYYY-MM-DD') : null
+                    setValue('customerDOB', formattedDate, { shouldValidate: true })
+                  }}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      error: !!errors.customerDOB,
+                      helperText: errors.customerDOB?.message,
+                      inputProps: {
+                        ...register('customerDOB', {
+                          required: FIELD_REQUIRED_MESSAGE,
+                          validate: {
+                            validDate: (value) => DOB_RULE(value) || DOB_RULE_MESSAGE
+                          }
+                        })
+                      }
+                    }
+                  }}
+                />
+              </Grid>
+            </LocalizationProvider>
+
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                label='Date of Birth'
-                type='date'
+                label='Gender'
                 fullWidth
+                select
                 variant='outlined'
-                {...register('customerDOB', {
-                  required: FIELD_REQUIRED_MESSAGE,
-                  validate: { validDate: (value) => DOB_RULE(value) || DOB_RULE_MESSAGE }
-                })}
-                error={!!errors.customerDOB}
-                helperText={errors.customerDOB?.message}
-              />
+                {...register('customerGender', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.customerGender}
+                helperText={errors.customerGender?.message}
+              >
+                <MenuItem value='Male'>Male</MenuItem>
+                <MenuItem value='Female'>Female</MenuItem>
+                <MenuItem value='Other'>Other</MenuItem>
+              </TextField>
             </Grid>
 
-            {/* Address */}
             <Grid size={{ xs: 12 }}>
               <TextField
                 label='Address'
@@ -172,7 +215,6 @@ const CreateCustomer = () => {
               />
             </Grid>
 
-            {/* City */}
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label='City'
@@ -191,7 +233,6 @@ const CreateCustomer = () => {
               </TextField>
             </Grid>
 
-            {/* Service Plan */}
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label='Service Plan'
@@ -210,24 +251,6 @@ const CreateCustomer = () => {
               </TextField>
             </Grid>
 
-            {/* Gender */}
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label='Gender'
-                fullWidth
-                select
-                variant='outlined'
-                {...register('customerGender', { required: FIELD_REQUIRED_MESSAGE })}
-                error={!!errors.customerGender}
-                helperText={errors.customerGender?.message}
-              >
-                <MenuItem value='Male'>Male</MenuItem>
-                <MenuItem value='Female'>Female</MenuItem>
-                <MenuItem value='Other'>Other</MenuItem>
-              </TextField>
-            </Grid>
-
-            {/* Create Button */}
             <Grid size={{ xs: 12 }} sx={{ textAlign: 'center', mt: 3 }}>
               <Button
                 type='submit'

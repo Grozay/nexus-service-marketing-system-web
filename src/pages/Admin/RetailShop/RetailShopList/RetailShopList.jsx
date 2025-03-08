@@ -5,11 +5,11 @@ import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Close'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import DoneAllIcon from '@mui/icons-material/DoneAll'
 import BlockIcon from '@mui/icons-material/Block'
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
+import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import {
   GridRowModes,
   DataGrid,
@@ -26,24 +26,26 @@ import 'leaflet/dist/leaflet.css'
 import { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
-import { getAllRetailShopsAPI, updateRetailShopAPI, getRetailShopByIdAPI } from '~/apis'
+import { getAllRetailShopsAPI, updateRetailShopAPI, deleteRetailShopAPI } from '~/apis'
 import Chip from '@mui/material/Chip'
 import { useNavigate } from 'react-router-dom'
-import { Visibility } from '@mui/icons-material'
+import EditIcon from '@mui/icons-material/Edit'
 // Function to transform store data from API
 const transformStoreData = (stores) => {
   if (!Array.isArray(stores)) return []
-  return stores.map(store => ({
-    id: store.storeId,
-    storeName: store.storeName,
-    storeAddress: store.storeAddress,
-    storeCity: store.storeCity,
-    storePhone: store.storePhone,
-    storeLatitude: store.storeLatitude,
-    storeLongitude: store.storeLongitude,
-    storeOpenHours: `${store.storeOpenAt} - ${store.storeCloseAt}`,
-    storeStatus: store.storeStatus
-  }))
+  return stores
+    .filter(store => store.storeStatus !== 'Deleted')
+    .map(store => ({
+      id: store.storeId,
+      storeName: store.storeName,
+      storeAddress: store.storeAddress,
+      storeCity: store.storeCity,
+      storePhone: store.storePhone,
+      storeLatitude: store.storeLatitude,
+      storeLongitude: store.storeLongitude,
+      storeOpenHours: `${store.storeOpenAt} - ${store.storeCloseAt}`,
+      storeStatus: store.storeStatus === 'Active'
+    }))
 }
 
 // Fetch all stores from API
@@ -67,23 +69,22 @@ function EditToolbar() {
   )
 }
 
-function RetailShopManagement() {
+export default function RetailShopManagement() {
   const [rows, setRows] = useState([])
   const [rowModesModel, setRowModesModel] = useState({})
   const [anchorEl, setAnchorEl] = useState(null)
-  const [selectedShop, setSelectedShop] = useState(null)
   const [selectedId, setSelectedId] = useState(null)
   const [previousRow, setPreviousRow] = useState(null)
   const confirmUpdate = useConfirm()
   const navigate = useNavigate()
-  // Fetch stores on component mount
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const stores = await getAllStores()
         setRows(stores)
       } catch (error) {
-        toast.error('Failed to fetch stores')
+        throw new Error(error)
       }
     }
     fetchData()
@@ -93,16 +94,6 @@ function RetailShopManagement() {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true
     }
-  }
-
-  const handleViewDetail = (id) => () => {
-    return () => navigate(`/management/retail-shop/${id}`)
-  }
-
-  const handleEditClick = (id) => () => {
-    const row = rows.find((row) => row.id === id)
-    setPreviousRow(row)
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
   }
 
   const handleSaveClick = (id) => () => {
@@ -119,16 +110,35 @@ function RetailShopManagement() {
       })
 
       if (confirmed) {
-        await updateRetailShopAPI({
-          storeId: id,
-          storeStatus: 'Deleted'
-        })
+        await deleteRetailShopAPI(id)
         setRows(rows.filter((row) => row.id !== id))
         toast.success('Store deleted successfully')
       }
     } catch (error) {
       toast.error(error.message || 'Failed to delete store')
     }
+  }
+
+  const handleEditClick = (id) => () => {
+    const row = rows.find((row) => row.id === id)
+    setPreviousRow(row)
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
+  }
+
+  const handleActivateClick = (id) => async () => {
+    await updateRetailShopAPI({ storeId: id, storeStatus: 'Active' })
+    toast.success('Store activated successfully')
+    setRows(rows.map((row) => (row.id === id ? { ...row, storeStatus: true } : row)))
+  }
+
+  const handleDeactivateClick = (id) => async () => {
+    await updateRetailShopAPI({ storeId: id, storeStatus: 'Inactive' })
+    toast.success('Store deactivated successfully')
+    setRows(rows.map((row) => (row.id === id ? { ...row, storeStatus: false } : row)))
+  }
+
+  const handleViewDetail = (id) => () => {
+    return () => navigate(`/management/retail-shop/${id}`)
   }
 
   const handleCancelClick = (id) => () => {
@@ -148,10 +158,14 @@ function RetailShopManagement() {
 
   const processRowUpdate = async (newRow) => {
     try {
+      if (!newRow.storeName || !newRow.storeAddress || !newRow.storePhone) {
+        throw new Error('Please fill in all required fields')
+      }
+
       const updatedRow = { ...newRow, isNew: false }
       setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)))
 
-      const { id, storeName, storeAddress, storeCity, storePhone, storeLatitude, storeLongitude } = updatedRow
+      const { id, storeName, storeAddress, storeCity, storePhone } = updatedRow
       const [storeOpenAt, storeCloseAt] = updatedRow.storeOpenHours.split(' - ')
 
       const payload = {
@@ -160,8 +174,6 @@ function RetailShopManagement() {
         storeAddress,
         storeCity,
         storePhone,
-        storeLatitude,
-        storeLongitude,
         storeOpenAt,
         storeCloseAt
       }
@@ -186,32 +198,8 @@ function RetailShopManagement() {
     }
   }
 
-  const handleActivateClick = (id) => async () => {
-    try {
-      await updateRetailShopAPI({ storeId: id, storeStatus: 'Active' })
-      setRows(rows.map((row) => row.id === id ? { ...row, storeStatus: 'Active' } : row))
-      toast.success('Store activated successfully')
-    } catch (error) {
-      toast.error(error.message || 'Failed to activate store')
-    }
-  }
-
-  const handleDeactivateClick = (id) => async () => {
-    try {
-      await updateRetailShopAPI({ storeId: id, storeStatus: 'Inactive' })
-      setRows(rows.map((row) => row.id === id ? { ...row, storeStatus: 'Inactive' } : row))
-      toast.success('Store deactivated successfully')
-    } catch (error) {
-      toast.error(error.message || 'Failed to deactivate store')
-    }
-  }
-
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel)
-  }
-
-  const handleMarkerClick = (shop) => {
-    setSelectedShop(shop)
   }
 
   const handleMoreClick = (id) => (event) => {
@@ -224,55 +212,22 @@ function RetailShopManagement() {
     setSelectedId(null)
   }
 
-  const ShopDetails = ({ shop }) => {
-    if (!shop) return (
-      <Paper sx={{ p: 2, textAlign: 'center' }}>
-        <Typography variant="h6">Select a store to view details</Typography>
-      </Paper>
-    )
-
-    return (
-      <Paper sx={{ p: 2 }}>
-        <Typography variant="h6" gutterBottom>Store Details</Typography>
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
-          <DetailItem label="Name" value={shop.storeName} />
-          <DetailItem label="Address" value={shop.storeAddress} />
-          <DetailItem label="City" value={shop.storeCity} />
-          <DetailItem label="Coordinates" value={`${shop.storeLatitude}, ${shop.storeLongitude}`} />
-          <DetailItem label="Open Hours" value={shop.storeOpenHours} />
-          <DetailItem label="Phone" value={shop.storePhone} />
-          <DetailItem label="Status" value={shop.storeStatus === 'Active' ? 'Active' : 'Inactive'} />
-        </Box>
-      </Paper>
-    )
-  }
-
-  const DetailItem = ({ label, value }) => (
-    <Box>
-      <Typography variant="subtitle2" color="text.secondary">{label}</Typography>
-      <Typography variant="body1">{value}</Typography>
-    </Box>
-  )
-
-  console.log('🚀 ~ RetailShopManagement ~ rows:', rows.storeStatus)
   const columns = [
-    { field: 'storeName', headerName: 'Store Name', width: 200, editable: true, filterable: true },
-    { field: 'storeAddress', headerName: 'Address', width: 250, editable: true, filterable: true },
-    { field: 'storeCity', headerName: 'City', width: 150, editable: true, filterable: true },
-    { field: 'storeLatitude', headerName: 'Latitude', width: 120, editable: true, filterable: true },
-    { field: 'storeLongitude', headerName: 'Longitude', width: 120, editable: true, filterable: true },
-    { field: 'storeOpenHours', headerName: 'Open Hours', width: 150, editable: true, filterable: true },
-    { field: 'storePhone', headerName: 'Phone', width: 150, editable: true, filterable: true },
+    { field: 'storeName', headerName: 'Name', width: 200, editable: true },
+    { field: 'storeAddress', headerName: 'Address', width: 250, editable: true },
+    { field: 'storeCity', headerName: 'City', width: 150, editable: true },
+    { field: 'storePhone', headerName: 'Phone', width: 150, editable: true },
+    { field: 'storeOpenHours', headerName: 'Open Hours', width: 150, editable: true },
     {
-      field: 'status',
-      headerName: 'Store Status',
+      field: 'storeStatus',
+      headerName: 'Status',
       width: 120,
       editable: false,
-      type: 'string',
+      type: 'boolean',
       renderCell: (params) => (
         <Chip
-          label={params.row.storeStatus === 'Active' ? 'Active' : 'Inactive'}
-          color={params.row.storeStatus === 'Active' ? 'success' : 'error'}
+          label={params.value ? 'Active' : 'Inactive'}
+          color={params.value ? 'success' : 'error'}
           variant="outlined"
           size="small"
         />
@@ -296,9 +251,7 @@ function RetailShopManagement() {
               key={id}
               icon={<SaveIcon />}
               label="Save"
-              sx={{
-                color: 'primary.main'
-              }}
+              sx={{ color: 'primary.main' }}
               onClick={handleSaveClick(id)}
             />,
             <GridActionsCellItem
@@ -328,110 +281,128 @@ function RetailShopManagement() {
   ]
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-      <Typography variant="h4" gutterBottom>Retail Shop Management</Typography>
+    <Box
+      sx={{
+        height: '100%',
+        width: '100%',
+        p: 3,
+        '& .actions': { color: 'text.secondary' },
+        '& .textPrimary': { color: 'text.primary' }
+      }}
+    >
+      <Typography
+        variant="h4"
+        component="h1"
+        sx={{ mb: 3, fontWeight: 'bold' }}
+      >
+        Retail Shop Management
+      </Typography>
 
-      <Box sx={{ display: 'flex', gap: 3 }}>
-        <Box sx={{ flex: 1 }}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>Retail Shops Map</Typography>
-            <MapContainer
-              center={[21.0278, 105.8342]}
-              zoom={7}
-              style={{ height: '400px', width: '100%' }}
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              />
-              {rows.map((shop) => (
-                <Marker
-                  key={shop.id}
-                  position={[parseFloat(shop.storeLatitude), parseFloat(shop.storeLongitude)]}
-                  eventHandlers={{
-                    click: () => handleMarkerClick(shop)
-                  }}
-                >
-                  <Popup>
-                    <Box>
-                      <Typography variant="subtitle1">{shop.storeName}</Typography>
-                      <Typography variant="body2">{shop.storeAddress}</Typography>
-                    </Box>
-                  </Popup>
-                </Marker>
-              ))}
-            </MapContainer>
-          </Paper>
-        </Box>
-
-        <Box sx={{ flex: 1 }}>
-          <ShopDetails shop={selectedShop} />
-        </Box>
-      </Box>
-
-      <Paper sx={{ p: 2 }}>
-        <Typography variant="h6" gutterBottom>Retail Shops List</Typography>
-        <Box sx={{ height: '80vh', width: '100%' }}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            editMode="row"
-            rowModesModel={rowModesModel}
-            onRowModesModelChange={handleRowModesModelChange}
-            onRowEditStop={handleRowEditStop}
-            processRowUpdate={processRowUpdate}
-            slots={{ toolbar: EditToolbar }}
-            slotProps={{
-              toolbar: { setRows, setRowModesModel }
-            }}
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <Typography variant="h6" gutterBottom>Retail Shops Map</Typography>
+        <MapContainer
+          center={[21.0278, 105.8342]}
+          zoom={7}
+          style={{ height: '400px', width: '100%' }}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleCloseMenu}
-          >
-            <MenuItem onClick={() => {
-              handleEditClick(selectedId)()
-              handleCloseMenu()
-            }}>
-              <EditIcon fontSize="small" sx={{ mr: 1 }} />
-              Edit
-            </MenuItem>
-            {
-              rows.find((row) => row.id === selectedId)?.status === false ? (
-                <MenuItem onClick={() => {
-                  handleActivateClick(selectedId)()
-                  handleCloseMenu()
-                }}>
-                  <DoneAllIcon fontSize="small" sx={{ mr: 1 }} />
-                Activate
-                </MenuItem>
-              ) : (
-                <MenuItem onClick={() => {
-                  handleDeactivateClick(selectedId)()
-                  handleCloseMenu()
-                }}>
-                  <BlockIcon fontSize="small" sx={{ mr: 1 }} />
-                Deactivate
-                </MenuItem>
-              )
-            }
-            <MenuItem onClick={() => {
-              handleDeleteClick(selectedId)()
-              handleCloseMenu()
-            }}>
-              <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
-              Delete
-            </MenuItem>
-            <MenuItem onClick={handleViewDetail(selectedId)()}>
-              <Visibility fontSize="small" sx={{ mr: 1 }} />
-              View
-            </MenuItem>
-          </Menu>
-        </Box>
+          {rows.map((shop) => {
+            return (
+              <Marker
+                key={shop.id}
+                position={[parseFloat(shop.storeLatitude), parseFloat(shop.storeLongitude)]}
+              >
+                <Popup>
+                  <Box>
+                    <Typography variant="subtitle1">{shop.storeName}</Typography>
+                    <Typography variant="body2">{shop.storeAddress}</Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: shop.storeStatus === true ? 'success.main' : 'error.main',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      {shop.storeStatus === true ? 'Active' : 'Inactive'}
+                    </Typography>
+                  </Box>
+                </Popup>
+              </Marker>
+            )})}
+        </MapContainer>
       </Paper>
+
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        editMode="row"
+        rowModesModel={rowModesModel}
+        onRowModesModelChange={handleRowModesModelChange}
+        onRowEditStop={handleRowEditStop}
+        processRowUpdate={processRowUpdate}
+        slots={{ toolbar: EditToolbar }}
+        slotProps={{ toolbar: { setRows, setRowModesModel } }}
+        sx={{
+          height: 'calc(100vh - 200px)',
+          boxShadow: 2,
+          border: 1,
+          borderColor: 'divider',
+          borderRadius: 2
+        }}
+      />
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+      >
+        <MenuItem
+          onClick={() => {
+            handleEditClick(selectedId)()
+            handleCloseMenu()
+          }}
+        >
+          <EditIcon fontSize="small" sx={{ mr: 1, color: 'primary.main' }} />
+            Edit
+        </MenuItem>
+        {rows.find((row) => row.id === selectedId)?.storeStatus === false ? (
+          <MenuItem
+            onClick={() => {
+              handleActivateClick(selectedId)()
+              handleCloseMenu()
+            }}
+          >
+            <DoneAllIcon fontSize="small" sx={{ mr: 1, color: 'success.main' }} />
+            Activate
+          </MenuItem>
+        ) : (
+          <MenuItem
+            onClick={() => {
+              handleDeactivateClick(selectedId)()
+              handleCloseMenu()
+            }}
+          >
+            <BlockIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
+            Deactivate
+          </MenuItem>
+        )}
+        <MenuItem onClick={handleViewDetail(selectedId)()}>
+          <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1, color: 'info.main' }} />
+          View Detail
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleDeleteClick(selectedId)()
+            handleCloseMenu()
+          }}
+        >
+          <DeleteIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
+          Delete
+        </MenuItem>
+      </Menu>
     </Box>
   )
 }
-
-export default RetailShopManagement

@@ -37,7 +37,6 @@ import CreateVendor from '~/pages/Admin/Vendor/CreateVendor/CreateVendor'
 import RetailShopList from '~/pages/Admin/RetailShop/RetailShopList/RetailShopList'
 import CreateRetailShop from '~/pages/Admin/RetailShop/CreateRetailShop/CreateRetailShop'
 import ConnectionList from '~/pages/Admin/Connections/ConnectionList/ConnectionList'
-// import CreateConnectionPlan from '~/pages/Admin/Connections/CreateConnectionPlan/CreateConnectionPlan'
 import CreateBilling from '~/pages/Admin/Billing/CreateBilling/CreateBilling'
 import BillingList from '~/pages/Admin/Billing/BillingList/BillingList'
 import EmployeeDetail from '~/pages/Admin/Employee/EmployeeDetail/EmployeeDetail'
@@ -46,10 +45,10 @@ import EquipmentDetail from '~/pages/Admin/Equipment/EquipmentDetail/EquipmentDe
 import VendorDetail from '~/pages/Admin/Vendor/VendorDetail/VendorDetail'
 import RetailShopDetail from '~/pages/Admin/RetailShop/RetailShopDetail/RetailShopDetail'
 import ConnectionDetail from '~/pages/Admin/Connections/ConnectionDetail/ConnectionDetail'
+
 const NAVIGATION = (currentUser) => {
   const baseNav = []
 
-  // Admin has access to all features
   if (currentUser.userRole === 'admin') {
     baseNav.push(
       { segment: 'management/', title: 'Dashboard', icon: <DashboardIcon /> },
@@ -62,34 +61,48 @@ const NAVIGATION = (currentUser) => {
           { segment: 'create', title: 'Create Employee' }
         ]
       },
-      { segment: 'management/customer', title: 'Customer', icon: <EmojiPeopleIcon />,
+      {
+        segment: 'management/customer',
+        title: 'Customer',
+        icon: <EmojiPeopleIcon />,
         children: [
           { segment: 'list', title: 'Customer List' },
           { segment: 'create', title: 'Create Customer' }
         ]
       },
-      { segment: 'management/equipment', title: 'Equipment', icon: <InventoryIcon />,
+      {
+        segment: 'management/equipment',
+        title: 'Equipment',
+        icon: <InventoryIcon />,
         children: [
           { segment: 'list', title: 'Equipment List' },
           { segment: 'create', title: 'Create Equipment' }
         ]
       },
-      { segment: 'management/vendor', title: 'Vendor', icon: <BusinessIcon />,
+      {
+        segment: 'management/vendor',
+        title: 'Vendor',
+        icon: <BusinessIcon />,
         children: [
           { segment: 'list', title: 'Vendor List' },
           { segment: 'create', title: 'Create Vendor' }
         ]
       },
-      { segment: 'management/retail-shop', title: 'Retail Shop', icon: <StoreIcon />,
+      {
+        segment: 'management/retail-shop',
+        title: 'Retail Shop',
+        icon: <StoreIcon />,
         children: [
           { segment: 'list', title: 'Retail Shop List' },
           { segment: 'create', title: 'Create Retail Shop' }
         ]
       },
-      { segment: 'management/connection-plans', title: 'Connection Plan', icon: <LanIcon />,
+      {
+        segment: 'management/connection-plans',
+        title: 'Connection Plan',
+        icon: <LanIcon />,
         children: [
-          { segment: 'list', title: 'Connection Plan List' },
-          { segment: 'create', title: 'Create Connection Plan' }
+          { segment: 'list', title: 'Connection Plan List' }
         ]
       },
       {
@@ -101,7 +114,10 @@ const NAVIGATION = (currentUser) => {
           { segment: 'list', title: 'Order List' }
         ]
       },
-      { segment: 'management/billing', title: 'Billing', icon: <ReceiptIcon />,
+      {
+        segment: 'management/billing',
+        title: 'Billing',
+        icon: <ReceiptIcon />,
         children: [
           { segment: 'create', title: 'Create Billing' },
           { segment: 'list', title: 'Billing List' }
@@ -118,11 +134,8 @@ const NAVIGATION = (currentUser) => {
         ]
       }
     )
-  }
-  // Other roles
-  else {
-    // Retail Staff
-    if (currentUser.userRole === 'retail staff') {
+  } else {
+    if (currentUser.userRole === 'css') {
       baseNav.push(
         {
           segment: 'management/orders',
@@ -138,32 +151,26 @@ const NAVIGATION = (currentUser) => {
       )
     }
 
-    // Technician
-    if (currentUser.userRole === 'technician') {
+    if (currentUser.userRole === 'tes') {
       baseNav.push(
         {
           segment: 'management/orders',
           title: 'Order',
           icon: <AssignmentIcon />,
-          children: [
-            { segment: 'list', title: 'Order List' }
-          ]
+          children: [{ segment: 'list', title: 'Order List' }]
         },
         { segment: 'management/connection-plans', title: 'Connection Plan', icon: <LanIcon /> },
         { segment: 'management/equipment', title: 'Equipment', icon: <InventoryIcon /> }
       )
     }
 
-    // Accountant
-    if (currentUser.userRole === 'accountant') {
+    if (currentUser.userRole === 'acs') {
       baseNav.push(
         { segment: 'management/billing', title: 'Billing', icon: <ReceiptIcon /> },
         { segment: 'management/payments', title: 'Payment', icon: <PaymentIcon /> }
       )
     }
   }
-
-
   return baseNav
 }
 
@@ -179,6 +186,7 @@ function Layout(props) {
   const confirmLogout = useConfirm()
   const navigate = useNavigate()
   const location = useLocation()
+
   const handleLogout = async () => {
     const { confirmed } = await confirmLogout({
       title: 'Are you sure you want to logout?',
@@ -191,6 +199,7 @@ function Layout(props) {
       dispatch(logoutEmployeeApi())
     }
   }
+
   const { window } = props
   const [session, setSession] = useState({
     user: {
@@ -200,7 +209,6 @@ function Layout(props) {
     }
   })
   const demoWindow = window !== undefined ? window() : undefined
-
 
   const authentication = useMemo(() => {
     return {
@@ -236,7 +244,16 @@ function Layout(props) {
       window={demoWindow}
       branding={{ title: 'Nexus management' }}
     >
-      <DashboardLayout>
+      <DashboardLayout
+        slotProps={{
+          sidebar: {
+            sx: {
+              width: '100px !important',
+              minWidth: '100px !important'
+            }
+          }
+        }}
+      >
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="employee">
@@ -273,7 +290,6 @@ function Layout(props) {
             <Route index element={<Navigate to="list" replace />} />
             <Route path="list" element={<ConnectionList />} />
             <Route path=":id" element={<ConnectionDetail />} />
-            {/* <Route path="create" element={<CreateConnectionPlan />} /> */}
           </Route>
           <Route path="orders">
             <Route index element={<Navigate to="list" replace />} />

@@ -1,161 +1,257 @@
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { createRetailShopAPI } from '~/apis'
+import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import MenuItem from '@mui/material/MenuItem'
 import Grid from '@mui/material/Grid2'
-import { useForm } from 'react-hook-form'
+import Paper from '@mui/material/Paper'
 import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
-import { createRetailShopAPI } from '~/apis'
-import { toast } from 'react-toastify'
-import { useNavigate } from 'react-router-dom'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { TimePicker } from '@mui/x-date-pickers/TimePicker'
+import dayjs from 'dayjs'
 
 const CreateRetailShop = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm()
-  const navigate = useNavigate()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch
+  } = useForm({
+    defaultValues: {
+      storeName: '',
+      storeAddress: '',
+      storeCity: '',
+      storePhone: '',
+      storeLatitude: '',
+      storeLongitude: '',
+      storeOpenAt: null,
+      storeCloseAt: null,
+      storeStatus: ''
+    }
+  })
 
-  const onCreateStore = (data) => {
-    const { storeName, storeAddress, storeCity, storePhone, storeLatitude, storeLongitude, storeOpenAt, storeCloseAt, storeStatus } = data
-    toast.promise(
-      createRetailShopAPI({
-        storeName,
-        storeAddress,
-        storeCity,
-        storePhone,
-        storeLatitude,
-        storeLongitude,
-        storeOpenAt,
-        storeCloseAt,
-        storeStatus
-      }), {
-        pending: 'Creating store...'
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
+
+  const storeOpenAt = watch('storeOpenAt')
+  const storeCloseAt = watch('storeCloseAt')
+
+  const onCreateStore = async (data) => {
+    try {
+      setLoading(true)
+      const formattedData = {
+        storeName: data.storeName.trim(),
+        storeAddress: data.storeAddress.trim(),
+        storeCity: data.storeCity.trim(),
+        storePhone: data.storePhone.trim(),
+        storeLatitude: parseFloat(data.storeLatitude.trim()),
+        storeLongitude: parseFloat(data.storeLongitude.trim()),
+        storeOpenAt: data.storeOpenAt ? dayjs(data.storeOpenAt).format('HH:mm') : null,
+        storeCloseAt: data.storeCloseAt ? dayjs(data.storeCloseAt).format('HH:mm') : null,
+        storeStatus: data.storeStatus
       }
-    ).then(res => {
-      if (!res.error) {
-        navigate('/management/retail-shop')
-      }
-    })
+
+      await toast.promise(
+        createRetailShopAPI(formattedData),
+        {
+          pending: 'Creating store...',
+          success: {
+            render() {
+              navigate('/management/retail-shop')
+              return 'Store created successfully!'
+            }
+          },
+          error: {
+            render({ data: error }) {
+              return error?.response?.data?.title || 'Failed to create store'
+            }
+          }
+        }
+      )
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error creating store:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Create New Retail Shop
-      </Typography>
+    <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+        <Typography
+          variant="h5"
+          component="h1"
+          sx={{ mb: 4, fontWeight: 'bold', textAlign: 'center' }}
+        >
+          Create New Retail Shop
+        </Typography>
 
-      <form onSubmit={handleSubmit(onCreateStore)}>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12 }}>
-            <TextField
-              label="Store Name"
-              fullWidth
-              {...register('storeName', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.storeName}
-              helperText={errors.storeName?.message}
-            />
-          </Grid>
+        <form onSubmit={handleSubmit(onCreateStore)}>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="Store Name"
+                disabled={loading}
+                {...register('storeName', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.storeName}
+                helperText={errors.storeName?.message}
+              />
+            </Grid>
 
-          <Grid size={{ xs: 12 }}>
-            <TextField
-              label="Address"
-              fullWidth
-              {...register('storeAddress', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.storeAddress}
-              helperText={errors.storeAddress?.message}
-            />
-          </Grid>
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="Address"
+                multiline
+                rows={2}
+                disabled={loading}
+                {...register('storeAddress', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.storeAddress}
+                helperText={errors.storeAddress?.message}
+              />
+            </Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              label="City"
-              fullWidth
-              {...register('storeCity', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.storeCity}
-              helperText={errors.storeCity?.message}
-            />
-          </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="City"
+                disabled={loading}
+                {...register('storeCity', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.storeCity}
+                helperText={errors.storeCity?.message}
+              />
+            </Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              label="Phone Number"
-              fullWidth
-              {...register('storePhone', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.storePhone}
-              helperText={errors.storePhone?.message}
-            />
-          </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="Phone Number"
+                disabled={loading}
+                {...register('storePhone', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.storePhone}
+                helperText={errors.storePhone?.message}
+              />
+            </Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              label="Latitude"
-              fullWidth
-              {...register('storeLatitude', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.storeLatitude}
-              helperText={errors.storeLatitude?.message}
-            />
-          </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="Latitude"
+                type="number"
+                disabled={loading}
+                {...register('storeLatitude', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.storeLatitude}
+                helperText={errors.storeLatitude?.message}
+              />
+            </Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              label="Longitude"
-              fullWidth
-              {...register('storeLongitude', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.storeLongitude}
-              helperText={errors.storeLongitude?.message}
-            />
-          </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="Longitude"
+                type="number"
+                disabled={loading}
+                {...register('storeLongitude', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.storeLongitude}
+                helperText={errors.storeLongitude?.message}
+              />
+            </Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              label="Open At"
-              type="time"
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-              {...register('storeOpenAt', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.storeOpenAt}
-              helperText={errors.storeOpenAt?.message}
-            />
-          </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <TimePicker
+                  label="Open At"
+                  value={storeOpenAt}
+                  onChange={(newValue) => {
+                    setValue('storeOpenAt', newValue, { shouldValidate: true })
+                  }}
+                  disabled={loading}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      variant: 'outlined',
+                      error: !!errors.storeOpenAt,
+                      helperText: errors.storeOpenAt?.message,
+                      ...register('storeOpenAt', { required: FIELD_REQUIRED_MESSAGE })
+                    }
+                  }}
+                />
+              </LocalizationProvider>
+            </Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              label="Close At"
-              type="time"
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-              {...register('storeCloseAt', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.storeCloseAt}
-              helperText={errors.storeCloseAt?.message}
-            />
-          </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <TimePicker
+                  label="Close At"
+                  value={storeCloseAt}
+                  onChange={(newValue) => {
+                    setValue('storeCloseAt', newValue, { shouldValidate: true })
+                  }}
+                  disabled={loading}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      variant: 'outlined',
+                      error: !!errors.storeCloseAt,
+                      helperText: errors.storeCloseAt?.message,
+                      ...register('storeCloseAt', { required: FIELD_REQUIRED_MESSAGE })
+                    }
+                  }}
+                />
+              </LocalizationProvider>
+            </Grid>
 
-          <Grid size={{ xs: 12 }}>
-            <TextField
-              select
-              label="Status"
-              fullWidth
-              {...register('storeStatus', { required: FIELD_REQUIRED_MESSAGE })}
-              error={!!errors.storeStatus}
-              helperText={errors.storeStatus?.message}
-            >
-              <MenuItem value="Active">Active</MenuItem>
-              <MenuItem value="Inactive">Inactive</MenuItem>
-            </TextField>
-          </Grid>
+            <Grid size={{ xs: 12, sm: 12 }}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="Status"
+                select
+                disabled={loading}
+                {...register('storeStatus', { required: FIELD_REQUIRED_MESSAGE })}
+                error={!!errors.storeStatus}
+                helperText={errors.storeStatus?.message}
+              >
+                <MenuItem value="Active">Active</MenuItem>
+                <MenuItem value="Inactive">Inactive</MenuItem>
+              </TextField>
+            </Grid>
 
-          <Grid size={{ xs: 12 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+            <Grid size={{ xs: 12 }} sx={{ textAlign: 'center', mt: 3 }}>
               <Button
                 type="submit"
                 variant="contained"
                 size="large"
+                disabled={loading}
+                sx={{
+                  px: 5,
+                  py: 1.5,
+                  bgcolor: 'primary.main',
+                  '&:hover': { bgcolor: 'primary.dark' },
+                  borderRadius: 2
+                }}
               >
-                Create Retail Shop
+                {loading ? 'Creating...' : 'Create Retail Shop'}
               </Button>
-            </Box>
+            </Grid>
           </Grid>
-        </Grid>
-      </form>
+        </form>
+      </Paper>
     </Box>
   )
 }

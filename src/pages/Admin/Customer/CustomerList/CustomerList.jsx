@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Close'
@@ -16,7 +15,7 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons
 } from '@mui/x-data-grid'
-import { getAllAccountsAPI, activateAccountAPI } from '~/apis'
+import { getAllAccountsAPI, activateAccountAPI, deleteAccountAPI } from '~/apis'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { updateAccountAPI } from '~/apis'
@@ -94,12 +93,6 @@ export default function CustomerList() {
     }
   }
 
-  const handleEditClick = (id) => () => {
-    const row = rows.find((row) => row.id === id)
-    setPreviousRow(row)
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
-  }
-
   const handleSaveClick = (id) => () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } })
   }
@@ -115,10 +108,7 @@ export default function CustomerList() {
 
       if (confirmed) {
         // Call API to soft delete
-        await updateAccountAPI({
-          accountId: id,
-          isDeleted: true
-        })
+        await deleteAccountAPI(id)
         // Update local state
         setRows(rows.filter((row) => row.id !== id))
         toast.success('Customer deleted successfully')
@@ -224,10 +214,10 @@ export default function CustomerList() {
 
   const columns = [
     { field: 'id', headerName: 'Customer ID', width: 150, editable: false },
-    { field: 'name', headerName: 'Name', width: 150, editable: true },
-    { field: 'email', headerName: 'Email', width: 200, editable: true },
-    { field: 'phone', headerName: 'Phone', width: 150, editable: true },
-    { field: 'address', headerName: 'Address', width: 200, editable: true },
+    { field: 'name', headerName: 'Name', width: 150, editable: false },
+    { field: 'email', headerName: 'Email', width: 200, editable: false },
+    { field: 'phone', headerName: 'Phone', width: 150, editable: false },
+    { field: 'address', headerName: 'Address', width: 200, editable: false },
     {
       field: 'status',
       headerName: 'Status',
@@ -242,13 +232,6 @@ export default function CustomerList() {
           size="small"
         />
       )
-    },
-    {
-      field: 'joinDate',
-      headerName: 'Join Date',
-      width: 150,
-      editable: false,
-      type: 'date'
     },
     {
       field: 'actions',
@@ -350,43 +333,46 @@ export default function CustomerList() {
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
       >
-        <MenuItem onClick={() => {
-          handleEditClick(selectedId)()
-          handleCloseMenu()
-        }}>
-          <EditIcon fontSize="small" sx={{ mr: 1 }} />
-          Edit
-        </MenuItem>
         {
           rows.find((row) => row.id === selectedId)?.status === false ? (
-            <MenuItem onClick={() => {
-              handleActivateClick(selectedId)()
-              handleCloseMenu()
-            }}>
-              <DoneAllIcon fontSize="small" sx={{ mr: 1 }} />
+            <MenuItem
+              onClick={() => {
+                handleActivateClick(selectedId)()
+                handleCloseMenu()
+              }}
+            >
+              <DoneAllIcon fontSize="small" sx={{ mr: 1, color: 'success.main' }} />
               Activate
             </MenuItem>
           ) : (
-            <MenuItem onClick={() => {
-              handleDeactivateClick(selectedId)()
-              handleCloseMenu()
-            }}>
-              <BlockIcon fontSize="small" sx={{ mr: 1 }} />
+            <MenuItem
+              onClick={() => {
+                handleDeactivateClick(selectedId)()
+                handleCloseMenu()
+              }}
+            >
+              <BlockIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
               Deactivate
             </MenuItem>
           )
         }
-        <MenuItem onClick={() => {
-          handleDeleteClick(selectedId)()
-          handleCloseMenu()
-        }}>
-          <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
-          Delete
-        </MenuItem>
-        <MenuItem onClick={handleViewDetail(selectedId)()}>
-          <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1 }} />
+        <MenuItem
+          onClick={handleViewDetail(selectedId)()}
+        >
+          <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1, color: 'info.main' }} />
           View Detail
         </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            handleDeleteClick(selectedId)()
+            handleCloseMenu()
+          }}
+        >
+          <DeleteIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
+          Delete
+        </MenuItem>
+
       </Menu>
     </Box>
   )
