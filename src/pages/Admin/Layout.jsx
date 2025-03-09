@@ -62,16 +62,20 @@ import ConnectionList from '~/pages/Admin/Connection/ConnectionList/ConnectionLi
 import CreateConnection from '~/pages/Admin/Connection/CreateConnection/CreateConnection'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import Divider from '@mui/material/Divider'
+import FeedbackList from '~/pages/Admin/Feedback/FeedbackList/FeedbackList'
+import CreateReply from '~/pages/Admin/Feedback/CreateReply/CreateReply'
+import CreateWithFeedback from '~/pages/Admin/Feedback/CreateWithFeedback/CreateWithFeedback'
+import FeedbackDetail from '~/pages/Admin/Feedback/FeedbackDetail/FeedbackDetail'
+import UpdatePassword from '~/pages/Admin/ProfileManagement/UpdatePassword'
 // Component bảo vệ Route dựa trên vai trò
 const ProtectedRoute = ({ allowedRoles, children }) => {
   const currentUser = useSelector(selectCurrentUser)
   if (!allowedRoles.includes(currentUser.userRole)) {
-    return <Navigate to="/not-found" replace />
+    return <Navigate to="/management/not-found" replace />
   }
   return children
 }
 
-// Hàm định nghĩa menu điều hướng
 const NAVIGATION = (currentUser) => {
   const baseNav = []
   if (currentUser.userRole === 'admin') {
@@ -164,8 +168,9 @@ const NAVIGATION = (currentUser) => {
         title: 'Feedback',
         icon: <FeedbackIcon />,
         children: [
-          { segment: 'customer', title: 'Customer Feedback' },
-          { segment: 'employee', title: 'Employee Feedback' }
+          { segment: 'list', title: 'Feedback List' },
+          // { segment: 'create', title: 'Create Feedback' },
+          { segment: 'create-with-feedback', title: 'Create With Feedback' }
         ]
       }
     )
@@ -451,10 +456,10 @@ function Layout(props) {
             path="profile"
             element={<ProtectedRoute allowedRoles={['admin', 'css', 'tes', 'acs']}><ProfileManagement /></ProtectedRoute>}
           />
-          {/* <Route
-            path="profile/edit"
-            element={<ProtectedRoute allowedRoles={['admin', 'css', 'tes', 'acs']}><EditProfileManagement /></ProtectedRoute>}
-          /> */}
+          <Route
+            path="profile/update-password"
+            element={<ProtectedRoute allowedRoles={['admin', 'css', 'tes', 'acs']}><UpdatePassword /></ProtectedRoute>}
+          />
           <Route path="employee">
             <Route index element={<Navigate to="list" replace />} />
             <Route
@@ -577,15 +582,23 @@ function Layout(props) {
             />
           </Route>
           <Route path="feedbacks">
-            <Route index element={<Navigate to="customer" replace />} />
-            {/* <Route
-              path="customer"
-              element={<ProtectedRoute allowedRoles={['admin', 'css']}><CustomerFeedbackPage /></ProtectedRoute>}
+            <Route index element={<Navigate to="list" replace />} />
+            <Route
+              path="list"
+              element={<ProtectedRoute allowedRoles={['admin', 'css']}><FeedbackList /></ProtectedRoute>}
             />
             <Route
-              path="employee"
-              element={<ProtectedRoute allowedRoles={['admin']}><EmployeeFeedbackPage /></ProtectedRoute>}
-            /> */}
+              path="create-with-feedback"
+              element={<ProtectedRoute allowedRoles={['admin', 'css']}><CreateWithFeedback /></ProtectedRoute>}
+            />
+            <Route
+              path="create"
+              element={<ProtectedRoute allowedRoles={['admin', 'css']}><CreateReply /></ProtectedRoute>}
+            />
+            <Route
+              path=":id"
+              element={<ProtectedRoute allowedRoles={['admin', 'css']}><FeedbackDetail /></ProtectedRoute>}
+            />
           </Route>
           <Route path="billing">
             <Route index element={<Navigate to="list" replace />} />

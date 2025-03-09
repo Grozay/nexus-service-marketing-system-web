@@ -26,7 +26,14 @@ function LoginForm() {
     const { userId, userPassword } = data
     toast.promise(
       dispatch(loginEmployeeApi({ userId, userPassword })), {
-        pending: 'Logging in...'
+        pending: 'Logging in...',
+        success: 'Login successfully!',
+        error: {
+          render({data}) {
+            // Hiển thị thông báo lỗi từ server hoặc thông báo mặc định
+            return data?.message || 'Login failed. Please check your credentials and try again.'
+          }
+        }
       }
     ).then(res => {
       if (!res.error) {

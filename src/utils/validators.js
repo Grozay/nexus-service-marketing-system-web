@@ -25,7 +25,7 @@ export const DOB_RULE = (value) => {
   return inputDate <= currentDate
 }
 export const PHONE_NUMBER_RULE = /^[0-9]{10}$/
-export const PHONE_NUMBER_RULE_MESSAGE = 'Số điện thoại không hợp lệ. (chỉ chấp nhận 10 chữ số)'
+export const PHONE_NUMBER_RULE_MESSAGE = 'Phone number must be 10 digits'
 
 export const LIMIT_COMMON_FILE_SIZE = 10485760 // byte = 10 MB
 export const ALLOW_COMMON_FILE_TYPES = ['image/jpg', 'image/jpeg', 'image/png']

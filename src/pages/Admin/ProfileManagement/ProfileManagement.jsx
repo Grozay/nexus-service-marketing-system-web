@@ -48,8 +48,8 @@ const Profile = () => {
     })
   }
 
-  const handleEditProfile = () => {
-    navigate('/management/profile/edit')
+  const handleUpdatePassword = () => {
+    navigate('/management/profile/update-password')
   }
 
   return (
@@ -147,16 +147,16 @@ const Profile = () => {
           </Grid>
         </Grid>
 
-        {/* <Box sx={{ mt: 4, textAlign: 'center' }}>
+        <Box sx={{ mt: 4, textAlign: 'center' }}>
           <Button
             variant="contained"
             color="primary"
             size="large"
-            onClick={handleEditProfile}
+            onClick={handleUpdatePassword}
           >
-            Edit Profile
+            Update Password
           </Button>
-        </Box> */}
+        </Box>
       </ProfilePaper>
     </Container>
   )
