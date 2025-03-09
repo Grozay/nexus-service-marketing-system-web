@@ -217,7 +217,7 @@ const CreatePlan = () => {
               />
             </Grid>
 
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid size={{ xs: 12, sm: 12 }}>
               <TextField
                 fullWidth
                 variant='outlined'

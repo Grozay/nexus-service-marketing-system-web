@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Close'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
@@ -15,7 +14,6 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons
 } from '@mui/x-data-grid'
-import { getAllOrdersAPI, updateOrderAPI } from '~/apis'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Chip from '@mui/material/Chip'
@@ -23,42 +21,38 @@ import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
 import Typography from '@mui/material/Typography'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
-import DoneAllIcon from '@mui/icons-material/DoneAll'
-import BlockIcon from '@mui/icons-material/Block'
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
+import PendingActionsIcon from '@mui/icons-material/PendingActions'
 import { useNavigate } from 'react-router-dom'
-// Transform order data from API
-const transformOrderData = (orders) => {
-  if (!Array.isArray(orders)) return []
-  return orders
-    .filter(order => !order.isDeleted)
-    .map(order => ({
-      id: order.orderId,
-      name: order.orderName,
-      description: order.orderDescription,
-      amount: order.orderAmount,
-      status: order.orderStatus,
-      plan: order.planDetails?.planName,
-      employee: order.employeeDetails?.employeeName,
-      store: order.storeDetails?.storeName,
-      storeId: order.storeId,
-      createdAt: new Date(order.orderCreatedAt),
-      isActive: order.orderIsFeasible,
-      accountEmail: order.accountDetails?.accountEmail,
-      accountPhone: order.accountDetails?.accountPhone,
-      accountAddress: order.accountDetails?.accountAddress
-    }))
+import { getAllConnectionsAPI, updateStatusConnectionAPI } from '~/apis'
+
+// Transform connection data from API
+const transformConnectionData = (connections) => {
+  if (!Array.isArray(connections)) return []
+  return connections.map(connection => ({
+    id: connection.connectionId,
+    name: connection.connectionName,
+    employeeId: connection.employeeId,
+    orderId: connection.orderId,
+    description: connection.connectionDescription || '',
+    status: connection.connectionStatus || 'Pending',
+    createdAt: new Date(connection.connectionCreatedAt),
+    orderName: connection.orderDetails?.orderName || '',
+    accountName: connection.orderDetails?.accountDetails?.accountName || '',
+    storeName: connection.orderDetails?.storeDetails?.storeName || ''
+  }))
 }
 
-// Fetch all orders from API
-const getAllOrders = async () => {
+// Fetch all connections from API
+const getAllConnections = async () => {
   try {
-    const response = await getAllOrdersAPI()
+    const response = await getAllConnectionsAPI()
     if (!Array.isArray(response)) {
       return []
     }
-    return transformOrderData(response)
+    return transformConnectionData(response)
   } catch (error) {
-    throw new Error('Error fetching orders:', error)
+    throw new Error('Error fetching connections:', error)
   }
 }
 
@@ -73,23 +67,22 @@ function EditToolbar() {
   )
 }
 
-function OrderList() {
+function ConnectionList() {
   const [rows, setRows] = useState([])
   const [rowModesModel, setRowModesModel] = useState({})
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedId, setSelectedId] = useState(null)
-  const navigate = useNavigate()
   const [previousRow, setPreviousRow] = useState(null)
   const confirmUpdate = useConfirm()
+  const navigate = useNavigate()
 
-  // Fetch orders on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const orders = await getAllOrders()
-        setRows(orders)
+        const connections = await getAllConnections()
+        setRows(connections)
       } catch (error) {
-        throw new Error(error)
+        toast.error(error.message || 'Error fetching connections')
       }
     }
     fetchData()
@@ -111,44 +104,6 @@ function OrderList() {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } })
   }
 
-  const handleDeleteClick = (id) => async () => {
-    try {
-      const { confirmed } = await confirmUpdate({
-        title: 'Confirm Delete',
-        description: 'Are you sure you want to delete this order?',
-        confirmationText: 'Delete',
-        cancellationText: 'Cancel'
-      })
-
-      if (confirmed) {
-        await updateOrderAPI({
-          orderId: id,
-          isDeleted: true
-        })
-        setRows(rows.filter((row) => row.id !== id))
-        toast.success('Order deleted successfully')
-      }
-    } catch (error) {
-      toast.error(error.message || 'Failed to delete order')
-    }
-  }
-
-  const handleActivateClick = (id) => async () => {
-    await updateOrderAPI({ orderId: id, orderIsFeasible: true })
-    toast.success('Order activated successfully')
-    setRows(rows.map((row) => (row.id === id ? { ...row, isActive: true } : row)))
-  }
-
-  const handleDeactivateClick = (id) => async () => {
-    await updateOrderAPI({ orderId: id, orderIsFeasible: false })
-    toast.success('Order deactivated successfully')
-    setRows(rows.map((row) => (row.id === id ? { ...row, isActive: false } : row)))
-  }
-
-  const handleViewDetail = (id) => () => {
-    navigate(`/management/orders/${id}`)
-  }
-
   const handleCancelClick = (id) => () => {
     setRowModesModel({
       ...rowModesModel,
@@ -164,53 +119,63 @@ function OrderList() {
     setPreviousRow(null)
   }
 
+  const handleActivateClick = (id) => async () => {
+    try {
+      await updateStatusConnectionAPI({ connectionId: id, connectionStatus: 'Connected' })
+      toast.success('Connection activated successfully')
+      setRows(rows.map((row) => (row.id === id ? { ...row, status: 'Connected' } : row)))
+    } catch (error) {
+      toast.error(error.message || 'Failed to activate connection')
+    }
+  }
+
+  const handleDeactivateClick = (id) => async () => {
+    try {
+      await updateStatusConnectionAPI({ connectionId: id, connectionStatus: 'Pending' })
+      toast.success('Connection deactivated successfully')
+      setRows(rows.map((row) => (row.id === id ? { ...row, status: 'Pending' } : row)))
+    } catch (error) {
+      toast.error(error.message || 'Failed to deactivate connection')
+    }
+  }
+
+  const handleViewDetail = (id) => () => {
+    navigate(`/management/connection/${id}`)
+  }
+
   const processRowUpdate = async (newRow) => {
     try {
-      // Validate required fields
-      if (!newRow.name || !newRow.amount) {
-        throw new Error('Please fill in all required fields (Name and Amount)')
+      if (!newRow.name) {
+        throw new Error('Connection name is required')
       }
 
       const updatedRow = { ...newRow, isNew: false }
       setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)))
 
-      const { id, name, description, amount } = updatedRow
+      // const { id, name, description } = updatedRow
 
-      // Retrieve the original row to get the storeId
-      const originalRow = rows.find((row) => row.id === id)
-      if (!originalRow.storeId) {
-        throw new Error('Store ID is missing in the original order data')
-      }
-
-      const payload = {
-        orderId: id,
-        orderName: name,
-        orderDescription: description,
-        orderAmount: amount,
-        storeId: originalRow.storeId // Include the original storeId in the payload
-      }
+      // const payload = {
+      //   connectionId: id,
+      //   connectionName: name,
+      //   connectionDescription: description
+      // }
 
       const { confirmed } = await confirmUpdate({
         title: 'Confirm Update',
-        description: 'Are you sure you want to update this order?',
+        description: 'Are you sure you want to update this connection?',
         confirmationText: 'Update',
         cancellationText: 'Cancel'
       })
 
       if (confirmed) {
-        await updateOrderAPI(payload)
-        toast.success('Order updated successfully')
+        // await updateConnectionAPI(payload)
+        toast.success('Connection updated successfully')
+        return updatedRow
       } else {
         throw new Error('Update cancelled by user')
       }
-      return updatedRow
     } catch (error) {
-      // Handle specific error messages from the backend
-      if (error.message.includes('FOREIGN KEY constraint')) {
-        toast.error('Update failed: Invalid store ID. Please ensure the store exists.')
-      } else {
-        toast.error(error.message || 'Update order failed')
-      }
+      toast.error(error.message || 'Update connection failed')
       throw error
     }
   }
@@ -230,21 +195,22 @@ function OrderList() {
   }
 
   const columns = [
-    { field: 'id', headerName: 'Order ID', width: 150, editable: false },
-    { field: 'amount', headerName: 'Amount', width: 100, editable: true, type: 'number' },
-    { field: 'status', headerName: 'Status', width: 120, editable: false },
-    { field: 'accountPhone', headerName: 'Account Phone', width: 150, editable: true },
-    { field: 'accountAddress', headerName: 'Account Address', width: 200, editable: true },
+    { field: 'id', headerName: 'Connection ID', width: 150, editable: false },
+    { field: 'orderId', headerName: 'Order ID', width: 150, editable: false },
+    { field: 'accountName', headerName: 'Account Name', width: 200, editable: false },
+    { field: 'storeName', headerName: 'Store Name', width: 150, editable: false },
     {
-      field: 'isActive',
-      headerName: 'Feasible',
+      field: 'status',
+      headerName: 'Status',
       width: 120,
       editable: false,
-      type: 'boolean',
       renderCell: (params) => (
         <Chip
-          label={params.value ? 'Feasible' : 'Infeasible'}
-          color={params.value ? 'success' : 'error'}
+          label={params.value}
+          color={
+            params.value === 'Connected' ? 'success' :
+              params.value === 'Pending' ? 'warning' : 'default'
+          }
           variant="outlined"
           size="small"
         />
@@ -275,9 +241,7 @@ function OrderList() {
               key={id}
               icon={<SaveIcon />}
               label="Save"
-              sx={{
-                color: 'primary.main'
-              }}
+              sx={{ color: 'primary.main' }}
               onClick={handleSaveClick(id)}
             />,
             <GridActionsCellItem
@@ -312,23 +276,16 @@ function OrderList() {
         height: '100%',
         width: '100%',
         p: 3,
-        '& .actions': {
-          color: 'text.secondary'
-        },
-        '& .textPrimary': {
-          color: 'text.primary'
-        }
+        '& .actions': { color: 'text.secondary' },
+        '& .textPrimary': { color: 'text.primary' }
       }}
     >
       <Typography
         variant="h4"
         component="h1"
-        sx={{
-          mb: 3,
-          fontWeight: 'bold'
-        }}
+        sx={{ mb: 3, fontWeight: 'bold' }}
       >
-        Order Management
+        Connection Management
       </Typography>
       <DataGrid
         rows={rows}
@@ -340,9 +297,7 @@ function OrderList() {
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
         slots={{ toolbar: EditToolbar }}
-        slotProps={{
-          toolbar: { setRows, setRowModesModel }
-        }}
+        slotProps={{ toolbar: { setRows, setRowModesModel } }}
         sx={{
           height: 'calc(100vh - 200px)',
           boxShadow: 2,
@@ -356,48 +311,34 @@ function OrderList() {
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
       >
-        {
-          rows.find((row) => row.id === selectedId)?.isActive === false ? (
-            <MenuItem
-              onClick={() => {
-                handleActivateClick(selectedId)()
-                handleCloseMenu()
-              }}
-            >
-              <DoneAllIcon fontSize="small" sx={{ mr: 1, color: 'success.main' }} />
-              Feasible
-            </MenuItem>
-          ) : (
-            <MenuItem
-              onClick={() => {
-                handleDeactivateClick(selectedId)()
-                handleCloseMenu()
-              }}
-            >
-              <BlockIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
-              Infeasible
-            </MenuItem>
-          )
-        }
-        <MenuItem
-          onClick={handleViewDetail(selectedId)}
-        >
+        {rows.find((row) => row.id === selectedId)?.status === 'Pending' ? (
+          <MenuItem
+            onClick={() => {
+              handleActivateClick(selectedId)()
+              handleCloseMenu()
+            }}
+          >
+            <CheckCircleOutlineIcon fontSize="small" sx={{ mr: 1, color: 'success.main' }} />
+            Connected
+          </MenuItem>
+        ) : (
+          <MenuItem
+            onClick={() => {
+              handleDeactivateClick(selectedId)()
+              handleCloseMenu()
+            }}
+          >
+            <PendingActionsIcon fontSize="small" sx={{ mr: 1, color: 'warning.main' }} />
+            Pending
+          </MenuItem>
+        )}
+        <MenuItem onClick={handleViewDetail(selectedId)}>
           <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1, color: 'info.main' }} />
           View Detail
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            handleDeleteClick(selectedId)()
-            handleCloseMenu()
-          }}
-        >
-          <DeleteIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
-          Delete
         </MenuItem>
       </Menu>
     </Box>
   )
 }
 
-export default OrderList
+export default ConnectionList

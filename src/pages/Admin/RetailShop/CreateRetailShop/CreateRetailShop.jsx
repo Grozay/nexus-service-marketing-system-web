@@ -10,7 +10,7 @@ import Button from '@mui/material/Button'
 import MenuItem from '@mui/material/MenuItem'
 import Grid from '@mui/material/Grid2'
 import Paper from '@mui/material/Paper'
-import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
+import { FIELD_REQUIRED_MESSAGE, PHONE_NUMBER_RULE, PHONE_NUMBER_RULE_MESSAGE } from '~/utils/validators'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker'
@@ -140,7 +140,7 @@ const CreateRetailShop = () => {
                 variant="outlined"
                 label="Phone Number"
                 disabled={loading}
-                {...register('storePhone', { required: FIELD_REQUIRED_MESSAGE })}
+                {...register('storePhone', { required: FIELD_REQUIRED_MESSAGE, pattern: { value: PHONE_NUMBER_RULE, message: PHONE_NUMBER_RULE_MESSAGE } })}
                 error={!!errors.storePhone}
                 helperText={errors.storePhone?.message}
               />

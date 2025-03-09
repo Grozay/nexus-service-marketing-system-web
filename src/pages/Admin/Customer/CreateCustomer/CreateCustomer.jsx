@@ -16,7 +16,9 @@ import {
   EMAIL_RULE,
   EMAIL_RULE_MESSAGE,
   DOB_RULE,
-  DOB_RULE_MESSAGE
+  DOB_RULE_MESSAGE,
+  PHONE_NUMBER_RULE,
+  PHONE_NUMBER_RULE_MESSAGE
 } from '~/utils/validators'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -151,7 +153,7 @@ const CreateCustomer = () => {
                 label='Phone Number'
                 fullWidth
                 variant='outlined'
-                {...register('customerPhone', { required: FIELD_REQUIRED_MESSAGE })}
+                {...register('customerPhone', { required: FIELD_REQUIRED_MESSAGE, pattern: { value: PHONE_NUMBER_RULE, message: PHONE_NUMBER_RULE_MESSAGE } })}
                 error={!!errors.customerPhone}
                 helperText={errors.customerPhone?.message}
               />
