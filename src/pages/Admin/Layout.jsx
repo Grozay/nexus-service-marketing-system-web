@@ -14,18 +14,26 @@ import AssignmentIcon from '@mui/icons-material/Assignment'
 import ReceiptIcon from '@mui/icons-material/Receipt'
 import PaymentIcon from '@mui/icons-material/Payment'
 import FeedbackIcon from '@mui/icons-material/Feedback'
+import SensorsIcon from '@mui/icons-material/Sensors'
+import Avatar from '@mui/material/Avatar'
+import IconButton from '@mui/material/IconButton'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Box from '@mui/material/Box'
 import Dashboard from '~/pages/Admin/Dashboard/Dashboard'
 import NotFound from '~/pages/Admin/NotFound/NotFound'
 import CreateOrder from '~/pages/Admin/Orders/CreateOrders/CreateOrder/CreateOrder'
 import OrderList from '~/pages/Admin/Orders/OrderList/OrderList'
 import Payments from '~/pages/Admin/Payments/Payments'
-import CustomerFeedbackPage from '~/pages/Admin/Feedback/FeedbackCustomer'
-import EmployeeFeedbackPage from '~/pages/Admin/Feedback/FeedbackEmployee'
+// import CustomerFeedbackPage from '~/pages/Admin/Feedback/FeedbackCustomer'
+// import EmployeeFeedbackPage from '~/pages/Admin/Feedback/FeedbackEmployee'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/employeeSlice'
 import { useDispatch } from 'react-redux'
 import { logoutEmployeeApi } from '~/redux/user/employeeSlice'
 import { useConfirm } from 'material-ui-confirm'
+import LogoutIcon from '@mui/icons-material/Logout'
+import PersonIcon from '@mui/icons-material/Person'
 import EmployeeList from '~/pages/Admin/Employee/EmployeeList/EmployeeList'
 import CreateEmployee from '~/pages/Admin/Employee/CreateEmployee/CreateEmployee'
 import CustomerList from '~/pages/Admin/Customer/CustomerList/CustomerList'
@@ -36,8 +44,9 @@ import VendorList from '~/pages/Admin/Vendor/VendorList/VendorList'
 import CreateVendor from '~/pages/Admin/Vendor/CreateVendor/CreateVendor'
 import RetailShopList from '~/pages/Admin/RetailShop/RetailShopList/RetailShopList'
 import CreateRetailShop from '~/pages/Admin/RetailShop/CreateRetailShop/CreateRetailShop'
-import ConnectionList from '~/pages/Admin/Connections/ConnectionList/ConnectionList'
-import CreateConnection from '~/pages/Admin/Connections/CreateConnection/CreateConnection'
+import ConnectionPlanList from '~/pages/Admin/ConnectionsPlan/ConnectionList/ConnectionList'
+import CreateConnectionPlan from '~/pages/Admin/ConnectionsPlan/CreateConnection/CreateConnection'
+import ConnectionPlanDetail from '~/pages/Admin/ConnectionsPlan/ConnectionDetail/ConnectionDetail'
 import CreateBilling from '~/pages/Admin/Billing/CreateBilling/CreateBilling'
 import BillingList from '~/pages/Admin/Billing/BillingList/BillingList'
 import EmployeeDetail from '~/pages/Admin/Employee/EmployeeDetail/EmployeeDetail'
@@ -45,8 +54,14 @@ import CustomerDetail from '~/pages/Admin/Customer/CustomerDetail/CustomerDetail
 import EquipmentDetail from '~/pages/Admin/Equipment/EquipmentDetail/EquipmentDetail'
 import VendorDetail from '~/pages/Admin/Vendor/VendorDetail/VendorDetail'
 import RetailShopDetail from '~/pages/Admin/RetailShop/RetailShopDetail/RetailShopDetail'
-import ConnectionDetail from '~/pages/Admin/Connections/ConnectionDetail/ConnectionDetail'
 import OrderDetail from '~/pages/Admin/Orders/OrderDetail/OrderDetail'
+import ProfileManagement from '~/pages/Admin/ProfileManagement/ProfileManagement'
+// import EditProfileManagement from '~/pages/Admin/ProfileManagement/EditProfileManagement'
+import ConnectionDetail from '~/pages/Admin/Connection/ConnectionDetail/ConnectionDetail'
+import ConnectionList from '~/pages/Admin/Connection/ConnectionList/ConnectionList'
+import CreateConnection from '~/pages/Admin/Connection/CreateConnection/CreateConnection'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import Divider from '@mui/material/Divider'
 // Component bảo vệ Route dựa trên vai trò
 const ProtectedRoute = ({ allowedRoles, children }) => {
   const currentUser = useSelector(selectCurrentUser)
@@ -59,7 +74,6 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
 // Hàm định nghĩa menu điều hướng
 const NAVIGATION = (currentUser) => {
   const baseNav = []
-
   if (currentUser.userRole === 'admin') {
     baseNav.push(
       { segment: 'management/', title: 'Dashboard', icon: <DashboardIcon /> },
@@ -118,6 +132,15 @@ const NAVIGATION = (currentUser) => {
         ]
       },
       {
+        segment: 'management/connection',
+        title: 'Connection',
+        icon: <SensorsIcon />,
+        children: [
+          { segment: 'list', title: 'Connection List' },
+          { segment: 'create', title: 'Create Connection' }
+        ]
+      },
+      {
         segment: 'management/orders',
         title: 'Order',
         icon: <AssignmentIcon />,
@@ -146,7 +169,7 @@ const NAVIGATION = (currentUser) => {
         ]
       }
     )
-  } else if (currentUser.userRole === 'css') { // Retail Staff
+  } else if (currentUser.userRole === 'css') {
     baseNav.push(
       {
         segment: 'management/orders',
@@ -156,22 +179,22 @@ const NAVIGATION = (currentUser) => {
           { segment: 'create', title: 'Create Order' },
           { segment: 'list', title: 'Order List' }
         ]
-      },
-      {
-        segment: 'management/billing',
-        title: 'Billing',
-        icon: <ReceiptIcon />,
-        children: [{ segment: 'list', title: 'Billing List' }]
-      },
-      { segment: 'management/payments', title: 'Payment', icon: <PaymentIcon /> },
-      {
-        segment: 'management/feedbacks',
-        title: 'Feedback',
-        icon: <FeedbackIcon />,
-        children: [{ segment: 'customer', title: 'Customer Feedback' }]
       }
+      // {
+      //   segment: 'management/billing',
+      //   title: 'Billing',
+      //   icon: <ReceiptIcon />,
+      //   children: [{ segment: 'list', title: 'Billing List' }]
+      // },
+      // { segment: 'management/payments', title: 'Payment', icon: <PaymentIcon /> },
+      // {
+      //   segment: 'management/feedbacks',
+      //   title: 'Feedback',
+      //   icon: <FeedbackIcon />,
+      //   children: [{ segment: 'customer', title: 'Customer Feedback' }]
+      // }
     )
-  } else if (currentUser.userRole === 'tes') { // Technician Staff
+  } else if (currentUser.userRole === 'tes') {
     baseNav.push(
       {
         segment: 'management/orders',
@@ -189,13 +212,25 @@ const NAVIGATION = (currentUser) => {
         ]
       },
       {
+        segment: 'management/connection',
+        title: 'Connection',
+        icon: <SensorsIcon />,
+        children: [
+          { segment: 'list', title: 'Connection List' },
+          { segment: 'create', title: 'Create Connection' }
+        ]
+      },
+      {
         segment: 'management/equipment',
         title: 'Equipment',
         icon: <InventoryIcon />,
-        children: [{ segment: 'list', title: 'Equipment List' }]
+        children: [
+          { segment: 'list', title: 'Equipment List' },
+          { segment: 'create', title: 'Create Equipment' }
+        ]
       }
     )
-  } else if (currentUser.userRole === 'acs') { // Accountant Staff
+  } else if (currentUser.userRole === 'acs') {
     baseNav.push(
       {
         segment: 'management/billing',
@@ -212,7 +247,6 @@ const NAVIGATION = (currentUser) => {
   return baseNav
 }
 
-// Hàm lấy trang mặc định dựa trên vai trò
 const getDefaultRoute = (currentUser) => {
   const nav = NAVIGATION(currentUser)
   if (nav.length === 0) return '/not-found'
@@ -229,6 +263,104 @@ const demoTheme = createTheme({
   breakpoints: { values: { xs: 0, sm: 600, md: 600, lg: 1200, xl: 1536 } }
 })
 
+const CustomToolbarAccount = ({ onLogout }) => {
+  const navigate = useNavigate()
+  const currentUser = useSelector(selectCurrentUser)
+  const [anchorEl, setAnchorEl] = useState(null)
+  const open = Boolean(anchorEl)
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
+  const handleProfile = () => {
+    navigate('/management/profile')
+    handleClose()
+  }
+
+  const handleLogout = () => {
+    onLogout()
+    handleClose()
+  }
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <IconButton
+        onClick={handleClick}
+        sx={{
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.04)'
+          }
+        }}
+      >
+        <Avatar
+          src={currentUser.userImage}
+          alt={currentUser.userName}
+          sx={{ width: 40, height: 40, border: '1px solid #e0e0e0' }}
+        />
+      </IconButton>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        PaperProps={{
+          sx: {
+            mt: 1.5,
+            minWidth: 200,
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+            borderRadius: '8px'
+          }
+        }}
+      >
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center'
+        }}>
+        </Box>
+        <MenuItem
+          onClick={handleProfile}
+          sx={{
+            '&:hover': {
+              color: 'primary.dark',
+              '& .profile-icon': {
+                color: 'primary.dark'
+              }
+            }
+          }}
+        >
+          <ListItemIcon>
+            <PersonIcon className='profile-icon' fontSize="small" />
+          </ListItemIcon>
+          Profile
+        </MenuItem>
+        <Divider />
+        <MenuItem
+          onClick={handleLogout}
+          sx={{
+            '&:hover': {
+              color: 'warning.dark',
+              '& .logout-icon': {
+                color: 'warning.dark'
+              }
+            }
+          }}
+        >
+          <ListItemIcon>
+            <LogoutIcon className='logout-icon' fontSize="small" />
+          </ListItemIcon>
+          Logout
+        </MenuItem>
+      </Menu>
+    </Box>
+  )
+}
+
 function Layout(props) {
   const dispatch = useDispatch()
   const currentUser = useSelector(selectCurrentUser)
@@ -243,7 +375,6 @@ function Layout(props) {
       cancellationText: 'Cancel',
       confirmationText: 'Confirm'
     })
-
     if (confirmed) {
       dispatch(logoutEmployeeApi())
     }
@@ -273,7 +404,7 @@ function Layout(props) {
       signOut: handleLogout
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [currentUser])
 
   const router = useMemo(() => {
     return {
@@ -294,13 +425,15 @@ function Layout(props) {
       branding={{ title: 'Nexus management' }}
     >
       <DashboardLayout
+        slots={{ toolbarAccount: () => <CustomToolbarAccount onLogout={handleLogout} /> }}
         slotProps={{
           sidebar: {
             sx: {
               width: '100px !important',
               minWidth: '100px !important'
             }
-          }
+          },
+          toolbarAccount: { sx: { mr: 2 } }
         }}
       >
         <Routes>
@@ -314,6 +447,14 @@ function Layout(props) {
               )
             }
           />
+          <Route
+            path="profile"
+            element={<ProtectedRoute allowedRoles={['admin', 'css', 'tes', 'acs']}><ProfileManagement /></ProtectedRoute>}
+          />
+          {/* <Route
+            path="profile/edit"
+            element={<ProtectedRoute allowedRoles={['admin', 'css', 'tes', 'acs']}><EditProfileManagement /></ProtectedRoute>}
+          /> */}
           <Route path="employee">
             <Route index element={<Navigate to="list" replace />} />
             <Route
@@ -352,7 +493,7 @@ function Layout(props) {
             />
             <Route
               path="create"
-              element={<ProtectedRoute allowedRoles={['admin']}><CreateEquipment /></ProtectedRoute>}
+              element={<ProtectedRoute allowedRoles={['admin', 'tes']}><CreateEquipment /></ProtectedRoute>}
             />
             <Route
               path=":id"
@@ -393,6 +534,22 @@ function Layout(props) {
             <Route index element={<Navigate to="list" replace />} />
             <Route
               path="list"
+              element={<ProtectedRoute allowedRoles={['admin', 'tes']}><ConnectionPlanList /></ProtectedRoute>}
+            />
+            <Route
+              path="create"
+              element={<ProtectedRoute allowedRoles={['admin', 'tes']}><CreateConnectionPlan /></ProtectedRoute>}
+            />
+            <Route
+              path=":slug"
+              element={<ProtectedRoute allowedRoles={['admin', 'tes']}><ConnectionPlanDetail /></ProtectedRoute>}
+            />
+          </Route>
+
+          <Route path="connection">
+            <Route index element={<Navigate to="list" replace />} />
+            <Route
+              path="list"
               element={<ProtectedRoute allowedRoles={['admin', 'tes']}><ConnectionList /></ProtectedRoute>}
             />
             <Route
@@ -400,7 +557,7 @@ function Layout(props) {
               element={<ProtectedRoute allowedRoles={['admin', 'tes']}><CreateConnection /></ProtectedRoute>}
             />
             <Route
-              path=":slug"
+              path=":id"
               element={<ProtectedRoute allowedRoles={['admin', 'tes']}><ConnectionDetail /></ProtectedRoute>}
             />
           </Route>
@@ -421,14 +578,14 @@ function Layout(props) {
           </Route>
           <Route path="feedbacks">
             <Route index element={<Navigate to="customer" replace />} />
-            <Route
+            {/* <Route
               path="customer"
               element={<ProtectedRoute allowedRoles={['admin', 'css']}><CustomerFeedbackPage /></ProtectedRoute>}
             />
             <Route
               path="employee"
               element={<ProtectedRoute allowedRoles={['admin']}><EmployeeFeedbackPage /></ProtectedRoute>}
-            />
+            /> */}
           </Route>
           <Route path="billing">
             <Route index element={<Navigate to="list" replace />} />

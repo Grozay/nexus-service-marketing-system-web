@@ -146,6 +146,32 @@ export const getPlanByCategoryIdAPI = async (id) => {
   return response.data
 }
 
+//CONNECTION
+export const getAllConnectionsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Connection`)
+  return response.data
+}
+
+export const createConnectionAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Connection/Create`, data)
+  return response.data
+}
+
+export const updateConnectionAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Connection/Update`, data)
+  return response.data
+}
+
+export const getConnectionByIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Connection/${id}`)
+  return response.data
+}
+
+export const updateStatusConnectionAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Connection/UpdateStatus`, data)
+  return response.data
+}
+
 //SUBSCRIPTION
 export const getAllSubscriptionsAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Subscription`)

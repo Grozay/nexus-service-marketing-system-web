@@ -29,7 +29,6 @@ export const logoutEmployeeApi = createAsyncThunk(
   }
 )
 
-
 //tạo ra 1 slice trong redux store
 export const userSlice = createSlice({
   name: 'user',
