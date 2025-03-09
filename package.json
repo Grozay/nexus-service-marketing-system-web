@@ -32,6 +32,7 @@
     "react-redux": "^9.1.0",
     "react-router-dom": "^7.1.5",
     "react-toastify": "^11.0.5",
+    "recharts": "^2.15.1",
     "redux-persist": "^6.0.0",
     "styled-components": "^6.1.15",
     "swiper": "^11.2.4",
