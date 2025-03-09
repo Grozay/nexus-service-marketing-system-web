@@ -1,56 +1,76 @@
 import { useState, useEffect } from 'react'
-import { Box, Typography, Card, CardContent, TextField } from '@mui/material'
+import { Box, Typography, Card, CardContent, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import { getAllPaymentsAPI } from '~/apis'
 import Chip from '@mui/material/Chip'
-import PaymentIcon from '@mui/icons-material/Payment'
+import { formatDate } from '~/utils/formatter'
+import { toast } from 'react-toastify' // Thêm để thông báo lỗi
+
+const transformedPayments = (payments) => {
+  if (!Array.isArray(payments)) return []
+  return payments.map(payment => ({
+    paymentId: payment.paymentId,
+    billingId: payment.billingId,
+    paymentMethod: payment.paymentMethod,
+    paymentAmount: payment.paymentAmount,
+    paymentNote: payment.paymentNote,
+    paymentStatus: payment.paymentStatus,
+    PaidAt: payment.PaidAt ? formatDate(payment.PaidAt) : '',
+    paymentCreatedAt: formatDate(payment.paymentCreatedAt)
+  }))
+}
+const getAllPayments = async () => {
+  try {
+    const response = await getAllPaymentsAPI()
+    if (!Array.isArray(response)) {
+      return []
+    }
+    return transformedPayments(response)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
 
 const PaymentList = () => {
   const [payments, setPayments] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState('All') // Sửa giá trị mặc định thành 'All'
 
   useEffect(() => {
     const fetchPayments = async () => {
-      try {
-        const response = await getAllPaymentsAPI()
-        if (response && Array.isArray(response.data)) {
-          // Transform dữ liệu payments để đảm bảo đúng cấu trúc
-          const transformedPayments = response.data.map(payment => ({
-            paymentId: payment.paymentId, // map paymentId
-            billingId: payment.billingId, // map billingId
-            paymentMethod: payment.paymentMethod, // map paymentMethod
-            paymentAmount: payment.paymentAmount, // map paymentAmount
-            paymentNote: payment.paymentNote, // map paymentNote
-            paymentStatus: payment.paymentStatus, // map paymentStatus
-            PaidAt: payment.PaidAt, // map PaidAt
-            paymentCreatedAt: payment.paymentCreatedAt // map paymentCreatedAt
-          }))
-          setPayments(transformedPayments) // Cập nhật state payments với dữ liệu đã được transform
-        } else {
-          console.error('Failed to fetch payments or invalid response:', response)
-          setPayments([])
-        }
-      } catch (error) {
-        console.error('Error fetching payments:', error)
-        setPayments([])
-      }
+      const payments = await getAllPayments()
+      setPayments(payments)
     }
     fetchPayments()
   }, [])
 
-  // Function to handle search term changes
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value)
   }
 
+  const handleStatusChange = (event) => {
+    setStatusFilter(event.target.value)
+  }
 
-  // Filter payments based on search term
-  const filteredPayments = payments.filter(payment =>
-    payment.paymentId?.toString().includes(searchTerm) ||
-    payment.paymentMethod?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  // Filter payments với tìm kiếm trên tất cả các trường và trạng thái
+  const filteredPayments = payments.filter(payment => {
+    const searchLower = searchTerm.toLowerCase()
+    const matchesSearch = (
+      payment.paymentId?.toString().includes(searchLower) ||
+      payment.billingId?.toString().includes(searchLower) ||
+      payment.paymentMethod?.toLowerCase().includes(searchLower) ||
+      payment.paymentAmount?.toString().includes(searchLower) ||
+      payment.paymentNote?.toLowerCase().includes(searchLower) ||
+      payment.paymentStatus?.toLowerCase().includes(searchLower) ||
+      payment.PaidAt?.toLowerCase().includes(searchLower) ||
+      payment.paymentCreatedAt?.toLowerCase().includes(searchLower)
+    )
 
-  // Define columns for DataGrid
+    const matchesStatus = statusFilter === 'All' || payment.paymentStatus === statusFilter
+
+    return matchesSearch && matchesStatus
+  })
+
   const columns = [
     { field: 'paymentId', headerName: 'Payment ID', width: 100 },
     { field: 'billingId', headerName: 'Billing ID', width: 100 },
@@ -64,7 +84,10 @@ const PaymentList = () => {
       renderCell: (params) => (
         <Chip
           label={params.value}
-          color={params.value === 'Paid' ? 'success' : 'warning'}
+          color={
+            params.value === 'Success' ? 'success' :
+              params.value === 'Fail' ? 'error' : 'warning'
+          }
           variant="outlined"
           size="small"
         />
@@ -75,32 +98,58 @@ const PaymentList = () => {
   ]
 
   return (
-    <Box sx={{ padding: 2 }}>
-      <Typography variant="h4" gutterBottom>
-        Payment Management
+    <Card sx={{ height: '90vh' }}>
+      <Typography sx={{
+        fontSize: '3rem',
+        fontWeight: 'bold',
+        marginTop: '1rem',
+        marginLeft: '1rem'
+      }}>
+        PAYMENT HISTORY
       </Typography>
-      <Card>
-        <CardContent>
-          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+      <CardContent sx={{ height: '75vh' }}>
+        <Box sx={{
+          display: 'flex',
+          gap: 2,
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          mb: 2
+        }}>
+          <Typography variant="h5" gutterBottom>
+            Search Payments
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <FormControl sx={{ minWidth: 200 }}>
+              <InputLabel>Payment Status</InputLabel>
+              <Select
+                value={statusFilter}
+                onChange={handleStatusChange}
+                label="Payment Status"
+              >
+                <MenuItem value="All">All</MenuItem>
+                <MenuItem value="Success">Success</MenuItem>
+                <MenuItem value="Fail">Fail</MenuItem>
+                {/* Nếu có trạng thái khác như 'Pending', thêm vào đây */}
+              </Select>
+            </FormControl>
             <TextField
-              label="Search Payment ID, Method"
+              label="Search All Fields"
               variant="outlined"
-              fullWidth
               value={searchTerm}
               onChange={handleSearchChange}
             />
           </Box>
-          <DataGrid
-            rows={filteredPayments}
-            columns={columns}
-            getRowId={(row) => row.paymentId}
-            pageSize={5}
-            rowsPerPageOptions={[5, 10, 20]}
-            sx={{ height: '500px' }}
-          />
-        </CardContent>
-      </Card>
-    </Box>
+        </Box>
+        <DataGrid
+          rows={filteredPayments}
+          columns={columns}
+          getRowId={(row) => row.paymentId}
+          pageSize={5}
+          rowsPerPageOptions={[5, 10, 20]}
+          sx={{ height: '100%' }}
+        />
+      </CardContent>
+    </Card>
   )
 }
 

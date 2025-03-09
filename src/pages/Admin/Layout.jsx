@@ -162,7 +162,9 @@ const NAVIGATION = (currentUser) => {
           { segment: 'list', title: 'Billing List' }
         ]
       },
-      { segment: 'management/payments', title: 'Payment', icon: <PaymentIcon /> },
+      { segment: 'management/payments',
+        title: 'Payment History',
+        icon: <PaymentIcon /> },
       {
         segment: 'management/feedbacks',
         title: 'Feedback',
@@ -184,6 +186,20 @@ const NAVIGATION = (currentUser) => {
           { segment: 'create', title: 'Create Order' },
           { segment: 'list', title: 'Order List' }
         ]
+      },
+      {
+        segment: 'management/billing',
+        title: 'Billing',
+        icon: <ReceiptIcon />,
+        children: [{ segment: 'list', title: 'Billing List' }]
+      },
+      { segment: 'management/payments', title: 'Payment History', icon: <PaymentIcon /> },
+      {
+        segment: 'management/feedbacks',
+        title: 'Feedback',
+        icon: <FeedbackIcon />,
+        children: [{ segment: 'customer', title: 'Customer Feedback' }]
+
       }
       // {
       //   segment: 'management/billing',
@@ -246,7 +262,7 @@ const NAVIGATION = (currentUser) => {
           { segment: 'list', title: 'Billing List' }
         ]
       },
-      { segment: 'management/payments', title: 'Payment', icon: <PaymentIcon /> }
+      { segment: 'management/payments', title: 'Payment History', icon: <PaymentIcon /> }
     )
   }
   return baseNav

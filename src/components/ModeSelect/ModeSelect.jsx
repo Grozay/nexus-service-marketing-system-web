@@ -19,14 +19,14 @@ function ModeSelect() {
           aria-label="toggle dark/light mode"
         >
           {mode === 'light' ?
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <DarkModeIcon sx={{ color: 'white' }} />
-              <Typography sx={{ color: 'white' }}>Dark</Typography>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <DarkModeIcon sx={{ color: 'white', fontSize: '14px' }} />
+              <Typography sx={{ color: 'white', fontSize: '14px' }}>Dark</Typography>
             </Box>
             :
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <LightModeIcon sx={{ color: 'white' }} />
-              <Typography sx={{ color: 'white' }}>Light</Typography>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <LightModeIcon sx={{ color: 'white', fontSize: '14px' }} />
+              <Typography sx={{ color: 'white', fontSize: '14px' }}>Light</Typography>
             </Box>}
         </IconButton>
       </Tooltip>

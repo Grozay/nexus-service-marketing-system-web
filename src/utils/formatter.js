@@ -15,14 +15,10 @@ export const interceptorLoadingElements = (calling) => {
 }
 
 export const formatDate = (date) => {
-  // Tạo đối tượng Date từ tham số đầu vào
-  const dateObj = new Date(date)
-
-  // Lấy các thành phần ngày tháng năm
-  const year = dateObj.getFullYear()
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0') // Tháng bắt đầu từ 0
-  const day = String(dateObj.getDate()).padStart(2, '0')
-
-  // Trả về chuỗi ngày tháng định dạng YYYY-MM-DD
-  return `${year}-${month}-${day}`
+  if (!date) return ''
+  const d = new Date(date)
+  const day = String(d.getDate()).padStart(2, '0')
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const year = d.getFullYear()
+  return `${day}/${month}/${year}`
 }

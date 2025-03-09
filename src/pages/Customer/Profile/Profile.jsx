@@ -1,5 +1,20 @@
-import React from 'react'
-import { Container, Box, Avatar, Typography, List, ListItem, ListItemIcon, ListItemText, Divider, Button, Icon } from '@mui/material'
+import { useState, useEffect } from 'react'
+import {
+  Container,
+  Box,
+  Avatar,
+  Typography,
+  Tabs,
+  Tab,
+  Card,
+  CardContent,
+  Grid,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider
+} from '@mui/material'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import EmailIcon from '@mui/icons-material/Email'
 import PhoneIcon from '@mui/icons-material/Phone'
@@ -7,47 +22,56 @@ import HomeIcon from '@mui/icons-material/Home'
 import VpnKeyIcon from '@mui/icons-material/VpnKey'
 import EditIcon from '@mui/icons-material/Edit'
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck'
-import WifiIcon from '@mui/icons-material/Wifi'
-import DialpadIcon from '@mui/icons-material/Dialpad'
-import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid'
+import StoreIcon from '@mui/icons-material/Store'
+import PersonIcon from '@mui/icons-material/Person'
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import { Link } from 'react-router-dom'
-import Grid from '@mui/material/Grid2'
 import AppBar from '~/components/AppBar/AppBar'
+import { getOrderByAccountIdAPI } from '~/apis'
+import { useSelector } from 'react-redux'
+import { selectCurrentAccount } from '~/redux/user/accountSlice'
 
 const Profile = () => {
-  // Sample customer data (replace with real API data)
-  const customerData = {
-    avatarUrl: '/static/images/avatars/avatar_default.jpg',
-    name: 'John Doe',
-    memberSince: '15/08/2023',
-    email: 'john.doe@example.com',
-    phone: '0901234567',
-    address: '123 Main St, District 1, HCMC',
-    username: 'johndoe123',
-    accountCreated: '10/08/2023',
-    registeredPlans: [
-      { id: 1, name: 'Broadband 64 Kbps', connectionType: 'Broadband', registeredDate: '20/08/2023', status: 'Active', icon: <WifiIcon /> },
-      { id: 2, name: 'Landline Local - Monthly', connectionType: 'Landline', registeredDate: '25/08/2023', status: 'Active', icon: <PhoneAndroidIcon /> },
-      { id: 3, name: 'Dial-Up 30 Hours', connectionType: 'Dial-Up', registeredDate: '01/09/2023', status: 'Paused', icon: <DialpadIcon /> },
-      { id: 4, name: 'Dial-Up 30 Hours', connectionType: 'Dial-Up', registeredDate: '01/09/2023', status: 'Paused', icon: <DialpadIcon /> },
-      { id: 5, name: 'Dial-Up 30 Hours', connectionType: 'Dial-Up', registeredDate: '01/09/2023', status: 'Paused', icon: <DialpadIcon /> },
-      { id: 6, name: 'Dial-Up 30 Hours', connectionType: 'Dial-Up', registeredDate: '01/09/2023', status: 'Paused', icon: <DialpadIcon /> },
-      { id: 7, name: 'Dial-Up 30 Hours', connectionType: 'Dial-Up', registeredDate: '01/09/2023', status: 'Paused', icon: <DialpadIcon /> },
-      { id: 8, name: 'Dial-Up 30 Hours', connectionType: 'Dial-Up', registeredDate: '01/09/2023', status: 'Paused', icon: <DialpadIcon /> },
-      { id: 9, name: 'Dial-Up 30 Hours', connectionType: 'Dial-Up', registeredDate: '01/09/2023', status: 'Paused', icon: <DialpadIcon /> },
-      { id: 10, name: 'Dial-Up 30 Hours', connectionType: 'Dial-Up', registeredDate: '01/09/2023', status: 'Paused', icon: <DialpadIcon /> }
+  const [tabValue, setTabValue] = useState(0)
+  const [profileData, setProfileData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  // const dispatch = useDispatch()
+  const currentAccount = useSelector(selectCurrentAccount)
 
-    ]
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        setLoading(true)
+        const response = await getOrderByAccountIdAPI(currentAccount.userId)
+        setProfileData(response)
+      } catch (err) {
+        setError(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProfileData()
+  }, [currentAccount.userId])
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue)
   }
 
-  const [showAllPlans, setShowAllPlans] = React.useState(false)
-
-  const handleShowMore = () => {
-    setShowAllPlans(true)
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <Typography>Loading...</Typography>
+      </Box>
+    )
   }
 
-  const handleShowLess = () => {
-    setShowAllPlans(false)
+  if (error || !profileData) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <Typography color="error">{error || 'No data available'}</Typography>
+      </Box>
+    )
   }
 
   return (
@@ -55,170 +79,314 @@ const Profile = () => {
       <AppBar />
       <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
         {/* Profile Header */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
-          <Avatar
-            alt={customerData.name}
-            src={customerData.avatarUrl}
-            sx={{ width: 80, height: 80, mb: 1 }}
-          >
-            <AccountCircleIcon sx={{ width: 80, height: 80 }} />
-          </Avatar>
-          <Typography variant="h5" component="h2" gutterBottom>
-            {customerData.name}
-          </Typography>
-          <Typography variant="subtitle2" color="text.secondary">
-            Member since {customerData.memberSince}
-          </Typography>
-        </Box>
-        <Divider sx={{ mb: 3 }} />
-
-        <Grid container spacing={3}>
-          {/* Personal Information */}
-          <Grid xs={12} md={6}>
-            <Typography variant="h6" component="h3" gutterBottom>
-                Personal Information
+        <Card sx={{ mb: 4, p: 2, textAlign: 'center' }}>
+          <CardContent>
+            <Avatar
+              alt={profileData.accountDetails.accountName}
+              sx={{ width: 100, height: 100, mb: 2, mx: 'auto' }}
+            >
+              <AccountCircleIcon sx={{ width: 80, height: 80 }} />
+            </Avatar>
+            <Typography variant="h5" component="h2" gutterBottom>
+              {profileData.accountDetails.accountName}
             </Typography>
-            <List dense>
-              <ListItem>
-                <ListItemIcon>
-                  <EmailIcon />
-                </ListItemIcon>
-                <ListItemText primary="Email" secondary={customerData.email} />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <PhoneIcon />
-                </ListItemIcon>
-                <ListItemText primary="Phone Number" secondary={customerData.phone} />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <HomeIcon />
-                </ListItemIcon>
-                <ListItemText primary="Address" secondary={customerData.address} />
-              </ListItem>
-            </List>
-          </Grid>
-
-          {/* Account Information */}
-          <Grid xs={12} md={6}>
-            <Typography variant="h6" component="h3" gutterBottom>
-                Account Information
+            <Typography variant="subtitle2" color="text.secondary">
+              Member since{' '}
+              {new Date(profileData.accountDetails.accountCreatedAt).toLocaleDateString()}
             </Typography>
-            <List dense>
-              <ListItem>
-                <ListItemIcon>
-                  <AccountCircleIcon />
-                </ListItemIcon>
-                <ListItemText primary="Username" secondary={customerData.username} />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <PlaylistAddCheckIcon />
-                </ListItemIcon>
-                <ListItemText primary="Account Created Date" secondary={customerData.accountCreated} />
-              </ListItem>
-            </List>
-          </Grid>
-        </Grid>
-        <Divider sx={{ mt: 3, mb: 3 }} />
+          </CardContent>
+        </Card>
 
-        {/* Registered Services */}
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h6" component="h3" gutterBottom sx={{
-            display: 'flex',
-            alignItems: 'center'
-          }}>
-            <Icon sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}><PlaylistAddCheckIcon sx={{ mr: 1, verticalAlign: 'middle', fontSize: '1.5rem' }} /></Icon>
-            Registered Services
-          </Typography>
-          <List dense>
-            {customerData.registeredPlans.slice(0, showAllPlans ? customerData.registeredPlans.length : 5).map((plan) => (
-              <ListItem key={plan.id}
-                sx={{
-                  flexDirection: { xs: 'column', sm: 'row' },
-                  alignItems: { xs: 'flex-start', sm: 'center' },
-                  gap: { xs: 1, sm: 0 },
-                  position: 'relative',
-                  pb: { xs: 6, sm: 0 } // Thêm padding bottom cho mobile để chừa chỗ cho nút
-                }}>
-                <ListItemIcon>
-                  {plan.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={plan.name}
-                  secondary={`${plan.connectionType} - Registered: ${plan.registeredDate} - Status: ${plan.status}`}
-                  sx={{ width: { xs: '100%', sm: 'auto' } }}
-                />
-                <Box
-                  sx={{
-                    position: { xs: 'absolute', sm: 'static' },
-                    bottom: { xs: 8, sm: 'auto' },
-                    left: { xs: 16, sm: 'auto' },
-                    width: { xs: 'calc(100% - 32px)', sm: 'auto' }
-                  }}
-                >
-                  <Button
-                    aria-label="view"
-                    size="small"
-                    variant="outlined"
-                    fullWidth
-                  >
-                    View Details
-                  </Button>
-                </Box>
-              </ListItem>
-            ))}
-            {!showAllPlans && customerData.registeredPlans.length > 5 && (
-              <Box sx={{ mt: 1 }}>
-                <ListItem key="show-more">
-                  <Button onClick={handleShowMore} fullWidth>
-                    Show more
-                  </Button>
+        {/* Tabs */}
+        <Tabs value={tabValue} onChange={handleTabChange} centered sx={{ mb: 4 }}>
+          <Tab label="Personal Info" />
+          <Tab label="Order Details" />
+          <Tab label="Plan Info" />
+          <Tab label="Store Info" />
+        </Tabs>
+
+        {/* Tab Content */}
+        {tabValue === 0 && (
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              <Card sx={{ boxShadow: 3 }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Personal Information
+                  </Typography>
+                  <List dense>
+                    <ListItem>
+                      <ListItemIcon>
+                        <EmailIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Email"
+                        secondary={profileData.accountDetails.accountEmail}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon>
+                        <PhoneIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Phone"
+                        secondary={profileData.accountDetails.accountPhone}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon>
+                        <HomeIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Address"
+                        secondary={profileData.accountDetails.accountAddress}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon>
+                        <PersonIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Gender"
+                        secondary={profileData.accountDetails.accountGender}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon>
+                        <AccountCircleIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="DOB"
+                        secondary={new Date(
+                          profileData.accountDetails.accountDOB
+                        ).toLocaleDateString()}
+                      />
+                    </ListItem>
+                  </List>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card sx={{ boxShadow: 3 }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Account Information
+                  </Typography>
+                  <List dense>
+                    <ListItem>
+                      <ListItemIcon>
+                        <AccountCircleIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Account ID"
+                        secondary={profileData.accountDetails.accountId}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon>
+                        <PlaylistAddCheckIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Created At"
+                        secondary={new Date(
+                          profileData.accountDetails.accountCreatedAt
+                        ).toLocaleDateString()}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon>
+                        <EditIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Last Updated"
+                        secondary={
+                          profileData.accountDetails.accountUpdatedAt
+                            ? new Date(
+                              profileData.accountDetails.accountUpdatedAt
+                            ).toLocaleDateString()
+                            : 'N/A'
+                        }
+                      />
+                    </ListItem>
+                  </List>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        )}
+
+        {tabValue === 1 && (
+          <Card sx={{ boxShadow: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Order Details
+              </Typography>
+              <List dense>
+                <ListItem>
+                  <ListItemIcon>
+                    <ShoppingCartIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Order ID" secondary={profileData.orderId} />
                 </ListItem>
-              </Box>
-            )}
-            {showAllPlans && customerData.registeredPlans.length > 5 && (
-              <Box sx={{ mt: 1 }}>
-                <ListItem key="show-less">
-                  <Button onClick={handleShowLess} fullWidth>
-                    Show less
-                  </Button>
+                <ListItem>
+                  <ListItemIcon>
+                    <AccountCircleIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Order Name" secondary={profileData.orderName} />
                 </ListItem>
-              </Box>
-            )}
-          </List>
-        </Box>
-        <Divider sx={{ mb: 3 }} />
+                <ListItem>
+                  <ListItemIcon>
+                    <PlaylistAddCheckIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Status" secondary={profileData.orderStatus} />
+                </ListItem>
+                <ListItem>
+                  <ListItemIcon>
+                    <EditIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Created At"
+                    secondary={new Date(profileData.orderCreatedAt).toLocaleString()}
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemIcon>
+                    <EditIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Amount" secondary={`$${profileData.orderAmount}`} />
+                </ListItem>
+              </List>
+            </CardContent>
+          </Card>
+        )}
+
+        {tabValue === 2 && (
+          <Card sx={{ boxShadow: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Plan Information
+              </Typography>
+              <List dense>
+                <ListItem>
+                  <ListItemIcon>
+                    <PlaylistAddCheckIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Plan Name" secondary={profileData.planDetails.planName} />
+                </ListItem>
+                <ListItem>
+                  <ListItemIcon>
+                    <AccountCircleIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Plan Type" secondary={profileData.planDetails.planType} />
+                </ListItem>
+                <ListItem>
+                  <ListItemIcon>
+                    <EditIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Price"
+                    secondary={`$${profileData.planDetails.planPrice}`}
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemIcon>
+                    <PlaylistAddCheckIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Validity"
+                    secondary={profileData.planDetails.planValidity}
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemIcon>
+                    <EditIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Description"
+                    secondary={profileData.planDetails.planDescription}
+                  />
+                </ListItem>
+              </List>
+            </CardContent>
+          </Card>
+        )}
+
+        {tabValue === 3 && (
+          <Card sx={{ boxShadow: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Store Information
+              </Typography>
+              <List dense>
+                <ListItem>
+                  <ListItemIcon>
+                    <StoreIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Store Name" secondary={profileData.storeDetails.storeName} />
+                </ListItem>
+                <ListItem>
+                  <ListItemIcon>
+                    <HomeIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Address"
+                    secondary={`${profileData.storeDetails.storeAddress}, ${profileData.storeDetails.storeCity}`}
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemIcon>
+                    <PhoneIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Phone" secondary={profileData.storeDetails.storePhone} />
+                </ListItem>
+                <ListItem>
+                  <ListItemIcon>
+                    <PlaylistAddCheckIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Hours"
+                    secondary={`${profileData.storeDetails.storeOpenAt} - ${profileData.storeDetails.storeCloseAt}`}
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemIcon>
+                    <EditIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Status" secondary={profileData.storeDetails.storeStatus} />
+                </ListItem>
+              </List>
+            </CardContent>
+          </Card>
+        )}
+
+        <Divider sx={{ my: 4 }} />
 
         {/* Account Settings */}
-        <Box>
-          <Typography variant="h6" component="h3" gutterBottom>
-            Account Settings
-          </Typography>
-          <List dense>
-            <ListItem component={Link} to="/account/profile/change-password">
-              <ListItemIcon>
-                <VpnKeyIcon />
-              </ListItemIcon>
-              <ListItemText primary="Change Password" />
-            </ListItem>
-            <ListItem component={Link} to="/account/profile/update-profile">
-              <ListItemIcon>
-                <EditIcon />
-              </ListItemIcon>
-              <ListItemText primary="Edit Profile" />
-            </ListItem>
-          </List>
-        </Box>
+        <Card sx={{ boxShadow: 3 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Account Settings
+            </Typography>
+            <List dense>
+              <ListItem component='a' href="/account/profile/change-password">
+                <ListItemIcon>
+                  <VpnKeyIcon />
+                </ListItemIcon>
+                <ListItemText primary="Change Password" />
+              </ListItem>
+              <ListItem sx={{ textDecoration: 'none' }} component={Link} to={`/account/profile/send-feedback?orderId=${profileData.orderId}`}>
+                <ListItemIcon>
+                  <EditIcon />
+                </ListItemIcon>
+                <ListItemText primary="Send Feedback" />
+              </ListItem>
+            </List>
+          </CardContent>
+        </Card>
 
         <Box mt={4} textAlign="center">
           <Typography variant="body2" color="text.secondary">
-            Have questions or need support? <Link href="/contact">Contact us</Link>
+            Have questions or need support? <Link to="/contact">Contact us</Link>
           </Typography>
         </Box>
       </Container>
