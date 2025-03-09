@@ -135,7 +135,9 @@ const NAVIGATION = (currentUser) => {
           { segment: 'list', title: 'Billing List' }
         ]
       },
-      { segment: 'management/payments', title: 'Payment', icon: <PaymentIcon /> },
+      { segment: 'management/payments',
+        title: 'Payment History',
+        icon: <PaymentIcon /> },
       {
         segment: 'management/feedbacks',
         title: 'Feedback',
@@ -163,7 +165,7 @@ const NAVIGATION = (currentUser) => {
         icon: <ReceiptIcon />,
         children: [{ segment: 'list', title: 'Billing List' }]
       },
-      { segment: 'management/payments', title: 'Payment', icon: <PaymentIcon /> },
+      { segment: 'management/payments', title: 'Payment History', icon: <PaymentIcon /> },
       {
         segment: 'management/feedbacks',
         title: 'Feedback',
@@ -206,7 +208,7 @@ const NAVIGATION = (currentUser) => {
           { segment: 'list', title: 'Billing List' }
         ]
       },
-      { segment: 'management/payments', title: 'Payment', icon: <PaymentIcon /> }
+      { segment: 'management/payments', title: 'Payment History', icon: <PaymentIcon /> }
     )
   }
   return baseNav

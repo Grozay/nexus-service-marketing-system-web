@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -58,7 +58,7 @@ function ResetPwForm({ onSubmit, userId }) {
                 autoFocus
                 fullWidth
                 label="Enter your new password..."
-                type="text"
+                type="password"
                 variant="outlined"
                 {...register('userPassword', { required: FIELD_REQUIRED_MESSAGE, pattern: PASSWORD_RULE })}
                 error={!!errors.userPassword}
@@ -71,7 +71,7 @@ function ResetPwForm({ onSubmit, userId }) {
                 autoFocus
                 fullWidth
                 label="Enter confirm password..."
-                type="text"
+                type="password"
                 variant="outlined"
                 {...register('confirmPassword', { required: FIELD_REQUIRED_MESSAGE, pattern: PASSWORD_RULE, validate: (value) => value == getValues('userPassword') })}
                 error={!!errors.confirmPassword}

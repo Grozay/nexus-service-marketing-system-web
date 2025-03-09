@@ -174,6 +174,11 @@ export const createPreOrderAPI = async (data) => {
   return response.data
 }
 
+export const getPreOrderByEmailAPI = async (email) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/PreOrder/${email}`)
+  return response.data
+}
+
 //vendor
 export const getAllVendorsAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Vendor`)
@@ -307,3 +312,26 @@ export const getAllPaymentsAPI = async () => {
   return response.data
 }
 
+export const processPaymentAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Payment/Create`, data)
+  return response.data
+}
+
+//update subscription and deposit status
+export const updateSubscriptionAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Subscription/update`, data)
+  return response.data
+}
+
+export const updateDepositAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Deposit/update`, data)
+  return response.data
+}
+
+// FEEDBACK
+export const createFeedbackAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Feedback/Create`, data)
+  return response.data
+}
+
+//
