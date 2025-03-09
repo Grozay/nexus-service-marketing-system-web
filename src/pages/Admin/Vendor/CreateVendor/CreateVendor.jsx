@@ -13,7 +13,9 @@ import Paper from '@mui/material/Paper'
 import {
   EMAIL_RULE_MESSAGE,
   FIELD_REQUIRED_MESSAGE,
-  EMAIL_RULE
+  EMAIL_RULE,
+  PHONE_NUMBER_RULE,
+  PHONE_NUMBER_RULE_MESSAGE
 } from '~/utils/validators'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -163,7 +165,7 @@ const CreateVendor = () => {
                   variant="outlined"
                   label="Phone Number"
                   disabled={loading}
-                  {...register('vendorPhone', { required: FIELD_REQUIRED_MESSAGE })}
+                  {...register('vendorPhone', { required: FIELD_REQUIRED_MESSAGE, pattern: { value: PHONE_NUMBER_RULE, message: PHONE_NUMBER_RULE_MESSAGE } })}
                   error={!!errors.vendorPhone}
                   helperText={errors.vendorPhone?.message}
                 />

@@ -14,7 +14,9 @@ import {
   FIELD_REQUIRED_MESSAGE,
   EMAIL_RULE,
   EMAIL_RULE_MESSAGE,
-  DOB_RULE_MESSAGE
+  DOB_RULE_MESSAGE,
+  PHONE_NUMBER_RULE,
+  PHONE_NUMBER_RULE_MESSAGE
 } from '~/utils/validators'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -145,7 +147,7 @@ const CreateEmployee = () => {
                 variant='outlined'
                 label='Phone Number'
                 disabled={loading}
-                {...register('employeePhone', { required: FIELD_REQUIRED_MESSAGE })}
+                {...register('employeePhone', { required: FIELD_REQUIRED_MESSAGE, pattern: { value: PHONE_NUMBER_RULE, message: PHONE_NUMBER_RULE_MESSAGE } })}
                 error={!!errors.employeePhone}
                 helperText={errors.employeePhone?.message}
               />

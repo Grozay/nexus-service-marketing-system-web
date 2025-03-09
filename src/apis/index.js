@@ -55,8 +55,6 @@ export const activateEmployeeAPI = async (data) => {
   return response.data
 }
 
-
-// khúc này chưa xong
 export const updateEmployeePasswordAPI = async (data) => {
   const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Employee/UpdatePassword`, data)
   return response.data
@@ -143,6 +141,32 @@ export const createPlanAPI = async (data) => {
 
 export const getPlanByCategoryIdAPI = async (id) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Plan/Categories/${id}`)
+  return response.data
+}
+
+//CONNECTION
+export const getAllConnectionsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Connection`)
+  return response.data
+}
+
+export const createConnectionAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Connection/Create`, data)
+  return response.data
+}
+
+export const updateConnectionAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Connection/Update`, data)
+  return response.data
+}
+
+export const getConnectionByIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Connection/${id}`)
+  return response.data
+}
+
+export const updateStatusConnectionAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Connection/UpdateStatus`, data)
   return response.data
 }
 
@@ -312,6 +336,7 @@ export const getAllPaymentsAPI = async () => {
   return response.data
 }
 
+
 export const processPaymentAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Payment/Create`, data)
   return response.data
@@ -329,9 +354,54 @@ export const updateDepositAPI = async (data) => {
 }
 
 // FEEDBACK
+export const getAllFeedbacksAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Feedback`)
+  return response.data
+}
+
 export const createFeedbackAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Feedback/Create`, data)
   return response.data
 }
 
-//
+export const getFeedbackByOrderIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Feedback/order/${id}`)
+  return response.data
+}
+
+export const updateFeedbackAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Feedback/Update`, data)
+  return response.data
+}
+
+export const deleteFeedbackAPI = async (id) => {
+  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Feedback/Delete/${id}`)
+  return response.data
+}
+
+// REPLY FEEDBACK
+export const getAllReplyFeedbacksAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Reply`)
+  return response.data
+}
+
+export const createReplyFeedbackAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Reply/Create`, data)
+  return response.data
+}
+
+export const getReplyFeedbackByOrderIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Reply/Order/${id}`)
+  return response.data
+}
+
+export const updateReplyFeedbackAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Reply/Update`, data)
+  return response.data
+}
+
+export const deleteReplyFeedbackAPI = async (id) => {
+  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/Reply/Delete/${id}`)
+  return response.data
+}
+

@@ -1,187 +1,346 @@
+import { useState, useEffect } from 'react'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+  LabelList,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid2'
 import Paper from '@mui/material/Paper'
-import { LineChart } from '@mui/x-charts'
-import { PieChart } from '@mui/x-charts'
-import { DataGrid, GridToolbar } from '@mui/x-data-grid'
+import Typography from '@mui/material/Typography'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Grow from '@mui/material/Grow'
+import LinearProgress from '@mui/material/LinearProgress'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Chip from '@mui/material/Chip'
+import Avatar from '@mui/material/Avatar'
 import { useTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import PeopleIcon from '@mui/icons-material/People'
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
-import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna'
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn'
+import CloudIcon from '@mui/icons-material/Cloud'
+import AssignmentIcon from '@mui/icons-material/Assignment'
+import { getAllOrdersAPI, getAllAccountsAPI, getAllConnectionsAPI, getPlanListAPI } from '~/apis'
+import { toast } from 'react-toastify'
+
+// Styled Components
+const StyledCard = styled(Card)(({ theme }) => ({
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'translateY(-5px)',
+    boxShadow: theme.shadows[8]
+  },
+  borderRadius: theme.shape.borderRadius * 2,
+  backgroundColor: theme.palette.background.paper,
+  padding: theme.spacing(2)
+}))
+
+const ChartPaper = styled(Paper)(({ theme }) => ({
+  height: '100%',
+  borderRadius: theme.shape.borderRadius * 2,
+  padding: theme.spacing(3),
+  backgroundColor: theme.palette.background.paper,
+  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)'
+}))
+
+const COLORS = ['#1976d2', '#4caf50', '#ff9800', '#f44336']
 
 const Dashboard = () => {
   const theme = useTheme()
+  const [revenueData, setRevenueData] = useState([])
+  const [serviceData, setServiceData] = useState([])
+  const [recentCustomers, setRecentCustomers] = useState([])
+  const [plans, setPlans] = useState([])
+  const [orders, setOrders] = useState([])
+  const [accounts, setAccounts] = useState([])
+  const [connections, setConnections] = useState([])
 
-  // Mock data for charts
-  const salesData = [
-    { month: 'Jan', sales: 4000 },
-    { month: 'Feb', sales: 3000 },
-    { month: 'Mar', sales: 2000 },
-    { month: 'Apr', sales: 2780 },
-    { month: 'May', sales: 1890 },
-    { month: 'Jun', sales: 2390 },
-    { month: 'Jul', sales: 3490 }
-  ]
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [orders, accounts, connections, plans] = await Promise.all([
+          getAllOrdersAPI(),
+          getAllAccountsAPI(),
+          getAllConnectionsAPI(),
+          getPlanListAPI()
+        ])
 
-  const userData = [
-    { id: 1, name: 'John Doe', role: 'Admin', lastLogin: '2023-10-01' },
-    { id: 2, name: 'Jane Smith', role: 'Manager', lastLogin: '2023-10-02' },
-    { id: 3, name: 'Alice Johnson', role: 'Staff', lastLogin: '2023-10-03' }
-  ]
+        setPlans(plans)
+        setOrders(orders)
+        setAccounts(accounts)
+        setConnections(connections)
+        const processedRevenueData = processOrdersData(orders)
+        setRevenueData(processedRevenueData)
 
-  const pieData = [
-    { id: 0, value: 10, label: 'Dial-Up' },
-    { id: 1, value: 15, label: 'Broadband' },
-    { id: 2, value: 20, label: 'Landline' }
-  ]
+        const processedServiceData = processConnectionsData(connections)
+        setServiceData(processedServiceData)
+
+        const processedRecentCustomers = processAccountsData(accounts)
+        setRecentCustomers(processedRecentCustomers)
+      } catch {
+        toast.error('Error fetching data')
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  // Hàm xử lý dữ liệu orders
+  const processOrdersData = (orders) => {
+    const monthlyRevenue = orders.reduce((acc, order) => {
+      const date = new Date(order.orderCreatedAt)
+      const month = date.getMonth()
+      const year = date.getFullYear()
+      const key = `${year}-${month}`
+
+      acc[key] = (acc[key] || 0) + order.orderAmount
+      return acc
+    }, {})
+
+    return Object.keys(monthlyRevenue).map((key) => {
+      const [year, month] = key.split('-')
+      return {
+        name: new Date(year, month).toLocaleString('default', { month: 'short', year: 'numeric' }),
+        revenue: monthlyRevenue[key],
+        customers: 0 // Chưa có đủ dữ liệu để tính số khách hàng
+      }
+    })
+  }
+
+  // Hàm xử lý dữ liệu connections
+  const processConnectionsData = (connections) => {
+    const serviceCount = connections.reduce((acc, connection) => {
+      const serviceType = connection.orderDetails?.planDetails?.planName || 'Unknown'
+      acc[serviceType] = (acc[serviceType] || 0) + 1
+      return acc
+    }, {})
+
+    return Object.keys(serviceCount).map((service) => ({
+      name: service,
+      value: serviceCount[service]
+    }))
+  }
+
+  // Hàm xử lý dữ liệu accounts
+  const processAccountsData = (accounts) => {
+    return accounts
+      .sort((a, b) => new Date(b.accountCreatedAt) - new Date(a.accountCreatedAt))
+      .slice(0, 5)
+      .map((account) => ({
+        id: account.accountId,
+        name: account.accountName,
+        service: account.planDetails?.planName || 'Unknown Plan',
+        status: account.accountIsActive ? 'Active' : 'Inactive',
+        amount: account.orderDetails?.orderAmount || 0
+      }))
+  }
 
   return (
-    <Box sx={{ p: 3, bgcolor: theme.palette.background.default }}>
-      <Typography variant="h4" component="h1" gutterBottom color={theme.palette.text.primary}>
-        Admin Dashboard
+    <Box sx={{ p: 3, bgcolor: theme.palette.background.default, minHeight: '100vh' }}>
+      <Typography
+        variant="h4"
+        sx={{
+          fontWeight: 600,
+          color: theme.palette.text.primary,
+          mb: 4,
+          textAlign: 'center'
+        }}
+      >
+        Network Services Dashboard
       </Typography>
 
-      <Grid container spacing={3} mb={3}>
-        {/* Quick Stats */}
-        <Grid size={{ xs: 12, md: 3 }}>
-          <Paper elevation={3} sx={{ p: 2, bgcolor: theme.palette.primary.light, color: theme.palette.primary.contrastText, minHeight: 150 }}>
-            {/* Quick Stats container */}
-            <Box display="flex" alignItems="center" mb={1}>
-              <PeopleIcon sx={{ mr: 1, fontSize: '2rem' }} />
-              <Typography variant="h6" gutterBottom color="inherit">
-                Total Users
+      {/* Stats Section */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        {[
+          { icon: MonetizationOnIcon, title: 'Revenue', value: '22,500,000 $', progress: 75, color: 'primary' },
+          {
+            icon: PeopleIcon,
+            title: 'Customers',
+            value: accounts.length,
+            subtext: `+${accounts.filter(account => new Date(account.accountCreatedAt) > new Date(new Date().setDate(new Date().getDate() - 30))).length} this month`,
+            color: 'success'
+          },
+          {
+            icon: AssignmentIcon,
+            title: 'Total Orders',
+            value: orders.length,
+            subtext: `+${orders.filter(order => new Date(order.orderCreatedAt) > new Date(new Date().setDate(new Date().getDate() - 30))).length} this month`,
+            color: 'info'
+          },
+          { icon: CloudIcon, title: 'Active Plans', value: plans.filter(plan => plan.planIsActive).length, subtext: `${plans.filter(plan => plan.planIsActive && new Date(plan.createdAt) > new Date(new Date().setDate(new Date().getDate() - 30))).length} new plans this month`, color: 'warning' }
+        ].map((stat, index) => (
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={stat.title}>
+            <Grow in timeout={600 + index * 200}>
+              <StyledCard>
+                <CardContent>
+                  <Box display="flex" alignItems="center" mb={2}>
+                    <stat.icon sx={{ color: theme.palette[stat.color].main, mr: 1, fontSize: 32 }} />
+                    <Typography variant="h6" sx={{ fontWeight: 500 }}>{stat.title}</Typography>
+                  </Box>
+                  <Typography variant="h4" color={`${stat.color}.main`}>{stat.value}</Typography>
+                  {stat.progress && (
+                    <LinearProgress
+                      variant="determinate"
+                      value={stat.progress}
+                      sx={{ mt: 2, height: 8, borderRadius: 4 }}
+                    />
+                  )}
+                  {stat.subtext && (
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                      {stat.subtext.includes('+') && <TrendingUpIcon fontSize="small" sx={{ mr: 0.5 }} />}
+                      {stat.subtext}
+                    </Typography>
+                  )}
+                </CardContent>
+              </StyledCard>
+            </Grow>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Charts Section */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        {/* Revenue & Customers Chart */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Grow in timeout={800}>
+            <ChartPaper>
+              <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
+                Revenue & Customers
               </Typography>
-            </Box>
-            <Typography variant="h4" color="inherit">
-              1,234
-            </Typography>
-          </Paper>
+              <Box sx={{ height: 400 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={revenueData} margin={{ top: 20, right: 20, left: 20, bottom: 15 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.grey[300]} />
+                    <XAxis dataKey="name" stroke={theme.palette.text.secondary} fontSize={14} />
+                    <YAxis yAxisId="left" stroke={theme.palette.text.secondary} fontSize={14} tickFormatter={(value) => `${value/1000}M`} />
+                    <YAxis yAxisId="right" orientation="right" stroke={theme.palette.text.secondary} fontSize={14} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: theme.palette.background.paper,
+                        borderRadius: theme.shape.borderRadius,
+                        border: `1px solid ${theme.palette.divider}`,
+                        boxShadow: theme.shadows[2]
+                      }}
+                      formatter={(value, name) => [
+                        `${value.toLocaleString()} ${name === 'revenue' ? 'VND' : ''}`,
+                        name === 'revenue' ? 'Revenue' : 'Customers'
+                      ]}
+                    />
+                    <Legend wrapperStyle={{ paddingTop: 10 }} />
+                    <Bar yAxisId="left" dataKey="revenue" fill={theme.palette.primary.main} name="Revenue" barSize={30} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="revenue" position="top" formatter={(value) => `${value/1000}M`} style={{ fill: theme.palette.primary.main, fontSize: 12, fontWeight: 'bold' }} />
+                    </Bar>
+                    <Bar yAxisId="right" dataKey="customers" fill={theme.palette.success.main} name="Customers" barSize={30} radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="customers" position="top" style={{ fill: theme.palette.success.main, fontSize: 12, fontWeight: 'bold' }} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Box>
+            </ChartPaper>
+          </Grow>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 3 }}>
-          <Paper elevation={3} sx={{ p: 2, bgcolor: theme.palette.secondary.light, color: theme.palette.secondary.contrastText, minHeight: 150 }}>
-            {/* Active Connections container */}
-            <Box display="flex" alignItems="center" mb={1}>
-              <SettingsInputAntennaIcon sx={{ mr: 1, fontSize: '2rem' }} />
-              <Typography variant="h6" gutterBottom color="inherit">
-                Active Connections
+        {/* Service Distribution */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Grow in timeout={1000}>
+            <ChartPaper>
+              <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
+                Service Distribution
               </Typography>
-            </Box>
-            <Typography variant="h4" color="inherit">
-              5,678
-            </Typography>
-          </Paper>
-        </Grid>
-
-        <Grid size={{ xs: 12, md: 3 }}>
-          <Paper elevation={3} sx={{ p: 2, bgcolor: theme.palette.success.light, color: theme.palette.success.contrastText, minHeight: 150 }}>
-            {/* Monthly Revenue container */}
-            <Box display="flex" alignItems="center" mb={1}>
-              <AttachMoneyIcon sx={{ mr: 1, fontSize: '2rem' }} />
-              <Typography variant="h6" gutterBottom color="inherit">
-                Monthly Revenue
-              </Typography>
-            </Box>
-            <Typography variant="h4" color="inherit">
-              $123,456
-            </Typography>
-          </Paper>
-        </Grid>
-
-        <Grid size={{ xs: 12, md: 3 }}>
-          <Paper elevation={3} sx={{ p: 2, bgcolor: theme.palette.warning.light, color: theme.palette.warning.contrastText, minHeight: 150 }}>
-            {/* Sales Growth container */}
-            <Box display="flex" alignItems="center" mb={1}>
-              <TrendingUpIcon sx={{ mr: 1, fontSize: '2rem' }} />
-              <Typography variant="h6" gutterBottom color="inherit">
-                Sales Growth
-              </Typography>
-            </Box>
-            <Typography variant="h4" color="inherit">
-              +15%
-            </Typography>
-          </Paper>
+              <Box sx={{ height: 400 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={serviceData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={120}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                      labelLine={true}
+                    >
+                      {serviceData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value, name) => [`${value}`, name]}
+                      contentStyle={{
+                        backgroundColor: theme.palette.background.paper,
+                        borderRadius: theme.shape.borderRadius,
+                        border: `1px solid ${theme.palette.divider}`
+                      }}
+                    />
+                    <Legend wrapperStyle={{ paddingTop: 10 }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </Box>
+            </ChartPaper>
+          </Grow>
         </Grid>
       </Grid>
 
+      {/* Recent Customers */}
       <Grid container spacing={3}>
-        {/* Sales Overview */}
-        <Grid size={{ xs: 12, md: 8 }}>
-          <Paper elevation={3} sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom color={theme.palette.text.primary}>
-              Sales Overview
-            </Typography>
-            <LineChart
-              xAxis={[{ data: salesData.map((item) => item.month), scaleType: 'band' }]}
-              series={[{ data: salesData.map((item) => item.sales), color: theme.palette.primary.main }]}
-              height={300}
-            />
-          </Paper>
-        </Grid>
-
-        {/* Connection Distribution  */}
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Paper elevation={3} sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom color={theme.palette.text.primary} align="center">
-              Connection Distribution
-            </Typography>
-            <Box display="flex" justifyContent="center" alignItems="center" sx={{ width: '100%' }}>
-              <PieChart
-                series={[
-                  {
-                    data: pieData,
-                    faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
-                    highlightScope: { fade: 'global', highlight: 'item' },
-                    colors: [theme.palette.primary.main, theme.palette.secondary.main, theme.palette.success.main],
-                    innerRadius: 0,
-                    cx: '75%',
-                    cy: '55%'
-                  }
-                ]}
-                slotProps={{
-                  legend: {
-                    direction: 'row',
-                    position: { vertical: 'top', horizontal: 'center' },
-                    padding: 0,
-                    itemMarkWidth: 10,
-                    itemMarkHeight: 10,
-                    markGap: 5,
-                    itemGap: 10
-                  }
-                }}
-                height={300}
-              />
-            </Box>
-          </Paper>
-        </Grid>
-
-        {/* Recent Activities */}
         <Grid size={{ xs: 12 }}>
-          <Paper elevation={3} sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom color={theme.palette.text.primary}>
-              Recent Activities
-            </Typography>
-            <Box sx={{ height: 400, width: '100%' }}>
-              <DataGrid
-                rows={userData}
-                columns={[
-                  { field: 'name', headerName: 'Name', width: 200 },
-                  { field: 'role', headerName: 'Role', width: 150 },
-                  { field: 'lastLogin', headerName: 'Last Login', width: 200 }
-                ]}
-                slots={{ toolbar: GridToolbar }}
-                sx={{
-                  '& .MuiDataGrid-toolbarContainer': {
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: theme.spacing(0, 2)
-                  }
-                }}
-              />
-            </Box>
-          </Paper>
+          <Grow in timeout={1200}>
+            <ChartPaper>
+              <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
+                Recent Customers
+              </Typography>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Service</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Amount</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {recentCustomers.map((customer) => (
+                    <TableRow key={customer.id} hover>
+                      <TableCell>
+                        <Box display="flex" alignItems="center">
+                          <Avatar sx={{ mr: 2, bgcolor: theme.palette.primary.main }}>{customer.name[0]}</Avatar>
+                          {customer.name}
+                        </Box>
+                      </TableCell>
+                      <TableCell>{customer.service}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={customer.status}
+                          color={customer.status === 'Active' ? 'success' : 'warning'}
+                          size="small"
+                          sx={{ minWidth: 80 }}
+                        />
+                      </TableCell>
+                      <TableCell>{customer.amount.toLocaleString()} VND</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </ChartPaper>
+          </Grow>
         </Grid>
       </Grid>
     </Box>

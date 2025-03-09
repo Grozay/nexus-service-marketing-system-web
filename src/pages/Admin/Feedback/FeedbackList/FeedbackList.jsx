@@ -15,7 +15,6 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons
 } from '@mui/x-data-grid'
-import { getAllOrdersAPI, updateOrderAPI } from '~/apis'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Chip from '@mui/material/Chip'
@@ -24,42 +23,23 @@ import { useConfirm } from 'material-ui-confirm'
 import Typography from '@mui/material/Typography'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
 import DoneAllIcon from '@mui/icons-material/DoneAll'
-import BlockIcon from '@mui/icons-material/Block'
 import { useNavigate } from 'react-router-dom'
-// Transform order data from API
-const transformOrderData = (orders) => {
-  if (!Array.isArray(orders)) return []
-  return orders
-    .filter(order => !order.isDeleted)
-    .map(order => ({
-      id: order.orderId,
-      name: order.orderName,
-      description: order.orderDescription,
-      amount: order.orderAmount,
-      status: order.orderStatus,
-      plan: order.planDetails?.planName,
-      employee: order.employeeDetails?.employeeName,
-      store: order.storeDetails?.storeName,
-      storeId: order.storeId,
-      createdAt: new Date(order.orderCreatedAt),
-      isActive: order.orderIsFeasible,
-      accountEmail: order.accountDetails?.accountEmail,
-      accountPhone: order.accountDetails?.accountPhone,
-      accountAddress: order.accountDetails?.accountAddress
-    }))
-}
+import { getAllFeedbacksAPI, deleteFeedbackAPI, updateFeedbackAPI } from '~/apis'
 
-// Fetch all orders from API
-const getAllOrders = async () => {
-  try {
-    const response = await getAllOrdersAPI()
-    if (!Array.isArray(response)) {
-      return []
-    }
-    return transformOrderData(response)
-  } catch (error) {
-    throw new Error('Error fetching orders:', error)
-  }
+// Transform feedback data
+const transformFeedbackData = (feedbacks) => {
+  if (!Array.isArray(feedbacks)) return []
+  return feedbacks.map(feedback => ({
+    id: feedback.feedbackId,
+    orderId: feedback.orderId,
+    subject: feedback.feedbackSubject,
+    message: feedback.feedbackMessage.substring(0, 50) + '...', // Truncate long message
+    rating: feedback.feedbackRating,
+    status: feedback.feedbackStatus,
+    createdAt: new Date(feedback.feedbackCreatedAt),
+    customerName: feedback.orderDetails.accountDetails.accountName,
+    customerEmail: feedback.orderDetails.accountDetails.accountEmail
+  }))
 }
 
 function EditToolbar() {
@@ -73,23 +53,22 @@ function EditToolbar() {
   )
 }
 
-function OrderList() {
+export default function FeedbackList() {
+  const navigate = useNavigate()
   const [rows, setRows] = useState([])
   const [rowModesModel, setRowModesModel] = useState({})
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedId, setSelectedId] = useState(null)
-  const navigate = useNavigate()
   const [previousRow, setPreviousRow] = useState(null)
   const confirmUpdate = useConfirm()
 
-  // Fetch orders on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const orders = await getAllOrders()
-        setRows(orders)
+        const feedbacks = await getAllFeedbacksAPI()
+        setRows(transformFeedbackData(feedbacks))
       } catch (error) {
-        throw new Error(error)
+        toast.error(error.message)
       }
     }
     fetchData()
@@ -101,12 +80,6 @@ function OrderList() {
     }
   }
 
-  // const handleEditClick = (id) => () => {
-  //   const row = rows.find((row) => row.id === id)
-  //   setPreviousRow(row)
-  //   setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
-  // }
-
   const handleSaveClick = (id) => () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } })
   }
@@ -115,38 +88,25 @@ function OrderList() {
     try {
       const { confirmed } = await confirmUpdate({
         title: 'Confirm Delete',
-        description: 'Are you sure you want to delete this order?',
+        description: 'Are you sure you want to delete this feedback?',
         confirmationText: 'Delete',
         cancellationText: 'Cancel'
       })
 
       if (confirmed) {
-        await updateOrderAPI({
-          orderId: id,
-          isDeleted: true
-        })
+        await deleteFeedbackAPI(id)
         setRows(rows.filter((row) => row.id !== id))
-        toast.success('Order deleted successfully')
+        toast.success('Feedback deleted successfully')
       }
     } catch (error) {
-      toast.error(error.message || 'Failed to delete order')
+      toast.error(error.message || 'Failed to delete feedback')
     }
   }
 
-  const handleActivateClick = (id) => async () => {
-    await updateOrderAPI({ orderId: id, orderIsFeasible: true })
-    toast.success('Order activated successfully')
-    setRows(rows.map((row) => (row.id === id ? { ...row, isActive: true } : row)))
-  }
-
-  const handleDeactivateClick = (id) => async () => {
-    await updateOrderAPI({ orderId: id, orderIsFeasible: false })
-    toast.success('Order deactivated successfully')
-    setRows(rows.map((row) => (row.id === id ? { ...row, isActive: false } : row)))
-  }
-
-  const handleViewDetail = (id) => () => {
-    navigate(`/management/orders/${id}`)
+  const handleEditClick = (id) => () => {
+    const row = rows.find((row) => row.id === id)
+    setPreviousRow(row)
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
   }
 
   const handleCancelClick = (id) => () => {
@@ -166,52 +126,47 @@ function OrderList() {
 
   const processRowUpdate = async (newRow) => {
     try {
-      // Validate required fields
-      if (!newRow.name || !newRow.amount) {
-        throw new Error('Please fill in all required fields (Name and Amount)')
+      if (!newRow.subject || !newRow.message) {
+        throw new Error('Please fill in all required fields')
       }
 
       const updatedRow = { ...newRow, isNew: false }
       setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)))
 
-      const { id, name, description, amount } = updatedRow
-
-      // Retrieve the original row to get the storeId
-      const originalRow = rows.find((row) => row.id === id)
-      if (!originalRow.storeId) {
-        throw new Error('Store ID is missing in the original order data')
-      }
-
       const payload = {
-        orderId: id,
-        orderName: name,
-        orderDescription: description,
-        orderAmount: amount,
-        storeId: originalRow.storeId // Include the original storeId in the payload
+        feedbackId: updatedRow.id,
+        feedbackSubject: updatedRow.subject,
+        feedbackMessage: updatedRow.message,
+        feedbackStatus: updatedRow.status
       }
 
       const { confirmed } = await confirmUpdate({
         title: 'Confirm Update',
-        description: 'Are you sure you want to update this order?',
+        description: 'Are you sure you want to update this feedback?',
         confirmationText: 'Update',
         cancellationText: 'Cancel'
       })
 
       if (confirmed) {
-        await updateOrderAPI(payload)
-        toast.success('Order updated successfully')
+        await updateFeedbackAPI(payload)
+        toast.success('Feedback updated successfully')
       } else {
         throw new Error('Update cancelled by user')
       }
       return updatedRow
     } catch (error) {
-      // Handle specific error messages from the backend
-      if (error.message.includes('FOREIGN KEY constraint')) {
-        toast.error('Update failed: Invalid store ID. Please ensure the store exists.')
-      } else {
-        toast.error(error.message || 'Update order failed')
-      }
+      toast.error(error.message || 'Failed to update feedback')
       throw error
+    }
+  }
+
+  const handleResolveClick = (id) => async () => {
+    try {
+      await updateFeedbackAPI({ feedbackId: id, feedbackStatus: 'Resolved' })
+      toast.success('Feedback resolved successfully')
+      setRows(rows.map((row) => (row.id === id ? { ...row, status: 'Resolved' } : row)))
+    } catch (error) {
+      toast.error(error.message || 'Failed to resolve feedback')
     }
   }
 
@@ -229,33 +184,41 @@ function OrderList() {
     setSelectedId(null)
   }
 
+  const handleViewDetail = (id) => () => {
+    const order = rows.find((row) => row.id === id)
+    return () => navigate(`/management/feedbacks/${order.orderId}`)
+  }
+
   const columns = [
-    { field: 'id', headerName: 'Order ID', width: 150, editable: false },
-    { field: 'amount', headerName: 'Amount', width: 100, editable: true, type: 'number' },
-    { field: 'status', headerName: 'Status', width: 120, editable: false },
-    { field: 'accountPhone', headerName: 'Account Phone', width: 150, editable: true },
-    { field: 'accountAddress', headerName: 'Account Address', width: 200, editable: true },
-    {
-      field: 'isActive',
-      headerName: 'Feasible',
-      width: 120,
-      editable: false,
-      type: 'boolean',
-      renderCell: (params) => (
-        <Chip
-          label={params.value ? 'Feasible' : 'Infeasible'}
-          color={params.value ? 'success' : 'error'}
-          variant="outlined"
-          size="small"
-        />
-      )
-    },
+    { field: 'orderId', headerName: 'Order ID', width: 150, editable: false },
+    { field: 'subject', headerName: 'Subject', width: 200, editable: false },
+    // { field: 'message', headerName: 'Message', width: 250, editable: false },
+    { field: 'rating', headerName: 'Rating', width: 100, type: 'number', editable: false },
+    { field: 'customerName', headerName: 'Customer', width: 150, editable: false },
     {
       field: 'createdAt',
       headerName: 'Created At',
       width: 150,
-      editable: false,
-      type: 'date'
+      type: 'date',
+      editable: false
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      width: 120,
+      renderCell: (params) => (
+        <Chip
+          label={params.value}
+          color={
+            params.value === 'Resolved' ? 'success' :
+              params.value === 'Processing' ? 'warning' :
+                params.value === 'Reviewed' ? 'info' :
+                  'secondary'
+          }
+          variant="outlined"
+          size="small"
+        />
+      )
     },
     {
       field: 'actions',
@@ -275,9 +238,7 @@ function OrderList() {
               key={id}
               icon={<SaveIcon />}
               label="Save"
-              sx={{
-                color: 'primary.main'
-              }}
+              sx={{ color: 'primary.main' }}
               onClick={handleSaveClick(id)}
             />,
             <GridActionsCellItem
@@ -312,37 +273,27 @@ function OrderList() {
         height: '100%',
         width: '100%',
         p: 3,
-        '& .actions': {
-          color: 'text.secondary'
-        },
-        '& .textPrimary': {
-          color: 'text.primary'
-        }
+        '& .actions': { color: 'text.secondary' },
+        '& .textPrimary': { color: 'text.primary' }
       }}
     >
       <Typography
         variant="h4"
         component="h1"
-        sx={{
-          mb: 3,
-          fontWeight: 'bold'
-        }}
+        sx={{ mb: 3, fontWeight: 'bold' }}
       >
-        Order Management
+        Feedback Management
       </Typography>
       <DataGrid
         rows={rows}
         columns={columns}
-        getRowId={(row) => row?.id || Math.random().toString(36).slice(2, 11)}
         editMode="row"
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
         slots={{ toolbar: EditToolbar }}
-        slotProps={{
-          toolbar: { setRows, setRowModesModel }
-        }}
+        slotProps={{ toolbar: { setRows, setRowModesModel } }}
         sx={{
           height: 'calc(100vh - 200px)',
           boxShadow: 2,
@@ -356,36 +307,21 @@ function OrderList() {
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
       >
-        {
-          rows.find((row) => row.id === selectedId)?.isActive === false ? (
-            <MenuItem
-              onClick={() => {
-                handleActivateClick(selectedId)()
-                handleCloseMenu()
-              }}
-            >
-              <DoneAllIcon fontSize="small" sx={{ mr: 1, color: 'success.main' }} />
-              Feasible
-            </MenuItem>
-          ) : (
-            <MenuItem
-              onClick={() => {
-                handleDeactivateClick(selectedId)()
-                handleCloseMenu()
-              }}
-            >
-              <BlockIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
-              Infeasible
-            </MenuItem>
-          )
-        }
-        <MenuItem
-          onClick={handleViewDetail(selectedId)}
-        >
+        {['Processing', 'Reviewed'].includes(rows.find((row) => row.id === selectedId)?.status) && (
+          <MenuItem
+            onClick={() => {
+              handleResolveClick(selectedId)()
+              handleCloseMenu()
+            }}
+          >
+            <DoneAllIcon fontSize="small" sx={{ mr: 1, color: 'success.main' }} />
+            Resolve
+          </MenuItem>
+        )}
+        <MenuItem onClick={handleViewDetail(selectedId)()}>
           <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1, color: 'info.main' }} />
           View Detail
         </MenuItem>
-
         <MenuItem
           onClick={() => {
             handleDeleteClick(selectedId)()
@@ -399,5 +335,3 @@ function OrderList() {
     </Box>
   )
 }
-
-export default OrderList
