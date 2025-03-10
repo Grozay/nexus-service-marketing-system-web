@@ -40,7 +40,8 @@ const SelectPlan = ({ onNext, setPlanData, setStoreData, setAccountData }) => {
   const [isLoading, setIsLoading] = useState(true)
 
   const startDateValue = watch('startDate')
-  const planIdValue = watch('planId') // Theo dõi giá trị planId
+  const planIdValue = watch('planId')
+  const accountIdValue = watch('accountId')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,13 +56,20 @@ const SelectPlan = ({ onNext, setPlanData, setStoreData, setAccountData }) => {
         setAllStores(stores || [])
         setAccountList(accounts || [])
       } catch (error) {
-        throw new Error('Error fetching data:', error)
+        toast.error('Error fetching data')
+        console.error('Error fetching data:', error)
       } finally {
         setIsLoading(false)
       }
     }
     fetchData()
   }, [])
+
+  // Lọc plans dựa trên category của account đã chọn
+  const selectedAccount = accountList.find(account => account.accountId === accountIdValue)
+  const availablePlans = allPlans.filter(plan =>
+    plan?.plan_Category?.categoryKey === selectedAccount?.categoryDetails?.categoryKey
+  )
 
   const onSubmit = (data) => {
     const { planId, storeId, startDate, endDate, accountId } = data
@@ -83,11 +91,20 @@ const SelectPlan = ({ onNext, setPlanData, setStoreData, setAccountData }) => {
       return
     }
 
+    // Kiểm tra category match
+    const isValidPlan = selectedPlanData?.plan_Category?.categoryKey ===
+                       selectedAccountData?.categoryDetails?.categoryKey
+
+    if (!isValidPlan) {
+      toast.error('Selected plan is not available for this customer category')
+      return
+    }
+
     setPlanData({
       ...selectedPlanData,
       startDate: start.toDate(),
       endDate: end.toDate(),
-      depositAmount: selectedPlanData.planPrice // Thêm depositAmount bằng planPrice
+      depositAmount: selectedPlanData.planPrice
     })
     setStoreData({
       ...selectedStoreData,
@@ -153,8 +170,15 @@ const SelectPlan = ({ onNext, setPlanData, setStoreData, setAccountData }) => {
                     control={control}
                     rules={{ required: 'Please select a plan' }}
                     render={({ field }) => (
-                      <Select {...field} labelId="plan-label" label="Plan" fullWidth margin="normal">
-                        {allPlans.map((plan) => (
+                      <Select
+                        {...field}
+                        labelId="plan-label"
+                        label="Plan"
+                        fullWidth
+                        margin="normal"
+                        disabled={!accountIdValue} // Disable nếu chưa chọn account
+                      >
+                        {availablePlans.map((plan) => (
                           <MenuItem key={plan.planId} value={plan.planId}>
                             {plan.planName} - {plan.planPrice} VND
                           </MenuItem>
@@ -163,6 +187,11 @@ const SelectPlan = ({ onNext, setPlanData, setStoreData, setAccountData }) => {
                     )}
                   />
                   {errors.planId && <Typography color="error" variant="caption">{errors.planId.message}</Typography>}
+                  {!accountIdValue && (
+                    <Typography color="textSecondary" variant="caption">
+                      Please select an account first
+                    </Typography>
+                  )}
                 </FormControl>
               </Grid>
 
@@ -193,7 +222,9 @@ const SelectPlan = ({ onNext, setPlanData, setStoreData, setAccountData }) => {
                   control={control}
                   rules={{
                     required: 'Please select a start date',
-                    validate: (value) => dayjs(value).isValid() && !dayjs(value).isBefore(dayjs(), 'day') || 'Start date cannot be in the past'
+                    validate: (value) =>
+                      dayjs(value).isValid() && !dayjs(value).isBefore(dayjs(), 'day') ||
+                      'Start date cannot be in the past'
                   }}
                   render={({ field, fieldState: { error } }) => (
                     <DesktopDatePicker
@@ -246,11 +277,10 @@ const SelectPlan = ({ onNext, setPlanData, setStoreData, setAccountData }) => {
                 />
               </Grid>
 
-              {/* Field Deposit hiển thị khi đã chọn plan */}
               {planIdValue && (
                 <Grid size={{ xs: 12, md: 12 }}>
                   <TextField
-                    label="Deposit Amount (VND)"
+                    label="Deposit Amount $"
                     value={selectedPlan ? selectedPlan.planPrice : ''}
                     fullWidth
                     margin="normal"

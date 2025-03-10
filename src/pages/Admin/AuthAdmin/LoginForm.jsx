@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -29,7 +28,7 @@ function LoginForm() {
         pending: 'Logging in...',
         success: 'Login successfully!',
         error: {
-          render({data}) {
+          render({ data }) {
             // Hiển thị thông báo lỗi từ server hoặc thông báo mặc định
             return data?.message || 'Login failed. Please check your credentials and try again.'
           }
@@ -97,12 +96,12 @@ function LoginForm() {
               <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Create account!</Typography>
             </Link>
           </Box> */}
-          <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
+          {/* <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
             <Typography>You forgot your password?</Typography>
             <Link to="/forgot-password" style={{ textDecoration: 'none' }}>
               <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Forgot Password</Typography>
             </Link>
-          </Box>
+          </Box> */}
         </MuiCard>
       </Zoom>
     </form>

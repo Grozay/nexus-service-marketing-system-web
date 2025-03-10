@@ -153,7 +153,6 @@ const Dashboard = () => {
 
   // Hàm xử lý dữ liệu accounts
   const processAccountsData = (accounts) => {
-    console.log('🚀 ~ processAccountsData ~ accounts:', accounts)
     return accounts
       .sort((a, b) => new Date(b.accountCreatedAt) - new Date(a.accountCreatedAt))
       .slice(0, 5)

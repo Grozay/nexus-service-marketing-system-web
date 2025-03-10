@@ -1,4 +1,3 @@
-// import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
@@ -17,7 +16,6 @@ const persistor = persistStore(store)
 
 injectStore(store)
 createRoot(document.getElementById('root')).render(
-  // <StrictMode>
   <Provider store={store}>
     <PersistGate persistor={persistor}>
       <BrowserRouter>
@@ -37,5 +35,4 @@ createRoot(document.getElementById('root')).render(
       </BrowserRouter>
     </PersistGate>
   </Provider>
-  // </StrictMode>
 )
