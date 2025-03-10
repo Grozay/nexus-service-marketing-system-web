@@ -72,6 +72,7 @@ const Dashboard = () => {
   const [orders, setOrders] = useState([])
   const [accounts, setAccounts] = useState([])
   const [connections, setConnections] = useState([])
+  const [totalRevenue, setTotalRevenue] = useState(0)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,6 +88,8 @@ const Dashboard = () => {
         setOrders(orders)
         setAccounts(accounts)
         setConnections(connections)
+        const total = orders.reduce((sum, order) => sum + (order.orderAmount || 0), 0)
+        setTotalRevenue(total)
         const processedRevenueData = processOrdersData(orders)
         setRevenueData(processedRevenueData)
 
@@ -105,25 +108,34 @@ const Dashboard = () => {
 
   // Hàm xử lý dữ liệu orders
   const processOrdersData = (orders) => {
-    const monthlyRevenue = orders.reduce((acc, order) => {
-      const date = new Date(order.orderCreatedAt)
-      const month = date.getMonth()
-      const year = date.getFullYear()
-      const key = `${year}-${month}`
+    const monthlyData = orders.reduce((acc, order) => {
+      const date = new Date(order.orderCreatedAt);
+      const month = date.getMonth();
+      const year = date.getFullYear();
+      const key = `${year}-${month}`;
 
-      acc[key] = (acc[key] || 0) + order.orderAmount
-      return acc
-    }, {})
+      if (!acc[key]) {
+        acc[key] = {
+          revenue: 0,
+          customers: new Set() // Sử dụng Set để đếm khách hàng duy nhất
+        };
+      }
 
-    return Object.keys(monthlyRevenue).map((key) => {
-      const [year, month] = key.split('-')
+      acc[key].revenue += order.orderAmount || 0;
+      acc[key].customers.add(order.accountId); // Thêm accountId vào Set
+
+      return acc;
+    }, {});
+
+    return Object.keys(monthlyData).map((key) => {
+      const [year, month] = key.split('-');
       return {
         name: new Date(year, month).toLocaleString('default', { month: 'short', year: 'numeric' }),
-        revenue: monthlyRevenue[key],
-        customers: 0 // Chưa có đủ dữ liệu để tính số khách hàng
-      }
-    })
-  }
+        revenue: monthlyData[key].revenue,
+        customers: monthlyData[key].customers.size // Số lượng khách hàng duy nhất
+      };
+    });
+  };
 
   // Hàm xử lý dữ liệu connections
   const processConnectionsData = (connections) => {
@@ -147,7 +159,7 @@ const Dashboard = () => {
       .map((account) => ({
         id: account.accountId,
         name: account.accountName,
-        service: account.planDetails?.planName || 'Unknown Plan',
+        service: account.categoryDetails?.categoryName || 'Unknown Plan',
         status: account.accountIsActive ? 'Active' : 'Inactive',
         amount: account.orderDetails?.orderAmount || 0
       }))
@@ -170,7 +182,7 @@ const Dashboard = () => {
       {/* Stats Section */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {[
-          { icon: MonetizationOnIcon, title: 'Revenue', value: '22,500,000 $', progress: 75, color: 'primary' },
+          { icon: MonetizationOnIcon, title: 'Total Revenue', value: `$${totalRevenue.toLocaleString()}`, progress: 75, color: 'primary' },
           {
             icon: PeopleIcon,
             title: 'Customers',
@@ -230,7 +242,7 @@ const Dashboard = () => {
                   <BarChart data={revenueData} margin={{ top: 20, right: 20, left: 20, bottom: 15 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.grey[300]} />
                     <XAxis dataKey="name" stroke={theme.palette.text.secondary} fontSize={14} />
-                    <YAxis yAxisId="left" stroke={theme.palette.text.secondary} fontSize={14} tickFormatter={(value) => `${value/1000}M`} />
+                    <YAxis yAxisId="left" stroke={theme.palette.text.secondary} fontSize={14} tickFormatter={(value) => `$${value.toLocaleString()}`} />
                     <YAxis yAxisId="right" orientation="right" stroke={theme.palette.text.secondary} fontSize={14} />
                     <Tooltip
                       contentStyle={{
@@ -240,13 +252,13 @@ const Dashboard = () => {
                         boxShadow: theme.shadows[2]
                       }}
                       formatter={(value, name) => [
-                        `${value.toLocaleString()} ${name === 'revenue' ? 'VND' : ''}`,
+                        name === 'revenue' ? `$${value.toLocaleString()}` : value,
                         name === 'revenue' ? 'Revenue' : 'Customers'
                       ]}
                     />
                     <Legend wrapperStyle={{ paddingTop: 10 }} />
                     <Bar yAxisId="left" dataKey="revenue" fill={theme.palette.primary.main} name="Revenue" barSize={30} radius={[4, 4, 0, 0]}>
-                      <LabelList dataKey="revenue" position="top" formatter={(value) => `${value/1000}M`} style={{ fill: theme.palette.primary.main, fontSize: 12, fontWeight: 'bold' }} />
+                      <LabelList dataKey="revenue" position="top" formatter={(value) => `$${value.toLocaleString()}`} style={{ fill: theme.palette.primary.main, fontSize: 12, fontWeight: 'bold' }} />
                     </Bar>
                     <Bar yAxisId="right" dataKey="customers" fill={theme.palette.success.main} name="Customers" barSize={30} radius={[4, 4, 0, 0]}>
                       <LabelList dataKey="customers" position="top" style={{ fill: theme.palette.success.main, fontSize: 12, fontWeight: 'bold' }} />
