@@ -60,30 +60,22 @@ function App() {
                 <Navigate to='/' replace={true} />} />
               <Route path='/account/reset-password' element={
                 <Navigate to='/' replace={true} />} />
+              {/*Profile Page*/}
               <Route path='/account/profile' element={<Profile />} />
               <Route path='/account/profile/change-password' element={<ChangePassword />} />
               <Route path='/account/profile/send-feedback' element={<SendFeedBack />} />
-              {/* <Route path='/account/profile/registered-plans' element={<RegisteredPlans />} />
-              <Route path='/account/profile/registered-plans/:slug' element={<RegisterPlansDetail />} />
-              <Route path='/account/profile/order-status' element={<OrderStatus />} /> */}
             </>
           ) : (
             <>
-              {/* If customer is not logged in, redirect to login page*/}
               <Route path='/account/login' element={<Auth />} />
               <Route path='/account/reset-password' element={<Auth />} />
+              {/* If customer is not logged in, redirect to login page*/}
               <Route path='/account/profile' element={
                 <Navigate to='/account/login' replace={true} />} />
               <Route path='/account/profile/change-password' element={
                 <Navigate to='/account/login' replace={true} />} />
               <Route path='/account/profile/send-feedback' element={
                 <Navigate to='/account/login' replace={true} />} />
-              {/* <Route path='/account/profile/registered-plans' element={
-                <Navigate to='/account/login' replace={true} />} />
-              <Route path='/account/profile/registered-plans/:slug' element={
-                <Navigate to='/account/login' replace={true} />} />
-              <Route path='/account/profile/order-status' element={
-                <Navigate to='/account/login' replace={true} />} /> */}
             </>
           )}
 

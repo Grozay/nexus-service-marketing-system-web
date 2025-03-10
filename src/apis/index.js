@@ -160,6 +160,11 @@ export const updateConnectionAPI = async (data) => {
   return response.data
 }
 
+export const getConnectionByOrderIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Connection/Order/${id}`)
+  return response.data
+}
+
 export const getConnectionByIdAPI = async (id) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Connection/${id}`)
   return response.data
@@ -330,6 +335,11 @@ export const updateBillingAPI = async (data) => {
   return response.data
 }
 
+export const getBillingsByOrderIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Billing/order/${id}`)
+  return response.data
+}
+
 // PAYMENT
 export const getAllPaymentsAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Payment`)
@@ -339,6 +349,12 @@ export const getAllPaymentsAPI = async () => {
 
 export const processPaymentAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Payment/Create`, data)
+  return response.data
+}
+
+//SUBSCRIPTION
+export const getSubscriptionByOrderIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Subscription/order/${id}`)
   return response.data
 }
 
