@@ -240,7 +240,7 @@ export default function EmployeeList() {
       field: 'role',
       headerName: 'Role',
       width: 150,
-      editable: true,
+      editable: false,
       type: 'singleSelect',
       valueOptions: [
         { value: 'css', label: 'Retail Staff' },
