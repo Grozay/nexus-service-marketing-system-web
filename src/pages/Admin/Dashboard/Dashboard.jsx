@@ -109,33 +109,33 @@ const Dashboard = () => {
   // Hàm xử lý dữ liệu orders
   const processOrdersData = (orders) => {
     const monthlyData = orders.reduce((acc, order) => {
-      const date = new Date(order.orderCreatedAt);
-      const month = date.getMonth();
-      const year = date.getFullYear();
-      const key = `${year}-${month}`;
+      const date = new Date(order.orderCreatedAt)
+      const month = date.getMonth()
+      const year = date.getFullYear()
+      const key = `${year}-${month}`
 
       if (!acc[key]) {
         acc[key] = {
           revenue: 0,
           customers: new Set() // Sử dụng Set để đếm khách hàng duy nhất
-        };
+        }
       }
 
-      acc[key].revenue += order.orderAmount || 0;
-      acc[key].customers.add(order.accountId); // Thêm accountId vào Set
+      acc[key].revenue += order.orderAmount || 0
+      acc[key].customers.add(order.accountId) // Thêm accountId vào Set
 
-      return acc;
-    }, {});
+      return acc
+    }, {})
 
     return Object.keys(monthlyData).map((key) => {
-      const [year, month] = key.split('-');
+      const [year, month] = key.split('-')
       return {
         name: new Date(year, month).toLocaleString('default', { month: 'short', year: 'numeric' }),
         revenue: monthlyData[key].revenue,
         customers: monthlyData[key].customers.size // Số lượng khách hàng duy nhất
-      };
-    });
-  };
+      }
+    })
+  }
 
   // Hàm xử lý dữ liệu connections
   const processConnectionsData = (connections) => {
@@ -153,6 +153,7 @@ const Dashboard = () => {
 
   // Hàm xử lý dữ liệu accounts
   const processAccountsData = (accounts) => {
+    console.log('🚀 ~ processAccountsData ~ accounts:', accounts)
     return accounts
       .sort((a, b) => new Date(b.accountCreatedAt) - new Date(a.accountCreatedAt))
       .slice(0, 5)
@@ -161,7 +162,7 @@ const Dashboard = () => {
         name: account.accountName,
         service: account.categoryDetails?.categoryName || 'Unknown Plan',
         status: account.accountIsActive ? 'Active' : 'Inactive',
-        amount: account.orderDetails?.orderAmount || 0
+        amount: account?.categoryDetails?.categoryDeposit || 0
       }))
   }
 
@@ -325,7 +326,7 @@ const Dashboard = () => {
                     <TableCell>Name</TableCell>
                     <TableCell>Service</TableCell>
                     <TableCell>Status</TableCell>
-                    <TableCell>Amount</TableCell>
+                    <TableCell>Deposit</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -346,7 +347,7 @@ const Dashboard = () => {
                           sx={{ minWidth: 80 }}
                         />
                       </TableCell>
-                      <TableCell>{customer.amount.toLocaleString()} VND</TableCell>
+                      <TableCell>{customer.amount.toLocaleString()} $</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
