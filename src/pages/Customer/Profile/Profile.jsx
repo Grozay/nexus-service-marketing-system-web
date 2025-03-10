@@ -1,20 +1,5 @@
 import { useState, useEffect } from 'react'
-import {
-  Container,
-  Box,
-  Avatar,
-  Typography,
-  Tabs,
-  Tab,
-  Card,
-  CardContent,
-  Grid,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Divider
-} from '@mui/material'
+import { Container, Box, Avatar, Typography, Tabs, Tab, Card, CardContent, Grid, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mui/material'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import EmailIcon from '@mui/icons-material/Email'
 import PhoneIcon from '@mui/icons-material/Phone'
@@ -30,6 +15,8 @@ import AppBar from '~/components/AppBar/AppBar'
 import { getOrderByAccountIdAPI } from '~/apis'
 import { useSelector } from 'react-redux'
 import { selectCurrentAccount } from '~/redux/user/accountSlice'
+import Connection from './OtherTabs/Connection'
+import Subscription from './OtherTabs/Subscription'
 
 const Profile = () => {
   const [tabValue, setTabValue] = useState(0)
@@ -77,7 +64,7 @@ const Profile = () => {
   return (
     <Box>
       <AppBar />
-      <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         {/* Profile Header */}
         <Card sx={{ mb: 4, p: 2, textAlign: 'center' }}>
           <CardContent>
@@ -103,6 +90,8 @@ const Profile = () => {
           <Tab label="Order Details" />
           <Tab label="Plan Info" />
           <Tab label="Store Info" />
+          <Tab label="Connection" />
+          <Tab label="Subscription" />
         </Tabs>
 
         {/* Tab Content */}
@@ -285,7 +274,7 @@ const Profile = () => {
                   </ListItemIcon>
                   <ListItemText
                     primary="Price"
-                    secondary={`$${profileData.planDetails.planPrice}`}
+                    secondary={`$ ${profileData.planDetails.planPrice}`}
                   />
                 </ListItem>
                 <ListItem>
@@ -348,15 +337,17 @@ const Profile = () => {
                     secondary={`${profileData.storeDetails.storeOpenAt} - ${profileData.storeDetails.storeCloseAt}`}
                   />
                 </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <EditIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Status" secondary={profileData.storeDetails.storeStatus} />
-                </ListItem>
               </List>
             </CardContent>
           </Card>
+        )}
+
+        {tabValue === 4 && (
+          <Connection orderId={profileData.orderId} />
+        )}
+
+        {tabValue === 5 && (
+          <Subscription orderId={profileData.orderId} />
         )}
 
         <Divider sx={{ my: 4 }} />
