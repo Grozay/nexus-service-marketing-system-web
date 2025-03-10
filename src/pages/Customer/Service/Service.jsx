@@ -18,9 +18,9 @@ import { getPlanListAPI } from '~/apis'
 import { useDispatch } from 'react-redux'
 import { fetchPlansDetailsAPI } from '~/redux/plans/planSlice'
 import { toast } from 'react-toastify'
-import dialUpConnection from '~/assets/images/dial-up-connection.jpg'
+import dialUpConnection from '~/assets/images/Dial-up-Connection.jpg'
 import broadbandConnection from '~/assets/images/broadband-connection.jpg'
-import landlineConnection from '~/assets/images/landline-connection.jpg'
+import landlineConnection from '~/assets/images/Landline-connection.jpg'
 import Footer from '~/components/Footer/Footer'
 
 const Service = () => {

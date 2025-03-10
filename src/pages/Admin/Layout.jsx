@@ -443,7 +443,10 @@ function Layout(props) {
       theme={demoTheme}
       router={router}
       window={demoWindow}
-      branding={{ title: 'Nexus management' }}
+      branding={{
+        title: 'Nexus management',
+        homeUrl: '/management'
+      }}
     >
       <DashboardLayout
         slots={{ toolbarAccount: () => <CustomToolbarAccount onLogout={handleLogout} /> }}

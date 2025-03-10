@@ -1,6 +1,4 @@
 import Box from '@mui/material/Box'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Close'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
@@ -91,39 +89,39 @@ export default function ConnectionList() {
     }
   }
 
-  const handleEditClick = (id) => () => {
-    const row = rows.find((row) => row.id === id)
-    setPreviousRow(row)
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
-  }
+  // const handleEditClick = (id) => () => {
+  //   const row = rows.find((row) => row.id === id)
+  //   setPreviousRow(row)
+  //   setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
+  // }
 
   const handleSaveClick = (id) => () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } })
   }
 
-  const handleDeleteClick = (id) => async () => {
-    try {
-      const { confirmed } = await confirmUpdate({
-        title: 'Confirm Delete',
-        description: 'Are you sure you want to delete this plan?', // Updated description
-        confirmationText: 'Delete',
-        cancellationText: 'Cancel'
-      })
+  // const handleDeleteClick = (id) => async () => {
+  //   try {
+  //     const { confirmed } = await confirmUpdate({
+  //       title: 'Confirm Delete',
+  //       description: 'Are you sure you want to delete this plan?', // Updated description
+  //       confirmationText: 'Delete',
+  //       cancellationText: 'Cancel'
+  //     })
 
-      if (confirmed) {
-        // Call API to soft delete - Assuming plan API is similar to account API for delete
-        await updateAccountAPI({ // Keep updateAccountAPI for now, might need to change
-          accountId: id, // Assuming planId can be used as accountId for now, adjust if needed
-          isDeleted: true
-        })
-        // Update local state
-        setRows(rows.filter((row) => row.id !== id))
-        toast.success('Plan deleted successfully') // Updated message
-      }
-    } catch (error) {
-      toast.error(error.message || 'Failed to delete plan') // Updated message
-    }
-  }
+  //     if (confirmed) {
+  //       // Call API to soft delete - Assuming plan API is similar to account API for delete
+  //       await updateAccountAPI({ // Keep updateAccountAPI for now, might need to change
+  //         accountId: id, // Assuming planId can be used as accountId for now, adjust if needed
+  //         isDeleted: true
+  //       })
+  //       // Update local state
+  //       setRows(rows.filter((row) => row.id !== id))
+  //       toast.success('Plan deleted successfully') // Updated message
+  //     }
+  //   } catch (error) {
+  //     toast.error(error.message || 'Failed to delete plan') // Updated message
+  //   }
+  // }
 
   const handleActivateClick = (id) => async () => {
     await activatePlanAPI({ planId: id, planIsActive: true })
@@ -139,11 +137,11 @@ export default function ConnectionList() {
 
   const handleViewDetail = (slug) => () => {
     if (slug) {
-      navigate(`/management/connection-plans/${slug}`);
+      navigate(`/management/connection-plans/${slug}`)
     } else {
-      toast.error('no connection plan');
+      toast.error('no connection plan')
     }
-  };
+  }
 
   const handleCancelClick = (id) => () => {
     setRowModesModel({

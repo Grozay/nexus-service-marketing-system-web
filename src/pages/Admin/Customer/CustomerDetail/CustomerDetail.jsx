@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Box, Typography, Paper, Divider, Button, Chip, Avatar, Collapse } from '@mui/material'
 import Grid from '@mui/material/Grid2'
 import { toast } from 'react-toastify'
-import { getOrderByAccountIdAPI } from '~/apis'
+import { getOrderByAccountIdAPI, getAccountByIdAPI } from '~/apis' // Thêm getAccountByIdAPI
 import { formatDate } from '~/utils/formatter'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import EmailIcon from '@mui/icons-material/Email'
@@ -16,7 +16,7 @@ import CategoryIcon from '@mui/icons-material/Category'
 import LocationCityIcon from '@mui/icons-material/LocationCity'
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import VisibilityIcon from '@mui/icons-material/Visibility' // Icon cho nút View Detail
+import VisibilityIcon from '@mui/icons-material/Visibility'
 
 export default function CustomerDetail() {
   const { id } = useParams()
@@ -29,24 +29,40 @@ export default function CustomerDetail() {
     const fetchCustomer = async () => {
       try {
         const orderData = await getOrderByAccountIdAPI(id)
-        if (orderData && orderData.length > 0) {
-          setCustomer(orderData[0].accountDetails)
-          const planList = orderData.map((order) => ({
-            planId: order.planDetails.planId, // Giả sử API trả về planId
-            planName: order.planDetails.planName,
-            planDetails: order.planDetails.planDetails,
-            planPrice: order.planDetails.planPrice,
-            planValidity: order.planDetails.planValidity,
-            planDescription: order.planDetails.planDescription,
-            planIsActive: order.planDetails.planIsActive
-          }))
-          setPlans(planList)
+
+        if (orderData) {
+          const orders = Array.isArray(orderData) ? orderData : [orderData]
+          if (orders.length > 0) {
+            setCustomer(orders[0].accountDetails)
+            const planList = orders.map((order) => ({
+              planId: order.planDetails.planId,
+              planName: order.planDetails.planName,
+              planDetails: order.planDetails.planDetails,
+              planPrice: order.planDetails.planPrice,
+              planValidity: order.planDetails.planValidity,
+              planDescription: order.planDetails.planDescription,
+              planIsActive: order.planDetails.planIsActive
+            }))
+            setPlans(planList)
+          } else {
+            throw new Error('No orders found, fetching account details instead')
+          }
         } else {
-          throw new Error('No customer data found for this account ID')
+          throw new Error('No orders found, fetching account details instead')
         }
-      } catch (error) {
-        toast.error(error.message || 'Failed to fetch customer details')
-        navigate('/management/customer/list')
+      } catch {
+        try {
+          const accountData = await getAccountByIdAPI(id)
+          if (accountData) {
+            setCustomer(accountData) // Dữ liệu từ getAccountByIdAPI
+            setPlans([]) // Không có plans vì không có order
+          } else {
+            throw new Error('No customer data found for this account ID')
+          }
+        } catch (accountError) {
+          toast.error(accountError.message || 'Failed to fetch customer details')
+          navigate('/management/customer/list')
+        }
       }
     }
     fetchCustomer()
@@ -65,7 +81,7 @@ export default function CustomerDetail() {
   }
 
   const handleViewPlanDetail = (planId) => {
-    navigate(`/management/plan/${planId}`) // Điều hướng đến trang chi tiết gói
+    navigate(`/management/plan/${planId}`)
   }
 
   return (
