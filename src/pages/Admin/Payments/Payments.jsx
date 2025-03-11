@@ -72,15 +72,15 @@ const PaymentList = () => {
   })
 
   const columns = [
-    { field: 'paymentId', headerName: 'Payment ID', width: 100 },
-    { field: 'billingId', headerName: 'Billing ID', width: 100 },
-    { field: 'paymentMethod', headerName: 'Payment Method', width: 150 },
-    { field: 'paymentAmount', headerName: 'Amount', width: 120, type: 'number' },
-    { field: 'paymentNote', headerName: 'Payment Note', width: 200 },
+    { field: 'paymentId', headerName: 'Payment ID', width: 150 },
+    { field: 'billingId', headerName: 'Billing ID', width: 150 },
+    { field: 'paymentMethod', headerName: 'Payment Method', width: 200 },
+    { field: 'paymentAmount', headerName: 'Amount', width: 200 },
+    { field: 'paymentNote', headerName: 'Payment Note', width: 300 },
     {
       field: 'paymentStatus',
       headerName: 'Status',
-      width: 120,
+      width: 200,
       renderCell: (params) => (
         <Chip
           label={params.value}
@@ -129,7 +129,6 @@ const PaymentList = () => {
                 <MenuItem value="All">All</MenuItem>
                 <MenuItem value="Success">Success</MenuItem>
                 <MenuItem value="Fail">Fail</MenuItem>
-                {/* Nếu có trạng thái khác như 'Pending', thêm vào đây */}
               </Select>
             </FormControl>
             <TextField

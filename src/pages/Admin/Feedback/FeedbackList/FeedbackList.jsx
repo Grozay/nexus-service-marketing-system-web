@@ -191,10 +191,10 @@ export default function FeedbackList() {
 
   const columns = [
     { field: 'orderId', headerName: 'Order ID', width: 150, editable: false },
-    { field: 'subject', headerName: 'Subject', width: 200, editable: false },
-    // { field: 'message', headerName: 'Message', width: 250, editable: false },
-    { field: 'rating', headerName: 'Rating', width: 100, type: 'number', editable: false },
-    { field: 'customerName', headerName: 'Customer', width: 150, editable: false },
+    { field: 'subject', headerName: 'Subject', width: 300, editable: false },
+    { field: 'message', headerName: 'Message', width: 350, editable: false },
+    { field: 'rating', headerName: 'Rating', width: 120, editable: false },
+    { field: 'customerName', headerName: 'Customer', width: 200, editable: false },
     {
       field: 'createdAt',
       headerName: 'Created At',
@@ -205,7 +205,7 @@ export default function FeedbackList() {
     {
       field: 'status',
       headerName: 'Status',
-      width: 120,
+      width: 150,
       renderCell: (params) => (
         <Chip
           label={params.value}

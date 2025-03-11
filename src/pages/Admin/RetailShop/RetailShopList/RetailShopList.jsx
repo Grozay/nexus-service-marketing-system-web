@@ -213,15 +213,15 @@ export default function RetailShopManagement() {
   }
 
   const columns = [
-    { field: 'storeName', headerName: 'Name', width: 200, editable: true },
-    { field: 'storeAddress', headerName: 'Address', width: 250, editable: true },
-    { field: 'storeCity', headerName: 'City', width: 150, editable: true },
-    { field: 'storePhone', headerName: 'Phone', width: 150, editable: true },
-    { field: 'storeOpenHours', headerName: 'Open Hours', width: 150, editable: true },
+    { field: 'storeName', headerName: 'Name', width: 250, editable: true },
+    { field: 'storeAddress', headerName: 'Address', width: 300, editable: true },
+    { field: 'storeCity', headerName: 'City', width: 250, editable: true },
+    { field: 'storePhone', headerName: 'Phone', width: 200, editable: true },
+    { field: 'storeOpenHours', headerName: 'Open Hours', width: 250, editable: true },
     {
       field: 'storeStatus',
       headerName: 'Status',
-      width: 120,
+      width: 150,
       editable: false,
       type: 'boolean',
       renderCell: (params) => (
@@ -302,11 +302,11 @@ export default function RetailShopManagement() {
         <Typography variant="h6" gutterBottom>Retail Shops Map</Typography>
         <MapContainer
           center={[21.0278, 105.8342]}
-          zoom={7}
+          zoom={14}
           style={{ height: '400px', width: '100%' }}
         >
           <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?lang=en"
             attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           {rows.map((shop) => {

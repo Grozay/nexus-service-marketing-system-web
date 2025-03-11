@@ -196,13 +196,14 @@ function ConnectionList() {
 
   const columns = [
     { field: 'id', headerName: 'Connection ID', width: 150, editable: false },
-    { field: 'orderId', headerName: 'Order ID', width: 150, editable: false },
-    { field: 'accountName', headerName: 'Account Name', width: 200, editable: false },
-    { field: 'storeName', headerName: 'Store Name', width: 150, editable: false },
+    { field: 'orderId', headerName: 'Order ID', width: 200, editable: false },
+    { field: 'orderName', headerName: 'Order Name', width: 250, editable: false },
+    { field: 'accountName', headerName: 'Account Name', width: 250, editable: false },
+    { field: 'storeName', headerName: 'Store Name', width: 250, editable: false },
     {
       field: 'status',
       headerName: 'Status',
-      width: 120,
+      width: 150,
       editable: false,
       renderCell: (params) => (
         <Chip

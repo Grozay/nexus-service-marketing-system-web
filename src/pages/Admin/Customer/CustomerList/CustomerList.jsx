@@ -213,15 +213,15 @@ export default function CustomerList() {
   }
 
   const columns = [
-    { field: 'id', headerName: 'Customer ID', width: 150, editable: false },
-    { field: 'name', headerName: 'Name', width: 150, editable: false },
-    { field: 'email', headerName: 'Email', width: 200, editable: false },
-    { field: 'phone', headerName: 'Phone', width: 150, editable: false },
-    { field: 'address', headerName: 'Address', width: 200, editable: false },
+    { field: 'id', headerName: 'Customer ID', width: 250, editable: false },
+    { field: 'name', headerName: 'Name', width: 250, editable: false },
+    { field: 'email', headerName: 'Email', width: 250, editable: false },
+    { field: 'phone', headerName: 'Phone', width: 250, editable: false },
+    { field: 'address', headerName: 'Address', width: 250, editable: false },
     {
       field: 'status',
       headerName: 'Status',
-      width: 120,
+      width: 150,
       editable: false,
       type: 'boolean',
       renderCell: (params) => (
