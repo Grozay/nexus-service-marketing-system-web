@@ -223,27 +223,27 @@ export default function VendorList() {
   }
 
   const columns = [
-    { field: 'name', headerName: 'Name', width: 200, editable: true },
-    { field: 'address', headerName: 'Address', width: 250, editable: true },
-    { field: 'phone', headerName: 'Phone', width: 150, editable: true },
+    { field: 'name', headerName: 'Name', width: 250, editable: true },
+    { field: 'address', headerName: 'Address', width: 300, editable: true },
+    { field: 'phone', headerName: 'Phone', width: 200, editable: true },
     {
       field: 'startDate',
       headerName: 'Start Date',
-      width: 150,
+      width: 250,
       editable: false,
       type: 'date'
     },
     {
       field: 'endDate',
       headerName: 'End Date',
-      width: 150,
+      width: 250,
       editable: true,
       type: 'date'
     },
     {
       field: 'status',
       headerName: 'Status',
-      width: 120,
+      width: 150,
       editable: false,
       type: 'boolean',
       renderCell: (params) => (

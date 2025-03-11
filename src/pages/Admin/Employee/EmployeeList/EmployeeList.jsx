@@ -232,14 +232,14 @@ export default function EmployeeList() {
   }
 
   const columns = [
-    { field: 'id', headerName: 'Employee ID', width: 150, editable: false },
-    { field: 'name', headerName: 'Name', width: 150, editable: true },
-    { field: 'email', headerName: 'Email', width: 200, editable: true },
-    { field: 'phone', headerName: 'Phone', width: 150, editable: true },
+    { field: 'id', headerName: 'Employee ID', width: 200, editable: false },
+    { field: 'name', headerName: 'Name', width: 250, editable: true },
+    { field: 'email', headerName: 'Email', width: 250, editable: true },
+    { field: 'phone', headerName: 'Phone', width: 250, editable: true },
     {
       field: 'role',
       headerName: 'Role',
-      width: 150,
+      width: 200,
       editable: false,
       type: 'singleSelect',
       valueOptions: [
@@ -272,7 +272,7 @@ export default function EmployeeList() {
     {
       field: 'status',
       headerName: 'Status',
-      width: 120,
+      width: 200,
       editable: false,
       type: 'boolean',
       renderCell: (params) => (
@@ -288,7 +288,7 @@ export default function EmployeeList() {
       field: 'actions',
       type: 'actions',
       headerName: 'Actions',
-      width: 100,
+      width: 150,
       cellClassName: 'actions',
       getActions: ({ id }) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit

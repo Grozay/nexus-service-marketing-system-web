@@ -230,15 +230,15 @@ function OrderList() {
   }
 
   const columns = [
-    { field: 'id', headerName: 'Order ID', width: 150, editable: false },
-    { field: 'amount', headerName: 'Amount', width: 100, editable: true, type: 'number' },
-    { field: 'status', headerName: 'Status', width: 120, editable: false },
-    { field: 'accountPhone', headerName: 'Account Phone', width: 150, editable: true },
-    { field: 'accountAddress', headerName: 'Account Address', width: 200, editable: true },
+    { field: 'id', headerName: 'Order ID', width: 200, editable: false },
+    { field: 'amount', headerName: 'Amount', width: 150, editable: true },
+    { field: 'status', headerName: 'Status', width: 200, editable: false },
+    { field: 'accountPhone', headerName: 'Account Phone', width: 200, editable: true },
+    { field: 'accountAddress', headerName: 'Account Address', width: 350, editable: true },
     {
       field: 'isActive',
       headerName: 'Feasible',
-      width: 120,
+      width: 150,
       editable: false,
       type: 'boolean',
       renderCell: (params) => (

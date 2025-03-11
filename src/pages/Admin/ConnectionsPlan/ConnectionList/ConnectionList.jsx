@@ -220,15 +220,15 @@ export default function ConnectionList() {
   }
 
   const columns = [
-    { field: 'id', headerName: 'Plan ID', width: 150, editable: false },
-    { field: 'name', headerName: 'Plan Name', width: 150, editable: true },
+    { field: 'id', headerName: 'Plan ID', width: 250, editable: false },
+    { field: 'name', headerName: 'Plan Name', width: 350, editable: true },
     { field: 'type', headerName: 'Plan Type', width: 200, editable: true },
-    { field: 'price', headerName: 'Price', width: 150, editable: true },
-    { field: 'validity', headerName: 'Validity', width: 200, editable: true },
+    { field: 'price', headerName: 'Price', width: 200, editable: true },
+    { field: 'validity', headerName: 'Validity', width: 250, editable: true },
     {
       field: 'status',
       headerName: 'Status',
-      width: 120,
+      width: 150,
       editable: false,
       type: 'boolean',
       renderCell: (params) => (
