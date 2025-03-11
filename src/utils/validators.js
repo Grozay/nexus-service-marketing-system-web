@@ -26,6 +26,14 @@ export const DOB_RULE = (value) => {
 }
 export const PHONE_NUMBER_RULE = /^[0-9]{10}$/
 export const PHONE_NUMBER_RULE_MESSAGE = 'Phone number must be 10 digits'
+export const LATITUDE_RULE = /^-?\d{1,2}(\.\d+)?$/
+export const LATITUDE_RULE_MESSAGE = 'Latitude must be a number between -90 and 90'
+export const LONGITUDE_RULE = /^-?\d{1,3}(\.\d+)?$/
+export const LONGITUDE_RULE_MESSAGE = 'Longitude must be a number between -180 and 180'
+export const OPEN_AT_RULE = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/
+export const OPEN_AT_RULE_MESSAGE = 'Open at must be a valid time format (HH:mm)'
+export const CLOSE_AT_RULE = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/
+export const CLOSE_AT_RULE_MESSAGE = 'Close at must be a valid time format (HH:mm)'
 
 export const LIMIT_COMMON_FILE_SIZE = 10485760 // byte = 10 MB
 export const ALLOW_COMMON_FILE_TYPES = ['image/jpg', 'image/jpeg', 'image/png']

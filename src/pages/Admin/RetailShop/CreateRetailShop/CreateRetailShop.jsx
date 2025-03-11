@@ -10,7 +10,8 @@ import Button from '@mui/material/Button'
 import MenuItem from '@mui/material/MenuItem'
 import Grid from '@mui/material/Grid2'
 import Paper from '@mui/material/Paper'
-import { FIELD_REQUIRED_MESSAGE, PHONE_NUMBER_RULE, PHONE_NUMBER_RULE_MESSAGE } from '~/utils/validators'
+import CircularProgress from '@mui/material/CircularProgress'
+import { FIELD_REQUIRED_MESSAGE, PHONE_NUMBER_RULE, PHONE_NUMBER_RULE_MESSAGE, LATITUDE_RULE, LATITUDE_RULE_MESSAGE, LONGITUDE_RULE, LONGITUDE_RULE_MESSAGE } from '~/utils/validators'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker'
@@ -46,25 +47,34 @@ const CreateRetailShop = () => {
   const onCreateStore = async (data) => {
     try {
       setLoading(true)
+
+      // Kiểm tra giờ mở và đóng
+      if (data.storeOpenAt && data.storeCloseAt && dayjs(data.storeCloseAt).isBefore(dayjs(data.storeOpenAt))) {
+        setLoading(false)
+        return toast.error('Close time must be after open time')
+      }
+
+      // Payload khớp với model BE (camelCase)
       const formattedData = {
         storeName: data.storeName.trim(),
         storeAddress: data.storeAddress.trim(),
         storeCity: data.storeCity.trim(),
         storePhone: data.storePhone.trim(),
-        storeLatitude: parseFloat(data.storeLatitude.trim()),
-        storeLongitude: parseFloat(data.storeLongitude.trim()),
+        storeLatitude: data.storeLatitude.trim(), // Giữ nguyên chuỗi
+        storeLongitude: data.storeLongitude.trim(), // Giữ nguyên chuỗi
         storeOpenAt: data.storeOpenAt ? dayjs(data.storeOpenAt).format('HH:mm') : null,
         storeCloseAt: data.storeCloseAt ? dayjs(data.storeCloseAt).format('HH:mm') : null,
         storeStatus: data.storeStatus
       }
 
+      // Log payload để debug
       await toast.promise(
         createRetailShopAPI(formattedData),
         {
           pending: 'Creating store...',
           success: {
             render() {
-              navigate('/management/retail-shop')
+              navigate('/management/retail-shop/list')
               return 'Store created successfully!'
             }
           },
@@ -76,8 +86,7 @@ const CreateRetailShop = () => {
         }
       )
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error creating store:', error)
+      toast.error(error?.response?.data?.title || 'Failed to create store')
     } finally {
       setLoading(false)
     }
@@ -102,7 +111,7 @@ const CreateRetailShop = () => {
                 variant="outlined"
                 label="Store Name"
                 disabled={loading}
-                {...register('storeName', { required: FIELD_REQUIRED_MESSAGE })}
+                {...register('storeName', { required: FIELD_REQUIRED_MESSAGE, maxLength: { value: 100, message: 'Store name must not exceed 100 characters' } })}
                 error={!!errors.storeName}
                 helperText={errors.storeName?.message}
               />
@@ -116,7 +125,7 @@ const CreateRetailShop = () => {
                 multiline
                 rows={2}
                 disabled={loading}
-                {...register('storeAddress', { required: FIELD_REQUIRED_MESSAGE })}
+                {...register('storeAddress', { required: FIELD_REQUIRED_MESSAGE, maxLength: { value: 255, message: 'Address must not exceed 255 characters' } })}
                 error={!!errors.storeAddress}
                 helperText={errors.storeAddress?.message}
               />
@@ -128,7 +137,7 @@ const CreateRetailShop = () => {
                 variant="outlined"
                 label="City"
                 disabled={loading}
-                {...register('storeCity', { required: FIELD_REQUIRED_MESSAGE })}
+                {...register('storeCity', { required: FIELD_REQUIRED_MESSAGE, maxLength: { value: 100, message: 'City must not exceed 100 characters' } })}
                 error={!!errors.storeCity}
                 helperText={errors.storeCity?.message}
               />
@@ -140,7 +149,11 @@ const CreateRetailShop = () => {
                 variant="outlined"
                 label="Phone Number"
                 disabled={loading}
-                {...register('storePhone', { required: FIELD_REQUIRED_MESSAGE, pattern: { value: PHONE_NUMBER_RULE, message: PHONE_NUMBER_RULE_MESSAGE } })}
+                {...register('storePhone', {
+                  required: FIELD_REQUIRED_MESSAGE,
+                  pattern: { value: PHONE_NUMBER_RULE, message: PHONE_NUMBER_RULE_MESSAGE },
+                  maxLength: { value: 20, message: 'Phone number must not exceed 20 characters' }
+                })}
                 error={!!errors.storePhone}
                 helperText={errors.storePhone?.message}
               />
@@ -151,9 +164,12 @@ const CreateRetailShop = () => {
                 fullWidth
                 variant="outlined"
                 label="Latitude"
-                type="number"
                 disabled={loading}
-                {...register('storeLatitude', { required: FIELD_REQUIRED_MESSAGE })}
+                {...register('storeLatitude', {
+                  required: FIELD_REQUIRED_MESSAGE,
+                  pattern: { value: LATITUDE_RULE, message: LATITUDE_RULE_MESSAGE },
+                  maxLength: { value: 255, message: 'Latitude must not exceed 255 characters' }
+                })}
                 error={!!errors.storeLatitude}
                 helperText={errors.storeLatitude?.message}
               />
@@ -164,9 +180,12 @@ const CreateRetailShop = () => {
                 fullWidth
                 variant="outlined"
                 label="Longitude"
-                type="number"
                 disabled={loading}
-                {...register('storeLongitude', { required: FIELD_REQUIRED_MESSAGE })}
+                {...register('storeLongitude', {
+                  required: FIELD_REQUIRED_MESSAGE,
+                  pattern: { value: LONGITUDE_RULE, message: LONGITUDE_RULE_MESSAGE },
+                  maxLength: { value: 255, message: 'Longitude must not exceed 255 characters' }
+                })}
                 error={!!errors.storeLongitude}
                 helperText={errors.storeLongitude?.message}
               />
@@ -177,9 +196,7 @@ const CreateRetailShop = () => {
                 <TimePicker
                   label="Open At"
                   value={storeOpenAt}
-                  onChange={(newValue) => {
-                    setValue('storeOpenAt', newValue, { shouldValidate: true })
-                  }}
+                  onChange={(newValue) => setValue('storeOpenAt', newValue, { shouldValidate: true })}
                   disabled={loading}
                   slotProps={{
                     textField: {
@@ -199,9 +216,7 @@ const CreateRetailShop = () => {
                 <TimePicker
                   label="Close At"
                   value={storeCloseAt}
-                  onChange={(newValue) => {
-                    setValue('storeCloseAt', newValue, { shouldValidate: true })
-                  }}
+                  onChange={(newValue) => setValue('storeCloseAt', newValue, { shouldValidate: true })}
                   disabled={loading}
                   slotProps={{
                     textField: {
@@ -216,7 +231,7 @@ const CreateRetailShop = () => {
               </LocalizationProvider>
             </Grid>
 
-            <Grid size={{ xs: 12, sm: 12 }}>
+            <Grid size={{ xs: 12 }}>
               <TextField
                 fullWidth
                 variant="outlined"
@@ -243,10 +258,20 @@ const CreateRetailShop = () => {
                   py: 1.5,
                   bgcolor: 'primary.main',
                   '&:hover': { bgcolor: 'primary.dark' },
-                  borderRadius: 2
+                  borderRadius: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1
                 }}
               >
-                {loading ? 'Creating...' : 'Create Retail Shop'}
+                {loading ? (
+                  <>
+                    <CircularProgress size={20} color="inherit" />
+                    Creating...
+                  </>
+                ) : (
+                  'Create Retail Shop'
+                )}
               </Button>
             </Grid>
           </Grid>
