@@ -56,8 +56,7 @@ const SelectPlan = ({ onNext, setPlanData, setStoreData, setAccountData }) => {
         setAllStores(stores || [])
         setAccountList(accounts || [])
       } catch (error) {
-        toast.error('Error fetching data')
-        console.error('Error fetching data:', error)
+        toast.error('Error fetching data', error)
       } finally {
         setIsLoading(false)
       }
@@ -93,7 +92,7 @@ const SelectPlan = ({ onNext, setPlanData, setStoreData, setAccountData }) => {
 
     // Kiểm tra category match
     const isValidPlan = selectedPlanData?.plan_Category?.categoryKey ===
-                       selectedAccountData?.categoryDetails?.categoryKey
+      selectedAccountData?.categoryDetails?.categoryKey
 
     if (!isValidPlan) {
       toast.error('Selected plan is not available for this customer category')
@@ -104,7 +103,7 @@ const SelectPlan = ({ onNext, setPlanData, setStoreData, setAccountData }) => {
       ...selectedPlanData,
       startDate: start.toDate(),
       endDate: end.toDate(),
-      depositAmount: selectedPlanData.planPrice
+      depositAmount: selectedPlanData.plan_Category.categoryDeposit
     })
     setStoreData({
       ...selectedStoreData,
@@ -180,7 +179,7 @@ const SelectPlan = ({ onNext, setPlanData, setStoreData, setAccountData }) => {
                       >
                         {availablePlans.map((plan) => (
                           <MenuItem key={plan.planId} value={plan.planId}>
-                            {plan.planName} - {plan.planPrice} VND
+                            {plan.planName} - {plan.planPrice} $
                           </MenuItem>
                         ))}
                       </Select>
@@ -278,18 +277,32 @@ const SelectPlan = ({ onNext, setPlanData, setStoreData, setAccountData }) => {
               </Grid>
 
               {planIdValue && (
-                <Grid size={{ xs: 12, md: 12 }}>
-                  <TextField
-                    label="Deposit Amount $"
-                    value={selectedPlan ? selectedPlan.planPrice : ''}
-                    fullWidth
-                    margin="normal"
-                    disabled
-                    InputProps={{
-                      readOnly: true
-                    }}
-                  />
-                </Grid>
+                <>
+                  <Grid size={{ xs: 12, md: 12 }}>
+                    <TextField
+                      label="Plan Amount $"
+                      value={selectedPlan ? selectedPlan.planPrice : ''}
+                      fullWidth
+                      margin="normal"
+                      disabled
+                      InputProps={{
+                        readOnly: true
+                      }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 12 }}>
+                    <TextField
+                      label="Deposit Amount $"
+                      value={selectedPlan ? selectedPlan.plan_Category.categoryDeposit : ''}
+                      fullWidth
+                      margin="normal"
+                      disabled
+                      InputProps={{
+                        readOnly: true
+                      }}
+                    />
+                  </Grid>
+                </>
               )}
             </Grid>
           </Box>

@@ -197,9 +197,7 @@ const CreateBilling = () => {
     { field: 'id', headerName: 'Order ID', width: 150 },
     { field: 'accountName', headerName: 'Customer Name', width: 180 },
     { field: 'accountPhone', headerName: 'Customer Phone', width: 150 },
-    { field: 'amount', headerName: 'Order Amount', width: 80, type: 'number' },
-    { field: 'tax', headerName: 'Tax (10%)', width: 80, type: 'number' },
-    { field: 'billingTotal', headerName: 'Billing Total', width: 80, type: 'number' },
+    { field: 'billingTotal', headerName: 'Billing Total', width: 120, type: 'number' },
     {
       field: 'status',
       headerName: 'Status',

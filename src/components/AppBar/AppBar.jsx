@@ -345,10 +345,10 @@ const NavBar = () => {
                       padding: 1
                     }}
                   >
-                    Tracking
                     <IconButton sx={{ p: 0, color: 'white' }}>
                       <SearchIcon />
                     </IconButton>
+                    Tracking
                   </Typography>
                 </Tooltip>
 

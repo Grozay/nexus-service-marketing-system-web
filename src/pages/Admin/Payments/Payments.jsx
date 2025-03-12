@@ -4,7 +4,6 @@ import { DataGrid } from '@mui/x-data-grid'
 import { getAllPaymentsAPI } from '~/apis'
 import Chip from '@mui/material/Chip'
 import { formatDate } from '~/utils/formatter'
-import { toast } from 'react-toastify' // Thêm để thông báo lỗi
 
 const transformedPayments = (payments) => {
   if (!Array.isArray(payments)) return []
@@ -15,7 +14,7 @@ const transformedPayments = (payments) => {
     paymentAmount: payment.paymentAmount,
     paymentNote: payment.paymentNote,
     paymentStatus: payment.paymentStatus,
-    PaidAt: payment.PaidAt ? formatDate(payment.PaidAt) : '',
+    PaidAt: payment.paidAt ? formatDate(payment.paidAt) : '',
     paymentCreatedAt: formatDate(payment.paymentCreatedAt)
   }))
 }

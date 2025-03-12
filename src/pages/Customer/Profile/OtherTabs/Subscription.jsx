@@ -5,29 +5,26 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle' // Thay cho Status
 import InfoIcon from '@mui/icons-material/Info' // Thay cho Order Information
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney' // Thay cho Support Amount
 import { getSubscriptionByOrderIdAPI } from '~/apis'
-import Loading from '~/components/Loading/Loading'
 import { useEffect, useState } from 'react'
 import { formatDate } from '~/utils/formatter'
+import { toast } from 'react-toastify'
 
 export default function Subscription({ orderId }) {
   const [subscriptions, setSubscriptions] = useState([])
-  const [loading, setLoading] = useState(true)
   const [visibleCount, setVisibleCount] = useState(2) // Hiển thị 2 subscriptions mặc định
 
   useEffect(() => {
     const fetchSubscriptions = async () => {
       try {
-        setLoading(true)
         const response = await getSubscriptionByOrderIdAPI(orderId)
         setSubscriptions(Array.isArray(response) ? response : [response])
-      } finally {
-        setLoading(false)
+      } catch (error) {
+        toast.error('Error fetching subscriptions:', error)
       }
     }
     fetchSubscriptions()
   }, [orderId])
 
-  if (loading) return <Loading />
 
   const visibleSubscriptions = subscriptions.slice(0, visibleCount)
   const hasMore = subscriptions.length > visibleCount

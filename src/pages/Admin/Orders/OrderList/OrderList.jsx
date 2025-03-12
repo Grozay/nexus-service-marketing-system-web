@@ -111,25 +111,27 @@ function OrderList() {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } })
   }
 
-  const handleDeleteClick = (id) => async () => {
+  const handleCancelOrder = (id) => async () => {
     try {
       const { confirmed } = await confirmUpdate({
-        title: 'Confirm Delete',
-        description: 'Are you sure you want to delete this order?',
-        confirmationText: 'Delete',
+        title: 'Confirm Cancel Order',
+        description: 'Are you sure you want to cancel this order?',
+        confirmationText: 'Cancel Order',
         cancellationText: 'Cancel'
       })
 
       if (confirmed) {
         await updateOrderAPI({
           orderId: id,
-          isDeleted: true
+          orderStatus: 'Canceled'
         })
-        setRows(rows.filter((row) => row.id !== id))
-        toast.success('Order deleted successfully')
+        setRows(rows.map((row) =>
+          row.id === id ? { ...row, orderStatus: 'Canceled' } : row
+        ))
+        toast.success('Order canceled successfully')
       }
     } catch (error) {
-      toast.error(error.message || 'Failed to delete order')
+      toast.error(error.message || 'Failed to cancel order')
     }
   }
 
@@ -388,12 +390,12 @@ function OrderList() {
 
         <MenuItem
           onClick={() => {
-            handleDeleteClick(selectedId)()
+            handleCancelOrder(selectedId)()
             handleCloseMenu()
           }}
         >
           <DeleteIcon fontSize="small" sx={{ mr: 1, color: 'error.main' }} />
-          Delete
+          Cancel
         </MenuItem>
       </Menu>
     </Box>

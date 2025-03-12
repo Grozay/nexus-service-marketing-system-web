@@ -21,7 +21,6 @@ import Subscription from './OtherTabs/Subscription'
 const Profile = () => {
   const [tabValue, setTabValue] = useState(0)
   const [profileData, setProfileData] = useState(null)
-  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   // const dispatch = useDispatch()
   const currentAccount = useSelector(selectCurrentAccount)
@@ -29,13 +28,10 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        setLoading(true)
         const response = await getOrderByAccountIdAPI(currentAccount.userId)
         setProfileData(response)
       } catch (err) {
         setError(err)
-      } finally {
-        setLoading(false)
       }
     }
     fetchProfileData()
@@ -45,13 +41,13 @@ const Profile = () => {
     setTabValue(newValue)
   }
 
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <Typography>Loading...</Typography>
-      </Box>
-    )
-  }
+  // if (loading) {
+  //   return (
+  //     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+  //       <Typography>Loading...</Typography>
+  //     </Box>
+  //   )
+  // }
 
   if (error || !profileData) {
     return (

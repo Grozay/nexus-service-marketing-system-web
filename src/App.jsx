@@ -7,6 +7,7 @@ import PageFly from './pages/Customer/PageFly/PageFly'
 
 const Auth = lazy(() => import('~/pages/Customer/Auth/Auth'))
 const Home = lazy(() => import('~/pages/Customer/Home/Home'))
+const Payment = lazy(() => import('~/pages/Customer/Payment/Payment'))
 const ServicePage = lazy(() => import('~/pages/Customer/Service/Service'))
 const ServiceCatogory = lazy(() => import('~/pages/Customer/Service/ServiceCatogory'))
 const ServiceDetail = lazy(() => import('~/pages/Customer/Service/ServiceDetail/ServiceDetail'))
@@ -52,6 +53,7 @@ function App() {
           <Route path='/news' element={<News />} />
           <Route path='/news/:slug' element={<NewsDetails />} />
           <Route path='/search-registration' element={<SearchRegistration />} />
+          <Route path='/payment' element={<Payment />} />
 
           {currentAccount ? (
             <>

@@ -340,6 +340,16 @@ export const getBillingsByOrderIdAPI = async (id) => {
   return response.data
 }
 
+export const getBillingByIdAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Billing/${id}`)
+  return response.data
+}
+
+export const sendBillAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Billing/send-bill`, data)
+  return response.data
+}
+
 // PAYMENT
 export const getAllPaymentsAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Payment`)
@@ -421,3 +431,13 @@ export const deleteReplyFeedbackAPI = async (id) => {
   return response.data
 }
 
+//VNPAY
+export const createVNPayPaymentAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/VnPay/payment-url`, data)
+  return response.data
+}
+
+export const vnpayReturnAPI = async (data) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/VnPay/vnpay-return`, data)
+  return response.data
+}

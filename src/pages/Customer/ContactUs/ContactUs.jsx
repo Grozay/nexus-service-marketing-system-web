@@ -1,5 +1,4 @@
-import React from 'react'
-import { Box, Button, Typography, TextField, Card, Container, Rating } from '@mui/material'
+import { Box, Button, Typography, TextField, Card, Container } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import AppBar from '~/components/AppBar/AppBar'
 import Footer from '~/components/Footer/Footer'
@@ -9,10 +8,8 @@ import { FIELD_REQUIRED_MESSAGE, EMAIL_RULE, EMAIL_RULE_MESSAGE } from '~/utils/
 import backgroundImage from '~/assets/team-member-1.png'
 import { toast } from 'react-toastify'
 import { contactUsAPI } from '~/apis'
-
 const ContactUs = () => {
   const { register, handleSubmit, formState: { errors }, setValue } = useForm()
-  const [rating, setRating] = React.useState(0)
 
   const onSubmit = async (data) => {
     const { fullName, email, message } = data
@@ -25,7 +22,6 @@ const ContactUs = () => {
         setValue('fullName', '')
         setValue('email', '')
         setValue('message', '')
-        setRating(0)
       }
     })
   }
@@ -65,12 +61,12 @@ const ContactUs = () => {
         <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
           <Card sx={{ p: 3, borderRadius: 2 }}>
             <Typography variant="h4" component="h1" align="center" gutterBottom>
-              Give Us Your Feedback or Inquiry
+              Send Us Your Suggestion or Inquiry
             </Typography>
 
             <Box component="form" onSubmit={handleSubmit(onSubmit)}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                {/* <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
                   <Typography variant="h6" component="h2">
                     How would you rate your experience?
                   </Typography>
@@ -80,12 +76,12 @@ const ContactUs = () => {
                     onChange={(event, newValue) => setRating(newValue)}
                     size="large"
                   />
-                </Box>
+                </Box> */}
 
                 <TextField
                   fullWidth
                   margin="normal"
-                  label="Full Name"
+                  label="Full Name *"
                   {...register('fullName', { required: FIELD_REQUIRED_MESSAGE })}
                   error={!!errors.fullName}
                   helperText={errors.fullName?.message}
@@ -94,7 +90,7 @@ const ContactUs = () => {
                 <TextField
                   fullWidth
                   margin="normal"
-                  label="Email"
+                  label="Email *"
                   {...register('email', {
                     required: FIELD_REQUIRED_MESSAGE,
                     pattern: EMAIL_RULE
@@ -111,7 +107,7 @@ const ContactUs = () => {
                 <TextField
                   fullWidth
                   margin="normal"
-                  label="Your Feedback"
+                  label="Your Feedback *"
                   multiline
                   rows={4}
                   {...register('message', { required: FIELD_REQUIRED_MESSAGE })}

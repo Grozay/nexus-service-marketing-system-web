@@ -10,17 +10,15 @@ import { Link, useLocation } from 'react-router-dom'
 
 const PageFly = () => {
   const [isVisible, setIsVisible] = useState(true)
-  const location = useLocation() // Lấy thông tin đường dẫn hiện tại
+  const location = useLocation()
 
-  // Kiểm tra đường dẫn mỗi khi location thay đổi
   useEffect(() => {
-    // Nếu đường dẫn chứa "domain/management", ẩn component
     if (location.pathname.includes('management')) {
       setIsVisible(false)
     } else {
-      setIsVisible(true) // Hiển thị ở các trang khác
+      setIsVisible(true)
     }
-  }, [location]) // Chạy lại khi location thay đổi
+  }, [location])
 
   return (
     <Fade in={isVisible} timeout={2000}>
@@ -62,7 +60,8 @@ const PageFly = () => {
             Register Now
           </Typography>
           <IconButton
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation() // Ngăn sự kiện click lan truyền lên Button cha
               setIsVisible(false)
             }}
             sx={{

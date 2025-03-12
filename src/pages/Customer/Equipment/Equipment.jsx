@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -128,8 +128,8 @@ const EquipmentPage = () => {
                     height="200"
                     image={equipment.image}
                     alt={equipment.name}
-                    sx={{ 
-                      objectFit: 'contain', 
+                    sx={{
+                      objectFit: 'contain',
                       p: 2,
                       transition: 'transform 0.3s ease',
                       '&:hover': {

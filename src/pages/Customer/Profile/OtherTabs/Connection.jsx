@@ -6,29 +6,25 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import PersonIcon from '@mui/icons-material/Person'
 import PhoneIcon from '@mui/icons-material/Phone'
 import { getConnectionByOrderIdAPI } from '~/apis'
-import Loading from '~/components/Loading/Loading'
 import { useEffect, useState } from 'react'
 import { formatDate } from '~/utils/formatter'
+import { toast } from 'react-toastify'
 
 export default function Connection({ orderId }) {
   const [connections, setConnections] = useState([])
-  const [loading, setLoading] = useState(true)
   const [visibleCount, setVisibleCount] = useState(2)
 
   useEffect(() => {
     const fetchConnections = async () => {
       try {
-        setLoading(true)
         const response = await getConnectionByOrderIdAPI(orderId)
         setConnections(Array.isArray(response) ? response : [response])
-      } finally {
-        setLoading(false)
+      } catch (error) {
+        toast.error('Error fetching connections:', error)
       }
     }
     fetchConnections()
   }, [orderId])
-
-  if (loading) return <Loading />
 
   const visibleConnections = connections.slice(0, visibleCount)
   const hasMore = connections.length > visibleCount

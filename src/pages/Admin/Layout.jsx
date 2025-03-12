@@ -67,6 +67,7 @@ import CreateReply from '~/pages/Admin/Feedback/CreateReply/CreateReply'
 import CreateWithFeedback from '~/pages/Admin/Feedback/CreateWithFeedback/CreateWithFeedback'
 import FeedbackDetail from '~/pages/Admin/Feedback/FeedbackDetail/FeedbackDetail'
 import UpdatePassword from '~/pages/Admin/ProfileManagement/UpdatePassword'
+import SendBill from './Billing/SendBill/SendBill'
 // Component bảo vệ Route dựa trên vai trò
 const ProtectedRoute = ({ allowedRoles, children }) => {
   const currentUser = useSelector(selectCurrentUser)
@@ -158,7 +159,8 @@ const NAVIGATION = (currentUser) => {
         title: 'Billing',
         icon: <ReceiptIcon />,
         children: [
-          { segment: 'create', title: 'Create Billing' },
+          { segment: 'create', title: 'Create Bill for New Order' },
+          { segment: 'send-bill', title: 'Send Bill' },
           { segment: 'list', title: 'Billing List' }
         ]
       },
@@ -258,7 +260,8 @@ const NAVIGATION = (currentUser) => {
         title: 'Billing',
         icon: <ReceiptIcon />,
         children: [
-          { segment: 'create', title: 'Create Billing' },
+          { segment: 'create', title: 'Create Bill for New Order' },
+          { segment: 'send-bill', title: 'Send Bill' },
           { segment: 'list', title: 'Billing List' }
         ]
       },
@@ -624,6 +627,10 @@ function Layout(props) {
             <Route
               path="create"
               element={<ProtectedRoute allowedRoles={['admin', 'acs']}><CreateBilling /></ProtectedRoute>}
+            />
+            <Route
+              path="send-bill"
+              element={<ProtectedRoute allowedRoles={['admin', 'acs']}><SendBill /></ProtectedRoute>}
             />
             <Route
               path="list"

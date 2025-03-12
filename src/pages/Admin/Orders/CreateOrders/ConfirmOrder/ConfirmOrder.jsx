@@ -38,7 +38,7 @@ const ConfirmOrder = ({ accountData, planData, store, onSubmit }) => {
     const orderData = {
       orderName: `Order for ${accountData.accountName || 'Unknown Account'}`,
       orderDescription: `Plan: ${planData.planName || 'Unknown Plan'} at ${store.storeName || 'Unknown Store'}`,
-      orderAmount: planData.planPrice || 0,
+      orderAmount: planData.planPrice + planData.plan_Category.categoryDeposit || 0,
       accountId: accountData.accountId,
       planId: planData.planId,
       employeeId: currentEmployee.userId || currentEmployee.employeeId,
@@ -99,7 +99,7 @@ const ConfirmOrder = ({ accountData, planData, store, onSubmit }) => {
       // 3. Tạo Deposit
       const depositData = {
         orderId: orderId,
-        depositAmount: (planData.planPrice * 0.5) || 500.00
+        depositAmount: planData.plan_Category.categoryDeposit
       }
 
       const depositResponse = await toast.promise(
@@ -144,7 +144,7 @@ const ConfirmOrder = ({ accountData, planData, store, onSubmit }) => {
         Address: {accountData?.accountAddress || 'N/A'}
       </Typography>
       <Typography variant="body1" gutterBottom>
-        Deposit Amount: {planData?.planPrice ? `${planData.planPrice} $` : 'N/A'}
+        Order Amount: {planData.planPrice + planData.plan_Category.categoryDeposit || 'N/A'}
       </Typography>
       <Typography variant="body1" gutterBottom>
         Selected Plan: {planData?.planName ? `${planData.planName} - ${planData.planPrice} VND` : 'N/A'}
